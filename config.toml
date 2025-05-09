@@ -1,6 +1,6 @@
-baseURL = 'https://protobuf.dev'
+baseURL = 'https://astro-xao.github.io/protocolbuffers.github.io'
 languageCode = 'en-us'
-title = 'Protocol Buffers Documentation'
+title = 'Protocol Buffers 文档'
 
 # Theme
 [module]
