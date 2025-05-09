@@ -7,9 +7,9 @@ type = "docs"
 
 本指南介绍如何使用 protocol buffer 语言来构建你的 protocol buffer 数据，包括 `.proto` 文件的语法以及如何根据 `.proto` 文件生成数据访问类。内容涵盖了 protocol buffer 语言的 **proto3** 版本。
 
-有关**editions**语法的信息，请参见 [Protobuf Editions Language Guide](./editions)。
+有关**editions**语法的信息，请参见 [Protobuf Editions Language Guide](../editions)。
 
-有关**proto2**语法的信息，请参见 [Proto2 Language Guide](./proto2)。
+有关**proto2**语法的信息，请参见 [Proto2 Language Guide](../proto2)。
 
 这是一个参考指南——如果你需要一个包含本文件中许多特性的分步示例，请参见你所选语言的 [教程](../getting-started)。
 
@@ -30,7 +30,7 @@ message SearchRequest {
 *   文件的第一行指定你正在使用 protocol buffer 语言规范的 proto3 版本。
 
         *   `edition`（或 proto2/proto3 的 `syntax`）必须是文件的第一行非空、非注释内容。
-        *   如果没有指定 `edition` 或 `syntax`，protocol buffer 编译器会假定你正在使用 [proto2](./proto2)。
+        *   如果没有指定 `edition` 或 `syntax`，protocol buffer 编译器会假定你正在使用 [proto2](../proto2)。
 
 *   `SearchRequest` 消息定义了三个字段（名称/值对），每个字段对应你想在该类型消息中包含的一项数据。每个字段都有名称和类型。
 
@@ -44,14 +44,14 @@ message SearchRequest {
 
 -   给定的编号在该消息的所有字段中**必须唯一**。
 -   字段编号 `19,000` 到 `19,999` 保留给 Protocol Buffers 实现。如果你在消息中使用了这些保留编号，protocol buffer 编译器会报错。
--   你不能使用任何之前[保留](#fieldreserved)的字段编号，也不能使用已分配给[扩展](./proto2#extensions)的字段编号。
+-   你不能使用任何之前[保留](#fieldreserved)的字段编号，也不能使用已分配给[扩展](../proto2#extensions)的字段编号。
 
-该编号**一旦消息类型投入使用后不可更改**，因为它用于标识 [消息的 wire 格式](./encoding)中的字段。
+该编号**一旦消息类型投入使用后不可更改**，因为它用于标识 [消息的 wire 格式](../encoding)中的字段。
 “更改”字段编号等同于删除该字段并用新编号创建一个同类型的新字段。如何正确操作，请参见[删除字段](#deleting)。
 
 字段编号**绝不应被重复使用**。不要将字段编号从[保留列表](#fieldreserved)中移除后用于新的字段定义。详见[重复使用字段编号的后果](#consequences)。
 
-你应将 1 到 15 号字段编号用于最常用的字段。较小的字段编号在 wire 格式中占用更少空间。例如，1 到 15 号字段编号编码时只需一个字节，16 到 2047 号字段编号编码时需两个字节。详情请参见 [Protocol Buffer 编码](./encoding#structure)。
+你应将 1 到 15 号字段编号用于最常用的字段。较小的字段编号在 wire 格式中占用更少空间。例如，1 到 15 号字段编号编码时只需一个字节，16 到 2047 号字段编号编码时需两个字节。详情请参见 [Protocol Buffer 编码](../encoding#structure)。
 
 #### 重复使用字段编号的后果 {#consequences}
 
@@ -71,7 +71,7 @@ protocol buffer 的 wire 格式非常精简，无法检测用一种定义编码�
 -   字段重新编号（有时为了让字段编号更美观）。重新编号实际上等同于删除并重新添加所有涉及的字段，导致 wire 格式不兼容。
 -   删除字段后未[保留](#fieldreserved)该编号，导致后续被复用。
 
-字段编号限制为 29 位而不是 32 位，是因为有三位用于指定字段的 wire 格式。详情请参见 [编码主题](./encoding#structure)。
+字段编号限制为 29 位而不是 32 位，是因为有三位用于指定字段的 wire 格式。详情请参见 [编码主题](../encoding#structure)。
 
 <a id="specifying-field-rules"></a>
 
@@ -98,17 +98,17 @@ protocol buffer 的 wire 格式非常精简，无法检测用一种定义编码�
         *   如果字段不是消息类型，有两种状态：
 
             *   字段被设置为非默认（非零）值，该值被显式设置或从 wire 解析。它会被序列化到 wire。
-            *   字段被设置为默认（零）值。它不会被序列化到 wire。实际上，你无法判断该默认（零）值是被设置/解析得到还是根本未提供。更多内容见 [字段存在性](./field_presence)。
+            *   字段被设置为默认（零）值。它不会被序列化到 wire。实际上，你无法判断该默认（零）值是被设置/解析得到还是根本未提供。更多内容见 [字段存在性](../field_presence)。
 
 *   `repeated`：该字段类型在格式良好的消息中可以重复出现零次或多次。重复值的顺序会被保留。
 
-*   `map`：这是一个键/值对字段类型。详见 [Maps](./encoding#maps)。
+*   `map`：这是一个键/值对字段类型。详见 [Maps](../encoding#maps)。
 
 #### Repeated 字段默认使用 Packed 编码 {#use-packed}
 
 在 proto3 中，标量数值类型的 `repeated` 字段默认使用 `packed` 编码。
 
-你可以在 [Protocol Buffer 编码](./encoding#packed) 了解更多关于 `packed` 编码的信息。
+你可以在 [Protocol Buffer 编码](../encoding#packed) 了解更多关于 `packed` 编码的信息。
 
 #### 消息类型字段始终具有字段存在性 {#field-presence}
 
@@ -136,7 +136,7 @@ message Message3 {
 
 “格式良好”用于描述 protocol buffer 消息时，指的是被序列化/反序列化的字节。protoc 解析器会验证 proto 定义文件是否可解析。
 
-单个字段在 wire 格式字节中可以出现多次。解析器会接受该输入，但只有最后一次出现的字段会通过生成的绑定访问。详见 [最后一个获胜](./encoding#last-one-wins)。
+单个字段在 wire 格式字节中可以出现多次。解析器会接受该输入，但只有最后一次出现的字段会通过生成的绑定访问。详见 [最后一个获胜](../encoding#last-one-wins)。
 
 ### 添加更多消息类型 {#adding-types}
 
@@ -234,7 +234,7 @@ message Foo {
 *   **PHP**：编译器为每个消息类型生成 `.php` 消息文件，为每个 `.proto` 文件生成 `.php` 元数据文件。元数据文件用于将有效消息类型加载到描述符池。
 *   **Dart**：编译器为每个消息类型生成 `.pb.dart` 文件，每个消息类型对应一个类。
 
-你可以通过选择的语言教程了解如何使用各自的 API。更多 API 细节见相关 [API 参考](./reference/)。
+你可以通过选择的语言教程了解如何使用各自的 API。更多 API 细节见相关 [API 参考](../../reference/)。
 
 ## 标量值类型 {#scalar}
 
@@ -522,7 +522,7 @@ message Foo {
 
 <sup>[6]</sup> 在 64 位机器上使用整数，在 32 位机器上使用字符串。
 
-你可以在 [Protocol Buffer Encoding](./encoding) 中了解更多关于这些类型在序列化消息时的编码方式。
+你可以在 [Protocol Buffer Encoding](../encoding) 中了解更多关于这些类型在序列化消息时的编码方式。
 
 ## 默认字段值 {#default}
 
@@ -532,7 +532,7 @@ message Foo {
 *   字节的默认值为空字节。
 *   布尔值的默认值为 false。
 *   数值类型的默认值为零。
-*   消息字段未设置。其具体值依赖于语言。详情请参见 [生成代码指南](./reference/)。
+*   消息字段未设置。其具体值依赖于语言。详情请参见 [生成代码指南](../../reference/)。
 *   枚举的默认值为**第一个定义的枚举值**，该值必须为 0。参见 [枚举默认值](#enum-default)。
 
 重复字段的默认值为空（通常在相应语言中为空列表）。
@@ -541,7 +541,7 @@ map 字段的默认值为空（通常在相应语言中为空 map）。
 
 注意，对于隐式存在的标量字段，一旦消息被解析，就无法判断该字段是被显式设置为默认值（例如布尔值被设置为 `false`），还是根本未设置：在定义消息类型时应考虑这一点。例如，如果你不希望某个布尔值被设置为 `false` 时触发某些行为，也不要让该行为在默认情况下发生。还要注意，如果标量消息字段**被**设置为其默认值，则该值不会被序列化到线上。如果 float 或 double 值被设置为 +0，则不会被序列化，但 -0 被视为不同的值，会被序列化。
 
-有关默认值在生成代码中的具体表现，请参见你所选语言的 [生成代码指南](./reference/)。
+有关默认值在生成代码中的具体表现，请参见你所选语言的 [生成代码指南](../../reference/)。
 
 ## 枚举类型 {#enum}
 
@@ -576,7 +576,7 @@ message SearchRequest {
 在 proto3 中，枚举定义的第一个值**必须**为零，并且建议命名为 `ENUM_TYPE_NAME_UNSPECIFIED` 或 `ENUM_TYPE_NAME_UNKNOWN`。原因如下：
 
 *   必须有一个零值，以便我们可以使用 0 作为数值[默认值](#default)。
-*   零值需要作为第一个元素，以兼容 [proto2](./proto2) 语义，其中第一个枚举值为默认值，除非显式指定了其他值。
+*   零值需要作为第一个元素，以兼容 [proto2](../proto2) 语义，其中第一个枚举值为默认值，除非显式指定了其他值。
 
 还建议该第一个默认值仅表示“未指定”，不应有其他语义含义。
 
@@ -601,7 +601,7 @@ enum EnumNotAllowingAlias {
 }
 ```
 
-枚举常量必须在 32 位整数范围内。由于 `enum` 值在线上使用 [varint 编码](./encoding)，负值效率较低，因此不推荐使用。你可以在消息定义中定义 `enum`，如前例所示，也可以在外部定义——这些 `enum` 可以在同一个 `.proto` 文件的任意消息定义中复用。你还可以在一个消息中使用另一个消息声明的 `enum` 类型，语法为 `_MessageType_._EnumType_`。
+枚举常量必须在 32 位整数范围内。由于 `enum` 值在线上使用 [varint 编码](../encoding)，负值效率较低，因此不推荐使用。你可以在消息定义中定义 `enum`，如前例所示，也可以在外部定义——这些 `enum` 可以在同一个 `.proto` 文件的任意消息定义中复用。你还可以在一个消息中使用另一个消息声明的 `enum` 类型，语法为 `_MessageType_._EnumType_`。
 
 当你在 `.proto` 文件中使用 `enum` 并运行 protocol buffer 编译器时，生成的代码会为 Java、Kotlin 或 C++ 生成相应的 `enum`，或为 Python 生成特殊的 `EnumDescriptor` 类，用于在运行时生成带有整数值的符号常量集。
 
@@ -610,10 +610,10 @@ enum EnumNotAllowingAlias {
 
 反序列化时，未识别的枚举值会保存在消息中，但在消息反序列化后如何表示取决于语言。在支持开放枚举类型（允许超出指定符号范围的值）的语言（如 C++ 和 Go）中，未知枚举值会以其底层整数表示存储。在 Java 等封闭枚举类型的语言中，会用枚举中的一个 case 表示未识别的值，并可通过特殊访问器获取底层整数。无论哪种情况，如果消息被序列化，未识别的值仍会随消息一起序列化。
 
-{{% alert title="重要" color="warning" %}} 关于枚举的预期行为与实际在不同语言中的表现差异，参见 [Enum Behavior](./enum)。
+{{% alert title="重要" color="warning" %}} 关于枚举的预期行为与实际在不同语言中的表现差异，参见 [Enum Behavior](../enum)。
 {{% /alert %}}
 
-有关如何在应用程序中使用消息枚举的更多信息，请参见你所选语言的 [生成代码指南](./reference/)。
+有关如何在应用程序中使用消息枚举的更多信息，请参见你所选语言的 [生成代码指南](../../reference/)。
 
 ### 保留值 {#reserved}
 
@@ -682,7 +682,7 @@ protocol buffer 编译器会在通过 `-I`/`--proto_path` 标志指定的一组�
 
 ### 使用 proto2 消息类型 {#proto2}
 
-你可以导入 [proto2](./proto2) 消息类型并在 proto3 消息中使用，反之亦然。但 proto2 枚举不能直接在 proto3 语法中使用（如果导入的 proto2 消息使用了它们则没问题）。
+你可以导入 [proto2](../proto2) 消息类型并在 proto3 消息中使用，反之亦然。但 proto2 枚举不能直接在 proto3 语法中使用（如果导入的 proto2 消息使用了它们则没问题）。
 
 ## 嵌套类型 {#nested}
 
@@ -731,11 +731,11 @@ message Outer {       // Level 0
 如果现有的消息类型已经不能满足你的需求——比如你想为消息格式增加一个字段——但又希望继续使用旧格式生成的代码，不用担心！当你使用二进制 wire 格式时，更新消息类型不会破坏任何现有代码，非常简单。
 
 {{% alert title="注意" color="note" %}} 如果你使用 JSON 或
-[proto text format](./reference/protobuf/textformat-spec)
+[proto text format](../../reference/protobuf/textformat-spec)
 来存储 protocol buffer 消息，你能在 proto 定义中做的更改会有所不同。{{% /alert %}}
 
 请查看
-[Proto 最佳实践](./best-practices/dos-donts) 以及以下规则：
+[Proto 最佳实践](../../best-practices/dos-donts) 以及以下规则：
 
 *   不要更改任何已有字段的字段编号。更改字段编号等同于删除该字段并添加一个新字段（类型相同但编号不同）。如果你想重新编号字段，请参见
         [删除字段](#deleting) 的说明。
@@ -749,7 +749,7 @@ message Outer {       // Level 0
 *   如果字节包含编码后的消息实例，嵌入式消息与 `bytes` 兼容。
 *   `fixed32` 与 `sfixed32` 兼容，`fixed64` 与 `sfixed64` 兼容。
 *   对于 `string`、`bytes` 和消息字段，单个（singular）与 `repeated` 兼容。对于 repeated 字段的序列化数据，期望该字段为单个的客户端会取最后一个输入值（如果是基本类型字段），或合并所有输入元素（如果是消息类型字段）。注意，这对数值类型（包括 bool 和 enum）通常**不安全**。数值类型的 repeated 字段默认以
-        [packed](./encoding#packed) 格式序列化，
+        [packed](../encoding#packed) 格式序列化，
         这在期望单个字段时无法正确解析。
 *   就 wire 格式而言，`enum` 与 `int32`、`uint32`、`int64` 和 `uint64` 兼容（注意如果值不适合会被截断）。但要注意，客户端代码在反序列化消息时可能会有不同处理方式：例如，未识别的 proto3 `enum` 值会保留在消息中，但具体如何表示取决于语言。int 字段总是保留其值。
 *   将单个 `optional` 字段或扩展变为**新**的 `oneof` 成员是二进制兼容的，但对于某些语言（如 Go），生成代码的 API 会发生不兼容的变化。因此，Google 在其公共 API 中不会做此类更改，详见
@@ -838,7 +838,7 @@ message SampleMessage {
 
 然后将 oneof 字段添加到 oneof 定义中。你可以添加任意类型的字段，除了 `map` 字段和 `repeated` 字段。如果需要将 repeated 字段添加到 oneof，可以使用包含 repeated 字段的消息类型。
 
-在生成的代码中，oneof 字段有与普通字段相同的 getter 和 setter。你还会获得一个特殊方法，用于检查 oneof 中设置的是哪个值（如果有的话）。你可以在相关的 [API 参考](./reference/) 中了解更多 oneof API 的信息。
+在生成的代码中，oneof 字段有与普通字段相同的 getter 和 setter。你还会获得一个特殊方法，用于检查 oneof 中设置的是哪个值（如果有的话）。你可以在相关的 [API 参考](../../reference/) 中了解更多 oneof API 的信息。
 
 ### Oneof 特性 {#oneof-features}
 
@@ -922,7 +922,7 @@ map<string, Project> projects = 3;
 *   如果为 map 字段提供了 key 但没有 value，序列化时的行为依赖于语言。在 C++、Java、Kotlin 和 Python 中，会序列化类型的默认值；在其他语言中则不会序列化任何内容。
 *   在 map `foo` 的同一作用域下不能有名为 `FooEntry` 的符号，因为 `FooEntry` 已被 map 的实现占用。
 
-所有支持的语言都已提供生成的 map API。你可以在相关[API 参考](./reference/)中了解更多信息。
+所有支持的语言都已提供生成的 map API。你可以在相关[API 参考](../../reference/)中了解更多信息。
 
 ### 向后兼容性 {#backwards}
 
@@ -988,13 +988,13 @@ service SearchService {
 
 最直接的 protocol buffer RPC 系统是 [gRPC](https://grpc.io)：由 Google 开发的跨语言、跨平台开源 RPC 系统。gRPC 与 protocol buffer 配合良好，可以直接通过 protocol buffer 编译器插件从 `.proto` 文件生成相关 RPC 代码。
 
-如果不想用 gRPC，也可以将 protocol buffer 与自定义 RPC 实现结合使用。详情见[Proto2 语言指南](./proto2#services)。
+如果不想用 gRPC，也可以将 protocol buffer 与自定义 RPC 实现结合使用。详情见[Proto2 语言指南](../proto2#services)。
 
 还有许多第三方项目正在为 protocol buffer 开发 RPC 实现。已知项目列表见[第三方插件 wiki 页面](https://github.com/protocolbuffers/protobuf/blob/master/docs/third_party.md)。
 
 ## JSON 映射 {#json}
 
-标准的 protocol buffer 二进制 wire 格式是 protobuf 系统间通信的首选序列化格式。若需与使用 JSON 的系统通信，protocol buffer 支持[JSON](./json) 的规范编码。
+标准的 protocol buffer 二进制 wire 格式是 protobuf 系统间通信的首选序列化格式。若需与使用 JSON 的系统通信，protocol buffer 支持[JSON](../json) 的规范编码。
 
 ## Options {#options}
 
@@ -1032,7 +1032,7 @@ service SearchService {
         option optimize_for = CODE_SIZE;
         ```
 
-*   `cc_generic_services`、`java_generic_services`、`py_generic_services`（文件选项）：**通用服务已弃用。** 控制 protocol buffer 编译器是否为 C++、Java 和 Python 生成基于[服务定义](#services)的抽象服务代码。出于兼容性考虑，默认值为 `true`。但自 2.3.0 版（2010 年 1 月）起，建议 RPC 实现通过[代码生成插件](./reference/cpp/api-docs/google.protobuf.compiler.plugin.pb)生成更具体的代码，而不是依赖“抽象”服务。
+*   `cc_generic_services`、`java_generic_services`、`py_generic_services`（文件选项）：**通用服务已弃用。** 控制 protocol buffer 编译器是否为 C++、Java 和 Python 生成基于[服务定义](#services)的抽象服务代码。出于兼容性考虑，默认值为 `true`。但自 2.3.0 版（2010 年 1 月）起，建议 RPC 实现通过[代码生成插件](../../reference/cpp/api-docs/google.protobuf.compiler.plugin.pb)生成更具体的代码，而不是依赖“抽象”服务。
 
         ```proto
         // 本文件依赖插件生成服务代码。
@@ -1041,11 +1041,11 @@ service SearchService {
         option py_generic_services = false;
         ```
 
-*   `cc_enable_arenas`（文件选项）：为 C++ 生成代码启用[arena 分配](./reference/cpp/arenas)。
+*   `cc_enable_arenas`（文件选项）：为 C++ 生成代码启用[arena 分配](../../reference/cpp/arenas)。
 
 *   `objc_class_prefix`（文件选项）：设置 Objective-C 生成类和枚举的前缀。无默认值。建议使用 3-5 个大写字母的前缀，[Apple 推荐](https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/ProgrammingWithObjectiveC/Conventions/Conventions.html#//apple_ref/doc/uid/TP40011210-CH10-SW4)。所有两字母前缀已被 Apple 保留。
 
-*   `packed`（字段选项）：在基本数值类型的 repeated 字段上默认为 `true`，使用更紧凑的[编码](./encoding#packed)。如需使用非打包 wire 格式，可设为 `false`。这为 2.3.0 之前的解析器提供兼容性（很少需要），例如：
+*   `packed`（字段选项）：在基本数值类型的 repeated 字段上默认为 `true`，使用更紧凑的[编码](../encoding#packed)。如需使用非打包 wire 格式，可设为 `false`。这为 2.3.0 之前的解析器提供兼容性（很少需要），例如：
 
         ```proto
         repeated int32 samples = 4 [packed = false];
@@ -1091,9 +1091,9 @@ const absl::string_view foo = proto2::GetEnumDescriptor<Data>()
 ### 自定义选项 {#customoptions}
 
 Protocol Buffers 还允许你定义和使用自己的选项。注意，这属于**高级特性**，大多数用户并不需要。如果你确实需要创建自定义选项，请参阅
-[Proto2 语言指南](./proto2#customoptions)
+[Proto2 语言指南](../proto2#customoptions)
 获取详细信息。注意，创建自定义选项需要用到
-[扩展](./proto2#extensions)，
+[扩展](../proto2#extensions)，
 而在 proto3 中，扩展仅允许用于自定义选项。
 
 ### 选项保留 {#option-retention}
@@ -1167,7 +1167,7 @@ enum MyEnum {
 ## 生成你的类 {#generating}
 
 要为 `.proto` 文件中定义的消息类型生成 Java、Kotlin、Python、C++、Go、Ruby、Objective-C 或 C# 代码，需要在 `.proto` 文件上运行 protocol buffer 编译器 `protoc`。如果你还没有安装编译器，
-[下载软件包](./downloads) 并按照 README 中的说明操作。对于 Go，还需要为编译器安装专用的代码生成插件；你可以在 GitHub 的 [golang/protobuf](https://github.com/golang/protobuf/) 仓库找到插件和安装说明。
+[下载软件包](../../downloads) 并按照 README 中的说明操作。对于 Go，还需要为编译器安装专用的代码生成插件；你可以在 GitHub 的 [golang/protobuf](https://github.com/golang/protobuf/) 仓库找到插件和安装说明。
 
 Protocol Compiler 的调用方式如下：
 
@@ -1184,23 +1184,23 @@ protoc --proto_path=IMPORT_PATH --cpp_out=DST_DIR --java_out=DST_DIR --python_ou
 *   你可以提供一个或多个*输出指令*：
 
         *   `--cpp_out` 在 `DST_DIR` 生成 C++ 代码。详见
-                [C++ 生成代码参考](./reference/cpp/cpp-generated)。
+                [C++ 生成代码参考](../../reference/cpp/cpp-generated)。
         *   `--java_out` 在 `DST_DIR` 生成 Java 代码。详见
-                [Java 生成代码参考](./reference/java/java-generated)。
+                [Java 生成代码参考](../../reference/java/java-generated)。
         *   `--kotlin_out` 在 `DST_DIR` 生成额外的 Kotlin 代码。详见
-                [Kotlin 生成代码参考](./reference/kotlin/kotlin-generated)。
+                [Kotlin 生成代码参考](../../reference/kotlin/kotlin-generated)。
         *   `--python_out` 在 `DST_DIR` 生成 Python 代码。详见
-                [Python 生成代码参考](./reference/python/python-generated)。
+                [Python 生成代码参考](../../reference/python/python-generated)。
         *   `--go_out` 在 `DST_DIR` 生成 Go 代码。详见
-                [Go 生成代码参考](./reference/go/go-generated-opaque)。
+                [Go 生成代码参考](../../reference/go/go-generated-opaque)。
         *   `--ruby_out` 在 `DST_DIR` 生成 Ruby 代码。详见
-                [Ruby 生成代码参考](./reference/ruby/ruby-generated)。
+                [Ruby 生成代码参考](../../reference/ruby/ruby-generated)。
         *   `--objc_out` 在 `DST_DIR` 生成 Objective-C 代码。详见
-                [Objective-C 生成代码参考](./reference/objective-c/objective-c-generated)。
+                [Objective-C 生成代码参考](../../reference/objective-c/objective-c-generated)。
         *   `--csharp_out` 在 `DST_DIR` 生成 C# 代码。详见
-                [C# 生成代码参考](./reference/csharp/csharp-generated)。
+                [C# 生成代码参考](../../reference/csharp/csharp-generated)。
         *   `--php_out` 在 `DST_DIR` 生成 PHP 代码。详见
-                [PHP 生成代码参考](./reference/php/php-generated)。
+                [PHP 生成代码参考](../../reference/php/php-generated)。
 
         作为额外的便利，如果 `DST_DIR` 以 `.zip` 或 `.jar` 结尾，编译器会将输出写入指定名称的单个 ZIP 格式归档文件。`.jar` 输出还会包含 Java JAR 规范要求的清单文件。注意，如果输出归档已存在，将会被覆盖。
 
