@@ -7,11 +7,11 @@ type = "docs"
 
 本指南介绍如何使用 protocol buffer 语言来构建你的 protocol buffer 数据，包括 `.proto` 文件的语法以及如何根据 `.proto` 文件生成数据访问类。内容涵盖了 protocol buffer 语言的 **proto3** 版本。
 
-有关**editions**语法的信息，请参见 [Protobuf Editions Language Guide](./programming-guides/editions)。
+有关**editions**语法的信息，请参见 [Protobuf Editions Language Guide](./editions)。
 
-有关**proto2**语法的信息，请参见 [Proto2 Language Guide](./programming-guides/proto2)。
+有关**proto2**语法的信息，请参见 [Proto2 Language Guide](./proto2)。
 
-这是一个参考指南——如果你需要一个包含本文件中许多特性的分步示例，请参见你所选语言的 [教程](./getting-started)。
+这是一个参考指南——如果你需要一个包含本文件中许多特性的分步示例，请参见你所选语言的 [教程](../getting-started)。
 
 ## 定义消息类型 {#simple}
 
@@ -30,7 +30,7 @@ message SearchRequest {
 *   文件的第一行指定你正在使用 protocol buffer 语言规范的 proto3 版本。
 
         *   `edition`（或 proto2/proto3 的 `syntax`）必须是文件的第一行非空、非注释内容。
-        *   如果没有指定 `edition` 或 `syntax`，protocol buffer 编译器会假定你正在使用 [proto2](./programming-guides/proto2)。
+        *   如果没有指定 `edition` 或 `syntax`，protocol buffer 编译器会假定你正在使用 [proto2](./proto2)。
 
 *   `SearchRequest` 消息定义了三个字段（名称/值对），每个字段对应你想在该类型消息中包含的一项数据。每个字段都有名称和类型。
 
@@ -44,14 +44,14 @@ message SearchRequest {
 
 -   给定的编号在该消息的所有字段中**必须唯一**。
 -   字段编号 `19,000` 到 `19,999` 保留给 Protocol Buffers 实现。如果你在消息中使用了这些保留编号，protocol buffer 编译器会报错。
--   你不能使用任何之前[保留](#fieldreserved)的字段编号，也不能使用已分配给[扩展](./programming-guides/proto2#extensions)的字段编号。
+-   你不能使用任何之前[保留](#fieldreserved)的字段编号，也不能使用已分配给[扩展](./proto2#extensions)的字段编号。
 
-该编号**一旦消息类型投入使用后不可更改**，因为它用于标识 [消息的 wire 格式](./programming-guides/encoding)中的字段。
+该编号**一旦消息类型投入使用后不可更改**，因为它用于标识 [消息的 wire 格式](./encoding)中的字段。
 “更改”字段编号等同于删除该字段并用新编号创建一个同类型的新字段。如何正确操作，请参见[删除字段](#deleting)。
 
 字段编号**绝不应被重复使用**。不要将字段编号从[保留列表](#fieldreserved)中移除后用于新的字段定义。详见[重复使用字段编号的后果](#consequences)。
 
-你应将 1 到 15 号字段编号用于最常用的字段。较小的字段编号在 wire 格式中占用更少空间。例如，1 到 15 号字段编号编码时只需一个字节，16 到 2047 号字段编号编码时需两个字节。详情请参见 [Protocol Buffer 编码](./programming-guides/encoding#structure)。
+你应将 1 到 15 号字段编号用于最常用的字段。较小的字段编号在 wire 格式中占用更少空间。例如，1 到 15 号字段编号编码时只需一个字节，16 到 2047 号字段编号编码时需两个字节。详情请参见 [Protocol Buffer 编码](./encoding#structure)。
 
 #### 重复使用字段编号的后果 {#consequences}
 
@@ -71,7 +71,7 @@ protocol buffer 的 wire 格式非常精简，无法检测用一种定义编码�
 -   字段重新编号（有时为了让字段编号更美观）。重新编号实际上等同于删除并重新添加所有涉及的字段，导致 wire 格式不兼容。
 -   删除字段后未[保留](#fieldreserved)该编号，导致后续被复用。
 
-字段编号限制为 29 位而不是 32 位，是因为有三位用于指定字段的 wire 格式。详情请参见 [编码主题](./programming-guides/encoding#structure)。
+字段编号限制为 29 位而不是 32 位，是因为有三位用于指定字段的 wire 格式。详情请参见 [编码主题](./encoding#structure)。
 
 <a id="specifying-field-rules"></a>
 
@@ -98,17 +98,17 @@ protocol buffer 的 wire 格式非常精简，无法检测用一种定义编码�
         *   如果字段不是消息类型，有两种状态：
 
             *   字段被设置为非默认（非零）值，该值被显式设置或从 wire 解析。它会被序列化到 wire。
-            *   字段被设置为默认（零）值。它不会被序列化到 wire。实际上，你无法判断该默认（零）值是被设置/解析得到还是根本未提供。更多内容见 [字段存在性](./programming-guides/field_presence)。
+            *   字段被设置为默认（零）值。它不会被序列化到 wire。实际上，你无法判断该默认（零）值是被设置/解析得到还是根本未提供。更多内容见 [字段存在性](./field_presence)。
 
 *   `repeated`：该字段类型在格式良好的消息中可以重复出现零次或多次。重复值的顺序会被保留。
 
-*   `map`：这是一个键/值对字段类型。详见 [Maps](./programming-guides/encoding#maps)。
+*   `map`：这是一个键/值对字段类型。详见 [Maps](./encoding#maps)。
 
 #### Repeated 字段默认使用 Packed 编码 {#use-packed}
 
 在 proto3 中，标量数值类型的 `repeated` 字段默认使用 `packed` 编码。
 
-你可以在 [Protocol Buffer 编码](./programming-guides/encoding#packed) 了解更多关于 `packed` 编码的信息。
+你可以在 [Protocol Buffer 编码](./encoding#packed) 了解更多关于 `packed` 编码的信息。
 
 #### 消息类型字段始终具有字段存在性 {#field-presence}
 
@@ -136,7 +136,7 @@ message Message3 {
 
 “格式良好”用于描述 protocol buffer 消息时，指的是被序列化/反序列化的字节。protoc 解析器会验证 proto 定义文件是否可解析。
 
-单个字段在 wire 格式字节中可以出现多次。解析器会接受该输入，但只有最后一次出现的字段会通过生成的绑定访问。详见 [最后一个获胜](./programming-guides/encoding#last-one-wins)。
+单个字段在 wire 格式字节中可以出现多次。解析器会接受该输入，但只有最后一次出现的字段会通过生成的绑定访问。详见 [最后一个获胜](./encoding#last-one-wins)。
 
 ### 添加更多消息类型 {#adding-types}
 
@@ -522,7 +522,7 @@ message Foo {
 
 <sup>[6]</sup> 在 64 位机器上使用整数，在 32 位机器上使用字符串。
 
-你可以在 [Protocol Buffer Encoding](./programming-guides/encoding) 中了解更多关于这些类型在序列化消息时的编码方式。
+你可以在 [Protocol Buffer Encoding](./encoding) 中了解更多关于这些类型在序列化消息时的编码方式。
 
 ## 默认字段值 {#default}
 
@@ -576,7 +576,7 @@ message SearchRequest {
 在 proto3 中，枚举定义的第一个值**必须**为零，并且建议命名为 `ENUM_TYPE_NAME_UNSPECIFIED` 或 `ENUM_TYPE_NAME_UNKNOWN`。原因如下：
 
 *   必须有一个零值，以便我们可以使用 0 作为数值[默认值](#default)。
-*   零值需要作为第一个元素，以兼容 [proto2](./programming-guides/proto2) 语义，其中第一个枚举值为默认值，除非显式指定了其他值。
+*   零值需要作为第一个元素，以兼容 [proto2](./proto2) 语义，其中第一个枚举值为默认值，除非显式指定了其他值。
 
 还建议该第一个默认值仅表示“未指定”，不应有其他语义含义。
 
@@ -601,7 +601,7 @@ enum EnumNotAllowingAlias {
 }
 ```
 
-枚举常量必须在 32 位整数范围内。由于 `enum` 值在线上使用 [varint 编码](./programming-guides/encoding)，负值效率较低，因此不推荐使用。你可以在消息定义中定义 `enum`，如前例所示，也可以在外部定义——这些 `enum` 可以在同一个 `.proto` 文件的任意消息定义中复用。你还可以在一个消息中使用另一个消息声明的 `enum` 类型，语法为 `_MessageType_._EnumType_`。
+枚举常量必须在 32 位整数范围内。由于 `enum` 值在线上使用 [varint 编码](./encoding)，负值效率较低，因此不推荐使用。你可以在消息定义中定义 `enum`，如前例所示，也可以在外部定义——这些 `enum` 可以在同一个 `.proto` 文件的任意消息定义中复用。你还可以在一个消息中使用另一个消息声明的 `enum` 类型，语法为 `_MessageType_._EnumType_`。
 
 当你在 `.proto` 文件中使用 `enum` 并运行 protocol buffer 编译器时，生成的代码会为 Java、Kotlin 或 C++ 生成相应的 `enum`，或为 Python 生成特殊的 `EnumDescriptor` 类，用于在运行时生成带有整数值的符号常量集。
 
@@ -610,7 +610,7 @@ enum EnumNotAllowingAlias {
 
 反序列化时，未识别的枚举值会保存在消息中，但在消息反序列化后如何表示取决于语言。在支持开放枚举类型（允许超出指定符号范围的值）的语言（如 C++ 和 Go）中，未知枚举值会以其底层整数表示存储。在 Java 等封闭枚举类型的语言中，会用枚举中的一个 case 表示未识别的值，并可通过特殊访问器获取底层整数。无论哪种情况，如果消息被序列化，未识别的值仍会随消息一起序列化。
 
-{{% alert title="重要" color="warning" %}} 关于枚举的预期行为与实际在不同语言中的表现差异，参见 [Enum Behavior](./programming-guides/enum)。
+{{% alert title="重要" color="warning" %}} 关于枚举的预期行为与实际在不同语言中的表现差异，参见 [Enum Behavior](./enum)。
 {{% /alert %}}
 
 有关如何在应用程序中使用消息枚举的更多信息，请参见你所选语言的 [生成代码指南](./reference/)。
@@ -682,7 +682,7 @@ protocol buffer 编译器会在通过 `-I`/`--proto_path` 标志指定的一组�
 
 ### 使用 proto2 消息类型 {#proto2}
 
-你可以导入 [proto2](./programming-guides/proto2) 消息类型并在 proto3 消息中使用，反之亦然。但 proto2 枚举不能直接在 proto3 语法中使用（如果导入的 proto2 消息使用了它们则没问题）。
+你可以导入 [proto2](./proto2) 消息类型并在 proto3 消息中使用，反之亦然。但 proto2 枚举不能直接在 proto3 语法中使用（如果导入的 proto2 消息使用了它们则没问题）。
 
 ## 嵌套类型 {#nested}
 
@@ -749,7 +749,7 @@ message Outer {       // Level 0
 *   如果字节包含编码后的消息实例，嵌入式消息与 `bytes` 兼容。
 *   `fixed32` 与 `sfixed32` 兼容，`fixed64` 与 `sfixed64` 兼容。
 *   对于 `string`、`bytes` 和消息字段，单个（singular）与 `repeated` 兼容。对于 repeated 字段的序列化数据，期望该字段为单个的客户端会取最后一个输入值（如果是基本类型字段），或合并所有输入元素（如果是消息类型字段）。注意，这对数值类型（包括 bool 和 enum）通常**不安全**。数值类型的 repeated 字段默认以
-        [packed](./programming-guides/encoding#packed) 格式序列化，
+        [packed](./encoding#packed) 格式序列化，
         这在期望单个字段时无法正确解析。
 *   就 wire 格式而言，`enum` 与 `int32`、`uint32`、`int64` 和 `uint64` 兼容（注意如果值不适合会被截断）。但要注意，客户端代码在反序列化消息时可能会有不同处理方式：例如，未识别的 proto3 `enum` 值会保留在消息中，但具体如何表示取决于语言。int 字段总是保留其值。
 *   将单个 `optional` 字段或扩展变为**新**的 `oneof` 成员是二进制兼容的，但对于某些语言（如 Go），生成代码的 API 会发生不兼容的变化。因此，Google 在其公共 API 中不会做此类更改，详见
@@ -988,13 +988,13 @@ service SearchService {
 
 最直接的 protocol buffer RPC 系统是 [gRPC](https://grpc.io)：由 Google 开发的跨语言、跨平台开源 RPC 系统。gRPC 与 protocol buffer 配合良好，可以直接通过 protocol buffer 编译器插件从 `.proto` 文件生成相关 RPC 代码。
 
-如果不想用 gRPC，也可以将 protocol buffer 与自定义 RPC 实现结合使用。详情见[Proto2 语言指南](./programming-guides/proto2#services)。
+如果不想用 gRPC，也可以将 protocol buffer 与自定义 RPC 实现结合使用。详情见[Proto2 语言指南](./proto2#services)。
 
 还有许多第三方项目正在为 protocol buffer 开发 RPC 实现。已知项目列表见[第三方插件 wiki 页面](https://github.com/protocolbuffers/protobuf/blob/master/docs/third_party.md)。
 
 ## JSON 映射 {#json}
 
-标准的 protocol buffer 二进制 wire 格式是 protobuf 系统间通信的首选序列化格式。若需与使用 JSON 的系统通信，protocol buffer 支持[JSON](./programming-guides/json) 的规范编码。
+标准的 protocol buffer 二进制 wire 格式是 protobuf 系统间通信的首选序列化格式。若需与使用 JSON 的系统通信，protocol buffer 支持[JSON](./json) 的规范编码。
 
 ## Options {#options}
 
@@ -1045,7 +1045,7 @@ service SearchService {
 
 *   `objc_class_prefix`（文件选项）：设置 Objective-C 生成类和枚举的前缀。无默认值。建议使用 3-5 个大写字母的前缀，[Apple 推荐](https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/ProgrammingWithObjectiveC/Conventions/Conventions.html#//apple_ref/doc/uid/TP40011210-CH10-SW4)。所有两字母前缀已被 Apple 保留。
 
-*   `packed`（字段选项）：在基本数值类型的 repeated 字段上默认为 `true`，使用更紧凑的[编码](./programming-guides/encoding#packed)。如需使用非打包 wire 格式，可设为 `false`。这为 2.3.0 之前的解析器提供兼容性（很少需要），例如：
+*   `packed`（字段选项）：在基本数值类型的 repeated 字段上默认为 `true`，使用更紧凑的[编码](./encoding#packed)。如需使用非打包 wire 格式，可设为 `false`。这为 2.3.0 之前的解析器提供兼容性（很少需要），例如：
 
         ```proto
         repeated int32 samples = 4 [packed = false];
@@ -1091,9 +1091,9 @@ const absl::string_view foo = proto2::GetEnumDescriptor<Data>()
 ### 自定义选项 {#customoptions}
 
 Protocol Buffers 还允许你定义和使用自己的选项。注意，这属于**高级特性**，大多数用户并不需要。如果你确实需要创建自定义选项，请参阅
-[Proto2 语言指南](./programming-guides/proto2#customoptions)
+[Proto2 语言指南](./proto2#customoptions)
 获取详细信息。注意，创建自定义选项需要用到
-[扩展](./programming-guides/proto2#extensions)，
+[扩展](./proto2#extensions)，
 而在 proto3 中，扩展仅允许用于自定义选项。
 
 ### 选项保留 {#option-retention}
