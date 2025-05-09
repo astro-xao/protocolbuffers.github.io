@@ -1,14 +1,12 @@
 
-
 +++
-title = "Tutorials"
+title = "教程"
 weight = 200
-description = "Each tutorial in this section shows you how to implement a simple application using protocol buffers in your favourite language, introducing you to the language's protocol buffer API as well as showing you the basics of creating and using .proto files."
+description = "本节中的每个教程将向您展示如何使用您喜欢的语言实现一个简单的应用程序，介绍该语言的 protocol buffer API，并演示如何创建和使用 .proto 文件的基础知识。"
 type = "docs"
 +++
 
-The complete sample code for each application is also provided.
+每个应用程序的完整示例代码也已提供。
 
-The tutorials don't assume that you know anything about protocol buffers, but do
-assume that you are comfortable writing code in your chosen language, including
-using file I/O.
+这些教程不要求您了解 protocol buffers，但假定您已经熟悉所选语言的编程，包括文件 I/O 的使用。
+

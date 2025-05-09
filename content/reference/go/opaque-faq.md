@@ -1,43 +1,35 @@
 +++
-title = "Go Opaque API FAQ"
+title = "Go Opaque API 常见问题解答"
 weight = 670
-linkTitle = "Opaque API FAQ"
-description = "A list of frequently asked questions about the Opaque API."
+linkTitle = "Opaque API 常见问题解答"
+description = "关于 Opaque API 的常见问题列表。"
 type = "docs"
 +++
 
 <style>
 .good pre {
-  border-left: 2px solid;
-  border-left-color: #0b8043;
-  background-color: #e2f3eb !important;
+    border-left: 2px solid;
+    border-left-color: #0b8043;
+    background-color: #e2f3eb !important;
 }
 .bad pre {
-  border-left: 2px solid;
-  border-left-color: #c53929;
-  background-color: #fbe9e7 !important;
+    border-left: 2px solid;
+    border-left-color: #c53929;
+    background-color: #fbe9e7 !important;
 }
 </style>
 
-The Opaque API is the latest version of the Protocol Buffers implementation for
-the Go programming language. The old version is now called Open Struct API. See
-the [Go Protobuf: The new Opaque API](https://go.dev/blog/protobuf-opaque) blog
-post for an introduction.
+Opaque API 是 Protocol Buffers 针对 Go 语言实现的最新版本。旧版本现在称为 Open Struct API。请参阅 [Go Protobuf: The new Opaque API](https://go.dev/blog/protobuf-opaque) 博客文章以了解介绍。
 
-This FAQ answers common questions about the new API and the migration process.
+本常见问题解答回答了关于新 API 及迁移过程中的常见问题。
 
-## Which API Should I Use When Creating a New .proto File? {#which}
+## 创建新的 .proto 文件时应使用哪个 API？ {#which}
 
-We recommend you select the Opaque API for new development. Protobuf Edition
-2024 (see
-[Protobuf Editions Overview](./editions/overview/)) will
-make the Opaque API the default.
+我们建议新开发选择 Opaque API。Protobuf Edition 2024（参见 [Protobuf Editions 概览](./editions/overview/)）将使 Opaque API 成为默认选项。
 
-## How Do I Enable the New Opaque API for My Messages? {#enable}
+## 如何为我的消息启用新的 Opaque API？ {#enable}
 
-With Protobuf Edition 2023 (current at the time of writing), you can select the
-Opaque API by setting the `api_level` editions feature to `API_OPAQUE` in your
-`.proto` file. This can be set per file or per message:
+在 Protobuf Edition 2023（撰写时为当前版本）中，可以通过在 `.proto` 文件中将 `api_level` editions 特性设置为 `API_OPAQUE` 来选择 Opaque API。可以按文件或按消息设置：
 
 ```proto
 edition = "2023";
@@ -50,8 +42,7 @@ option features.(pb.go).api_level = API_OPAQUE;
 message LogEntry { … }
 ```
 
-Protobuf Edition 2024 will default to the Opaque API, meaning you will not need
-extra imports or options anymore:
+Protobuf Edition 2024 将默认使用 Opaque API，届时无需额外导入或选项：
 
 ```proto
 edition = "2024";
@@ -61,135 +52,107 @@ package log;
 message LogEntry { … }
 ```
 
-The release date estimate for Protobuf Edition 2024 is early 2025.
+Protobuf Edition 2024 预计将在 2025 年初发布。
 
-For your convenience, you can also override the default API level with a
-`protoc` command-line flag:
+你也可以通过 `protoc` 命令行参数覆盖默认 API 级别：
 
 ```
 protoc […] --go_opt=default_api_level=API_HYBRID
 ```
 
-To override the default API level for a specific file (instead of all files),
-use the `apilevelM` mapping flag (similar to
-[the `M` flag for import paths](./reference/go/go-generated/#package)):
+如需仅为特定文件覆盖默认 API 级别，可使用 `apilevelM` 映射参数（类似于 [导入路径的 `M` 参数](./reference/go/go-generated/#package)）：
 
 ```
 protoc […] --go_opt=apilevelMhello.proto=API_HYBRID
 ```
 
-The command-line flags also work for `.proto` files still using proto2 or proto3
-syntax, but if you want to select the API level from within the `.proto` file,
-you need to migrate said file to editions first.
+命令行参数同样适用于仍使用 proto2 或 proto3 语法的 `.proto` 文件，但如果你希望在 `.proto` 文件中选择 API 级别，则需先将该文件迁移到 editions。
 
-## How Do I Enable Lazy Decoding? {#lazydecoding}
+## 如何启用延迟解码（Lazy Decoding）？ {#lazydecoding}
 
-1.  Migrate your code to use the opaque implementation.
-1.  Set the `[lazy = true]` option on the proto submessage fields that should be
-    lazily decoded.
-1.  Run your unit and integration tests, and then roll out to a staging
-    environment.
+1.  将代码迁移到 opaque 实现。
+2.  在需要延迟解码的 proto 子消息字段上设置 `[lazy = true]` 选项。
+3.  运行单元和集成测试，然后部署到预发布环境。
 
-## Are Errors Ignored with Lazy Decoding? {#lazydecodingerrors}
+## 启用延迟解码后错误会被忽略吗？ {#lazydecodingerrors}
 
-No.
-[`proto.Marshal`](https://pkg.go.dev/google.golang.org/protobuf/proto?tab=doc#Marshal)
-will always validate the wire format data, even when decoding is deferred until
-first access.
+不会。
+[`proto.Marshal`](https://pkg.go.dev/google.golang.org/protobuf/proto?tab=doc#Marshal) 即使在解码被延迟到首次访问时，也始终会验证 wire 格式数据。
 
-## Where Can I Ask Questions or Report Issues? {#questions}
+## 我可以在哪里提问或报告问题？ {#questions}
 
-If you found an issue with the `open2opaque` migration tool (such as incorrectly
-rewritten code), please report it in the
-[open2opaque issue tracker](https://github.com/golang/open2opaque/issues).
+如果你发现 `open2opaque` 迁移工具有问题（如代码重写不正确），请在 [open2opaque 问题追踪器](https://github.com/golang/open2opaque/issues) 报告。
 
-If you found an issue with Go Protobuf, please report it in the
-[Go Protobuf issue tracker](https://github.com/golang/protobuf/issues/).
+如果你发现 Go Protobuf 有问题，请在 [Go Protobuf 问题追踪器](https://github.com/golang/protobuf/issues/) 报告。
 
-## What Are the Benefits of the Opaque API? {#benefits}
+## Opaque API 有哪些优势？ {#benefits}
 
-The Opaque API comes with numerous benefits:
+Opaque API 带来了诸多优势：
 
-*   It uses a more efficient memory representation, thereby reducing memory and
-    Garbage Collection cost.
-*   It makes lazy decoding possible, which can significantly improve
-    performance.
-*   It fixes a number of sharp edges. Bugs resulting from pointer address
-    comparison, accidental sharing, or undesired use of Go reflection are all
-    prevented when using the Opaque API.
-*   It makes the ideal memory layout possible by enabling profile-driven
-    optimizations.
+*   使用更高效的内存表示，降低内存和垃圾回收成本。
+*   支持延迟解码，可显著提升性能。
+*   修复了许多棘手问题。使用 Opaque API 时，指针地址比较、意外共享或 Go 反射的非预期使用等 bug 都能避免。
+*   通过支持基于性能分析的优化，实现理想的内存布局。
 
-See
-[the Go Protobuf: The new Opaque API blog post](https://go.dev/blog/protobuf-opaque)
-for more details on these points.
+详见 [Go Protobuf: The new Opaque API 博客文章](https://go.dev/blog/protobuf-opaque)。
 
-## Which Is Faster, Builders or Setters? {#builders-faster}
+## Builder 和 Setter 哪个更快？ {#builders-faster}
 
-Generally, code using builders:
+通常，使用 builder 的代码：
 
 ```go
 _ = pb.M_builder{
-  F: &val,
+    F: &val,
 }.Build()
 ```
 
-is slower than the following equivalent:
+比下面这种等价写法要慢：
 
 ```go
 m := &pb.M{}
 m.SetF(val)
 ```
 
-for the following reasons:
+原因如下：
 
-1.  The `Build()` call iterates over all fields in the message (even ones that
-    are not explicitly set) and copies their values (if any) to the final
-    message. This linear performance matters for messages with many fields.
-1.  There's a potential extra heap allocation (`&val`).
-1.  The builder can be significantly larger and use more memory in presence of
-    oneof fields. Builders have a field per oneof union member while the message
-    can store the oneof itself as a single field.
+1.  `Build()` 会遍历消息中的所有字段（即使未显式设置），并将其值（如有）复制到最终消息。对于字段较多的消息，这种线性性能会有影响。
+2.  可能会有额外的堆分配（如 `&val`）。
+3.  如果存在 oneof 字段，builder 可能会显著变大并占用更多内存。builder 为每个 oneof 联合成员分配一个字段，而消息本身只需一个字段。
 
-Aside from runtime performance, if binary size is a concern for you, avoiding
-builders will result in less code.
+除了运行时性能，如果你关心二进制体积，避免使用 builder 会生成更少的代码。
 
-## How Do I Use Builders? {#builders-how}
+## 如何使用 Builder？ {#builders-how}
 
-Builders are designed to be used as *values* and with an immediate `Build()`
-call. Avoid using pointers to builders or storing builders in variables.
+Builder 设计为 *值类型* 并应立即调用 `Build()`。避免使用 builder 的指针或将 builder 存储在变量中。
 
 ```go {.good}
 m := pb.M_builder{
-    // ...
+        // ...
 }.Build()
 ```
 
 ```go {.bad}
-// BAD: Avoid using a pointer
+// 错误：避免使用指针
 m := (&pb.M_builder{
-    // ...
+        // ...
 }).Build()
 ```
 
 ```go {.bad highlight="content:b.:= "}
-// BAD: avoid storing in a variable
+// 错误：避免存储到变量
 b := pb.M_builder{
-    // ...
+        // ...
 }
 m := b.Build()
 ```
 
-Proto messages are immutable in some other languages, hence users tend to pass
-the builder type into function calls when constructing a proto message. Go proto
-messages are mutable, hence there's no need for passing the builder into
-function calls. Simply pass the proto message.
+在其他语言中，proto 消息是不可变的，因此用户习惯于在构造 proto 消息时传递 builder 类型。但 Go proto 消息是可变的，无需传递 builder，只需传递 proto 消息即可。
 
 ```go {.bad}
-// BAD: avoid passing a builder around
+// 错误：避免传递 builder
 func populate(mb *pb.M_builder) {
-  mb.Field1 = proto.Int32(4711)
-  //...
+    mb.Field1 = proto.Int32(4711)
+    //...
 }
 // ...
 mb := pb.M_builder{}
@@ -199,29 +162,21 @@ m := mb.Build()
 
 ```go {.good}
 func populate(mb *pb.M) {
-  mb.SetField1(4711)
-  //...
+    mb.SetField1(4711)
+    //...
 }
 // ...
 m := &pb.M{}
 populate(m)
 ```
 
-Builders are designed to imitate the composite literal construction of the Open
-Struct API, not as an alternative representation of a proto message.
+Builder 旨在模仿 Open Struct API 的复合字面量构造方式，而不是 proto 消息的替代表示。
 
-The recommended pattern is also more performant. The intended use of `Build()`
-where it is called directly on the builder struct literal can be optimized well.
-A separate call to `Build()` is much harder to optimize, as the compiler may not
-easily identify which fields are populated. If the builder lives longer, there's
-also a high chance that small objects like scalars have to be heap allocated and
-later need to be freed by the garbage collector.
+推荐模式也更高效。直接在 builder 结构体字面量上调用 `Build()` 可获得良好优化。单独调用 `Build()` 则难以优化，因为编译器难以识别哪些字段已被填充。如果 builder 生命周期较长，小对象如标量可能需要堆分配，后续还需垃圾回收。
 
-## Should I Use Builders or Setters? {#builders-vs-setters}
+## 应该用 Builder 还是 Setter？ {#builders-vs-setters}
 
-When constructing an empty protocol buffer, you should use `new` or an empty
-composite literals. Both are equivalently idiomatic to construct a zero
-initialized value in Go and are more performant than an empty builder.
+构造空的 protocol buffer 时，建议使用 `new` 或空复合字面量。两者都是 Go 中构造零值的惯用方式，比空 builder 更高效。
 
 ```go {.good}
 m1 := new(pb.M)
@@ -229,31 +184,27 @@ m2 := &pb.M{}
 ```
 
 ```go {.bad}
-// BAD: avoid: unnecessarily complex
+// 错误：不必要的复杂
 m1 := pb.M_builder{}.Build()
 ```
 
-In cases where you need to construct non-empty protocol buffers, you have the
-choice between using setters or using builders. Either is fine, but most people
-will find builders more readable. If the code you are writing needs to perform
-well,
-[setters are generally slightly more performant than builders](#builders-faster).
+如需构造非空 protocol buffer，可选择使用 setter 或 builder。两者都可以，但大多数人会觉得 builder 更易读。如果你关注性能，[setter 通常比 builder 略快](#builders-faster)。
 
 ```go {.good}
-// Recommended: using builders
+// 推荐：使用 builder
 m1 := pb.M1_builder{
-    Submessage: pb.M2_builder{
-        Submessage: pb.M3_builder{
-            String: proto.String("hello world"),
-            Int:    proto.Int32(42),
+        Submessage: pb.M2_builder{
+                Submessage: pb.M3_builder{
+                        String: proto.String("hello world"),
+                        Int:    proto.Int32(42),
+                }.Build(),
+                Bytes: []byte("hello"),
         }.Build(),
-        Bytes: []byte("hello"),
-    }.Build(),
 }.Build()
 ```
 
 ```go
-// Also okay: using setters
+// 也可以：使用 setter
 m3 := &pb.M3{}
 m3.SetString("hello world")
 m3.SetInt(42)
@@ -264,124 +215,77 @@ m1 := &pb.M1{}
 m1.SetSubmessage(m2)
 ```
 
-You can combine the use of builder and setters if certain fields require
-conditional logic before setting.
+如某些字段需在设置前进行条件判断，可结合使用 builder 和 setter。
 
 ```go {.good}
 m1 := pb.M1_builder{
-    Field1: value1,
+        Field1: value1,
 }.Build()
 if someCondition() {
-    m1.SetField2(value2)
-    m1.SetField3(value3)
+        m1.SetField2(value2)
+        m1.SetField3(value3)
 }
 ```
 
-## How Can I Influence open2opaque’s Builder Behavior? {#builders-flags}
+## 如何影响 open2opaque 的 builder 行为？ {#builders-flags}
 
-The `open2opaque` tool’s `--use_builders` flag can have the following values:
+`open2opaque` 工具的 `--use_builders` 参数可取以下值：
 
-*   `--use_builders=everywhere`: always use builders, no exceptions.
-*   `--use_builders=tests`: use builders only in tests, setters otherwise.
-*   `--use_builders=nowhere`: never use builders.
+*   `--use_builders=everywhere`：始终使用 builder，无例外。
+*   `--use_builders=tests`：仅在测试中使用 builder，其他情况用 setter。
+*   `--use_builders=nowhere`：从不使用 builder。
 
-## How Much Performance Benefit Can I Expect? {#performance-benefit}
+## 性能提升有多大？ {#performance-benefit}
 
-This depends heavily on your workload. The following questions can guide your
-performance exploration:
+这高度依赖于你的工作负载。以下问题可帮助你评估性能：
 
-*   How big a percentage of your CPU usage is Go Protobuf? Some workloads, like
-    logs analysis pipelines that compute statistics based on Protobuf input
-    records, can spend about 50% of their CPU usage in Go Protobuf. Performance
-    improvements will likely be clearly visible in such workloads. On the other
-    end of the spectrum, in programs that only spend 3-5% of their CPU usage in
-    Go Protobuf, performance improvements will often be insignificant compared
-    to other opportunities.
-*   How amenable to lazy decoding is your program? If large portions of the
-    input messages are never accessed, lazy decoding can save a lot of work.
-    This pattern is usually encountered in jobs like proxy servers (which pass
-    through the input as-is), or logs analysis pipelines with high selectivity
-    (which discard many records based on a high-level predicate).
-*   Do your message definitions contain many elementary fields with explicit
-    presence? The Opaque API uses a more efficient memory representation for
-    elementary fields like integers, booleans, enums and floats, but not
-    strings, repeated fields or submessages.
+*   Go Protobuf 占用你多少 CPU？某些工作负载（如日志分析流水线）在 Protobuf 输入记录上计算统计信息，约 50% 的 CPU 用于 Go Protobuf。这类场景下性能提升会很明显。相反，如果程序仅有 3-5% 的 CPU 用于 Go Protobuf，则性能提升通常微不足道。
+*   程序对延迟解码的适应性如何？如果大量输入消息从未被访问，延迟解码可节省大量工作。此模式常见于代理服务器（原样转发输入）或高选择性日志分析流水线（基于高层谓词丢弃许多记录）。
+*   消息定义中是否有大量带显式 presence 的基础字段？Opaque API 对整数、布尔、枚举和浮点等基础字段采用更高效的内存表示，但对字符串、repeated 字段或子消息则无此优化。
 
-## How Does Proto2, Proto3, and Editions Relate to the Opaque API? {#proto23editions}
+## Proto2、Proto3 和 Editions 与 Opaque API 有何关系？ {#proto23editions}
 
-The terms proto2 and proto3 refer to different syntax versions in your `.proto`
-files. [Protobuf Editions](./editions/overview) is the
-successor to both proto2 and proto3.
+proto2 和 proto3 指的是 `.proto` 文件的不同语法版本。[Protobuf Editions](./editions/overview) 是二者的继任者。
 
-The Opaque API affects only the generated code in `.pb.go` files, not what you
-write in your `.proto` files.
+Opaque API 只影响 `.pb.go` 文件中的生成代码，不影响你在 `.proto` 文件中的写法。
 
-The Opaque API works the same, independent of which syntax or edition your
-`.proto` files use. However, if you want to select the Opaque API on a per-file
-basis (as opposed to using a command-line flag when you are running `protoc`),
-you must migrate the file to editions first. See
-[How Do I Enable the New Opaque API for My Messages?](#enable) for details.
+Opaque API 的行为与 `.proto` 文件使用的语法或 edition 无关。但如果你希望按文件选择 Opaque API（而不是在运行 `protoc` 时用命令行参数），则必须先将文件迁移到 editions。详见 [如何为我的消息启用新的 Opaque API？](#enable)。
 
-## Why Only Change the Memory Layout of Elementary Fields? {#memorylayout}
+## 为什么只改变基础字段的内存布局？ {#memorylayout}
 
-The
-[announcement blog post’s “Opaque structs use less memory” section](https://go.dev/blog/protobuf-opaque#lessmemory)
-explains:
+[公告博客的“Opaque structs use less memory”部分](https://go.dev/blog/protobuf-opaque#lessmemory) 解释道：
 
-> This performance improvement [modeling field presence more efficiently]
-> depends heavily on your protobuf message shape: The change only affects
-> elementary fields like integers, booleans, enums and floats, but not strings,
-> repeated fields or submessages.
+> 这种性能提升 [更高效地建模字段 presence] 很大程度上取决于你的 protobuf 消息结构：该变化只影响整数、布尔、枚举和浮点等基础字段，不影响字符串、repeated 字段或子消息。
 
-A natural follow-up question is why strings, repeated fields, and submessages
-remain pointers in the Opaque API. The answer is twofold.
+自然会有人问，为什么字符串、repeated 字段和子消息在 Opaque API 中仍然用指针表示？原因有二：
 
-### Consideration 1: Memory Usage
+### 考虑一：内存使用
 
-Representing submessages as values instead of pointers would increase memory
-usage: each Protobuf message type carries internal state, which would consume
-memory even when the submessage is not actually set.
+将子消息表示为值而非指针会增加内存使用：每种 Protobuf 消息类型都带有内部状态，即使子消息未实际设置也会消耗内存。
 
-For strings and repeated fields, the situation is more nuanced. Let’s compare
-the memory usage of using a string value compared to a string pointer:
+对于字符串和 repeated 字段，情况更复杂。比较一下字符串值和字符串指针的内存占用：
 
-Go variable type | set? | [word]s                  | #bytes
----------------- | ---- | ------------------------ | ------
-`string`         | yes  | 2 (data, len)            | 16
-`string`         | no   | 2 (data, len)            | 16
-`*string`        | yes  | 1 (data) + 2 (data, len) | 24
-`*string`        | no   | 1 (data)                 | 8
+Go 变量类型 | 是否设置 | [字]数                  | 字节数
+------------ | ------- | ------------------------ | ------
+`string`     | 是      | 2（data, len）           | 16
+`string`     | 否      | 2（data, len）           | 16
+`*string`    | 是      | 1（data）+2（data, len） | 24
+`*string`    | 否      | 1（data）                | 8
 
 [word]: https://en.wikipedia.org/wiki/Word_(computer_architecture)
 
-(The situation is similar for slices, but slice headers need 3 words: data, len,
-cap.)
+（slice 也类似，但 slice 头需要 3 个字：data、len、cap。）
 
-If your string fields are overwhelmingly not set, using a pointer saves RAM. Of
-course, this saving comes at the cost of introducing more allocations and
-pointers into the program, which increases load on the Garbage Collector.
+如果你的字符串字段大多未设置，使用指针可节省内存。当然，这会带来更多分配和指针，增加垃圾回收压力。
 
-The advantage of the Opaque API is that we can change the representation without
-any changes to user code. The current memory layout was optimal for us when we
-introduced it, but if we measured today or 5 years into the future, maybe we
-would have chosen a different layout.
+Opaque API 的优势在于可以无需用户代码变更就调整表示方式。当前内存布局在引入时最优，但如果今天或五年后重新评估，也许会选择不同布局。
 
-As described in the
-[announcement blog post’s “Making the ideal memory layout possible” section](https://go.dev/blog/protobuf-opaque#idealmemory),
-we aim to make these optimization decisions on a per-workload basis in the
-future.
+如 [公告博客的“Making the ideal memory layout possible”部分](https://go.dev/blog/protobuf-opaque#idealmemory) 所述，未来我们希望能按工作负载做出这些优化决策。
 
-### Consideration 2: Lazy Decoding
+### 考虑二：延迟解码
 
-Aside from the memory usage consideration, there is another restriction: fields
-for which [lazy decoding](#lazydecoding) is enabled must be represented by
-pointers.
+除了内存使用外，还有另一个限制：启用 [延迟解码](#lazydecoding) 的字段必须用指针表示。
 
-Protobuf messages are safe for concurrent access (but not concurrent mutation),
-so if two different goroutines trigger lazy decoding, they need to coordinate
-somehow. This coordination is implemented through using the
-[`sync/atomic` package](https://pkg.go.dev/sync/atomic), which can update
-pointers atomically, but not slice headers (which exceed a [word]).
+Protobuf 消息可安全并发访问（但不可并发修改），因此如果两个 goroutine 触发延迟解码，需要某种协调。该协调通过 [`sync/atomic` 包](https://pkg.go.dev/sync/atomic) 实现，可原子更新指针，但不能原子更新 slice 头（超出一个 [字]）。
 
-While `protoc` currently only permits lazy decoding for (non-repeated)
-submessages, this reasoning holds for all field types.
+目前 `protoc` 仅允许对（非 repeated）子消息启用延迟解码，但该理由对所有字段类型都适用。

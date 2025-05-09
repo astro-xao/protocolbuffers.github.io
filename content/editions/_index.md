@@ -1,10 +1,11 @@
 +++
-title = "Protobuf Editions"
+title = "Protobuf 版本"
 weight = 41
-description = "Topics related to the Protobuf Editions functionality."
+description = "与 Protobuf 版本功能相关的主题。"
 type = "docs"
 +++
 
-*   [Protobuf Editions Overview](./editions/overview)
-*   [Feature Settings for Editions](./editions/features)
-*   [Implementing Editions Support](./editions/implementation)
+*   [Protobuf 版本概述](./overview)
+*   [版本的功能设置](./features)
+*   [实现版本支持](./implementation)
+

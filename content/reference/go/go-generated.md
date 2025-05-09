@@ -1,108 +1,65 @@
 +++
-title = "Go Generated Code Guide (Open)"
+title = "Go 生成代码指南（Open）"
 weight = 610
-linkTitle = "Generated Code Guide (Open)"
-description = "Describes exactly what Go code the protocol buffer compiler generates for any given protocol definition."
+linkTitle = "生成代码指南（Open）"
+description = "详细描述 protocol buffer 编译器针对任意 proto 定义生成的 Go 代码。"
 type = "docs"
 +++
 
-Any differences between
-proto2 and proto3 generated code are highlighted - note that these differences
-are in the generated code as described in this document, not the base API, which
-are the same in both versions. You should read the
-[proto2 language guide](./programming-guides/proto2)
-and/or the
-[proto3 language guide](./programming-guides/proto3)
-before reading this document.
+proto2 和 proto3 生成代码的差异已高亮标注——注意，这些差异仅体现在本文档描述的生成代码中，基础 API 在两个版本中是相同的。建议在阅读本文档前，先阅读
+[proto2 语言指南](./programming-guides/proto2)
+和/或
+[proto3 语言指南](./programming-guides/proto3)。
 
-{{% alert title="Note" color="warning" %}}You are
-looking at documentation for the old generated code API (Open Struct API).
-See
-[Go Generated Code (Opaque)](./reference/go/go-generated-opaque)
-for the corresponding documentation of the (new) Opaque API. See
-[Go Protobuf: The new Opaque API](https://go.dev/blog/protobuf-opaque) for the
-introduction of the Opaque API. {{% /alert %}}
+{{% alert title="注意" color="warning" %}}您正在查看旧版生成代码 API（Open Struct API）的文档。
+参见
+[Go 生成代码（Opaque）](./reference/go/go-generated-opaque)
+获取新版 Opaque API 的相关文档。Opaque API 的介绍请见
+[Go Protobuf: The new Opaque API](https://go.dev/blog/protobuf-opaque)。
+{{% /alert %}}
 
-## Compiler Invocation {#invocation}
+## 编译器调用 {#invocation}
 
-The protocol buffer compiler requires a plugin to generate Go code. Install it
-using Go 1.16 or higher by running:
+Protocol Buffer 编译器需要插件来生成 Go 代码。使用 Go 1.16 或更高版本，运行以下命令安装：
 
 ```shell
 go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 ```
 
-This will install a `protoc-gen-go` binary in `$GOBIN`. Set the `$GOBIN`
-environment variable to change the installation location. It must be in your
-`$PATH` for the protocol buffer compiler to find it.
+这将在 `$GOBIN` 目录下安装 `protoc-gen-go` 可执行文件。可通过设置 `$GOBIN` 环境变量更改安装位置。该目录需加入您的 `$PATH`，以便编译器找到插件。
 
-The protocol buffer compiler produces Go output when invoked with the `go_out`
-flag. The argument to the `go_out` flag is the directory where you want the
-compiler to write your Go output. The compiler creates a single source file for
-each `.proto` file input. The name of the output file is created by replacing
-the `.proto` extension with `.pb.go`.
+编译器通过 `go_out` 标志生成 Go 输出。该标志的参数为输出目录。每个输入的 `.proto` 文件会生成一个源文件，输出文件名将 `.proto` 后缀替换为 `.pb.go`。
 
-Where in the output directory the generated `.pb.go` file is placed depends on
-the compiler flags. There are several output modes:
+生成的 `.pb.go` 文件在输出目录中的位置取决于编译器参数，有以下几种模式：
 
--   If the `paths=import` flag is specified, the output file is placed in a
-    directory named after the Go package's import path (such as one provided by
-    the `go_package` option within the `.proto` file). For example, an input
-    file `protos/buzz.proto` with a Go import path of
-    `example.com/project/protos/fizz` results in an output file at
-    `example.com/project/protos/fizz/buzz.pb.go`. This is the default output
-    mode if a `paths` flag is not specified.
--   If the `module=$PREFIX` flag is specified, the output file is placed in a
-    directory named after the Go package's import path (such as one provided by
-    the `go_package` option within the `.proto` file), but with the specified
-    directory prefix removed from the output filename. For example, an input
-    file `protos/buzz.proto` with a Go import path of
-    `example.com/project/protos/fizz` and `example.com/project` specified as the
-    `module` prefix results in an output file at `protos/fizz/buzz.pb.go`.
-    Generating any Go packages outside the module path results in an error. This
-    mode is useful for outputting generated files directly into a Go module.
--   If the `paths=source_relative` flag is specified, the output file is placed
-    in the same relative directory as the input file. For example, an input file
-    `protos/buzz.proto` results in an output file at `protos/buzz.pb.go`.
+- 指定 `paths=import` 时，输出文件放在以 Go 包导入路径命名的目录下（如 `.proto` 文件中的 `go_package` 选项）。例如，输入文件 `protos/buzz.proto`，Go 导入路径为 `example.com/project/protos/fizz`，则输出为 `example.com/project/protos/fizz/buzz.pb.go`。如果未指定 `paths`，此为默认模式。
+- 指定 `module=$PREFIX` 时，输出文件放在以 Go 包导入路径命名的目录下，但会移除指定前缀。例如，输入文件 `protos/buzz.proto`，Go 导入路径为 `example.com/project/protos/fizz`，指定 `module` 前缀为 `example.com/project`，则输出为 `protos/fizz/buzz.pb.go`。生成的 Go 包若超出模块路径会报错。此模式适合直接输出到 Go module。
+- 指定 `paths=source_relative` 时，输出文件与输入文件保持相对目录。例如，输入文件 `protos/buzz.proto`，输出为 `protos/buzz.pb.go`。
 
-Flags specific to `protoc-gen-go` are provided by passing a `go_opt` flag when
-invoking `protoc`. Multiple `go_opt` flags may be passed. For example, when
-running:
+`protoc-gen-go` 的专用参数通过 `go_opt` 标志传递，可多次指定。例如：
 
 ```shell
 protoc --proto_path=src --go_out=out --go_opt=paths=source_relative foo.proto bar/baz.proto
 ```
 
-the compiler will read input files `foo.proto` and `bar/baz.proto` from within
-the `src` directory, and write output files `foo.pb.go` and `bar/baz.pb.go` to
-the `out` directory. The compiler automatically creates nested output
-sub-directories if necessary, but will not create the output directory itself.
+编译器会从 `src` 目录读取 `foo.proto` 和 `bar/baz.proto`，并将 `foo.pb.go` 和 `bar/baz.pb.go` 写入 `out` 目录。编译器会自动创建嵌套子目录，但不会自动创建输出目录本身。
 
-## Packages {#package}
+## 包 {#package}
 
-In order to generate Go code, the Go package's import path must be provided for
-every `.proto` file (including those transitively depended upon by the `.proto`
-files being generated). There are two ways to specify the Go import path:
+每个 `.proto` 文件（包括所有依赖文件）都必须指定 Go 包导入路径。可通过以下两种方式指定：
 
--   by declaring it within the `.proto` file, or
--   by declaring it on the command line when invoking `protoc`.
+- 在 `.proto` 文件中声明；
+- 在调用 `protoc` 时通过命令行声明。
 
-We recommend declaring it within the `.proto` file so that the Go packages for
-`.proto` files can be centrally identified with the `.proto` files themselves
-and to simplify the set of flags passed when invoking `protoc`. If the Go import
-path for a given `.proto` file is provided by both the `.proto` file itself and
-on the command line, then the latter takes precedence over the former.
+推荐在 `.proto` 文件中声明，以便集中管理并简化编译参数。如果两处都指定，则命令行参数优先。
 
-The Go import path is locally specified in a `.proto` file by declaring a
-`go_package` option with the full import path of the Go package. Example usage:
+在 `.proto` 文件中通过 `go_package` 选项指定导入路径，例如：
 
 ```proto
 option go_package = "example.com/project/protos/fizz";
 ```
 
-The Go import path may be specified on the command line when invoking the
-compiler, by passing one or more `M${PROTO_FILE}=${GO_IMPORT_PATH}` flags.
-Example usage:
+也可在命令行通过 `M${PROTO_FILE}=${GO_IMPORT_PATH}` 方式指定：
 
 ```shell
 protoc --proto_path=src \
@@ -111,48 +68,31 @@ protoc --proto_path=src \
   protos/buzz.proto protos/bar.proto
 ```
 
-Since the mapping of all `.proto` files to their Go import paths can be quite
-large, this mode of specifying the Go import paths is generally performed by
-some build tool (e.g., [Bazel](https://bazel.build/)) that has
-control over the entire dependency tree. If there are duplicate entries for a
-given `.proto` file, then the last one specified takes precedence.
+由于所有 `.proto` 文件的映射可能很大，通常由构建工具（如 [Bazel](https://bazel.build/)）统一管理。如果有重复映射，以最后一个为准。
 
-For both the `go_package` option and the `M` flag, the value may include an
-explicit package name separated from the import path by a semicolon. For
-example: `"example.com/protos/foo;package_name"`. This usage is discouraged
-since the package name will be derived by default from the import path in a
-reasonable manner.
+`go_package` 选项和 `M` 标志的值可包含分号分隔的包名，如 `"example.com/protos/foo;package_name"`。但不推荐这样做，默认会根据导入路径合理推导包名。
 
-The import path is used to determine which import statements must be generated
-when one `.proto` file imports another `.proto` file. For example, if `a.proto`
-imports `b.proto`, then the generated `a.pb.go` file needs to import the Go
-package which contains the generated `b.pb.go` file (unless both files are in
-the same package). The import path is also used to construct output filenames.
-See the \"Compiler Invocation\" section above for details.
+导入路径用于生成 `.proto` 文件间的 import 语句。例如，`a.proto` import 了 `b.proto`，则生成的 `a.pb.go` 需 import 包含 `b.pb.go` 的 Go 包（除非两者在同一包）。导入路径也用于构建输出文件名，详见“编译器调用”部分。
 
-There is no correlation between the Go import path and the
-[`package` specifier](./programming-guides/proto3#packages)
-in the `.proto` file. The latter is only relevant to the protobuf namespace,
-while the former is only relevant to the Go namespace. Also, there is no
-correlation between the Go import path and the `.proto` import path.
+Go 导入路径与 `.proto` 文件中的
+[`package` 关键字](./programming-guides/proto3#packages)
+无关，前者仅用于 Go 命名空间，后者仅用于 protobuf 命名空间。Go 导入路径与 `.proto` 的 import 路径也无关。
 
-## API level {#apilevel}
+## API 级别 {#apilevel}
 
-The generated code either uses the Open Struct API or the Opaque API. See the
-[Go Protobuf: The new Opaque API](https://go.dev/blog/protobuf-opaque)
-blog post for an introduction.
+生成代码会使用 Open Struct API 或 Opaque API。相关介绍见
+[Go Protobuf: The new Opaque API](https://go.dev/blog/protobuf-opaque)。
 
-Depending on the syntax your `.proto` file uses, here is which API will be used:
+根据 `.proto` 文件的语法，API 级别如下：
 
-`.proto` syntax | API level
---------------- | ----------
-proto2          | Open Struct API
-proto3          | Open Struct API
-edition 2023    | Open Struct API
-edition 2024+   | Opaque API
+`.proto` 语法 | API 级别
+------------- | ----------
+proto2        | Open Struct API
+proto3        | Open Struct API
+edition 2023  | Open Struct API
+edition 2024+ | Opaque API
 
-You can select the API by setting the `api_level` editions feature in your
-`.proto` file. This can be set per file or per message:
+可通过在 `.proto` 文件中设置 `api_level` editions 特性选择 API，支持文件级或消息级设置：
 
 ```proto
 edition = "2023";
@@ -165,68 +105,55 @@ option features.(pb.go).api_level = API_OPAQUE;
 message LogEntry { … }
 ```
 
-For your convenience, you can also override the default API level with a
-`protoc` command-line flag:
+也可通过 `protoc` 命令行参数全局覆盖默认 API 级别：
 
 ```
 protoc […] --go_opt=default_api_level=API_HYBRID
 ```
 
-To override the default API level for a specific file (instead of all files),
-use the `apilevelM` mapping flag (similar to [the `M` flag for import
-paths](./reference/go/go-generated/#package)):
+如需为特定文件覆盖默认 API 级别，使用 `apilevelM` 映射参数（类似于 [导入路径的 `M` 参数](./reference/go/go-generated/#package)）：
 
 ```
 protoc […] --go_opt=apilevelMhello.proto=API_HYBRID
 ```
 
-The command-line flags also work for `.proto` files still using proto2 or proto3
-syntax, but if you want to select the API level from within the `.proto` file,
-you need to migrate said file to editions first.
+命令行参数同样适用于 proto2/proto3 语法的 `.proto` 文件。但如需在文件内选择 API 级别，需先迁移到 editions。
 
-## Messages {#message}
+## 消息 {#message}
 
-Given a simple message declaration:
+给定如下简单消息声明：
 
 ```proto
 message Artist {}
 ```
 
-the protocol buffer compiler generates a struct called `Artist`. An `*Artist`
-implements the
+编译器会生成名为 `Artist` 的结构体。`*Artist` 实现了
 [`proto.Message`](https://pkg.go.dev/google.golang.org/protobuf/proto?tab=doc#Message)
-interface.
+接口。
 
-The
-[`proto` package](https://pkg.go.dev/google.golang.org/protobuf/proto?tab=doc)
-provides functions which operate on messages, including conversion to and from
-binary format.
+[`proto` 包](https://pkg.go.dev/google.golang.org/protobuf/proto?tab=doc)
+提供了操作消息的函数，包括二进制格式的转换。
 
-The `proto.Message` interface defines a `ProtoReflect` method. This method
-returns a
+`proto.Message` 接口定义了 `ProtoReflect` 方法，返回
 [`protoreflect.Message`](https://pkg.go.dev/google.golang.org/protobuf/reflect/protoreflect?tab=doc#Message)
-which provides a reflection-based view of the message.
+，提供基于反射的消息视图。
 
-The `optimize_for` option does not affect the output of the Go code generator.
+`optimize_for` 选项不会影响 Go 代码生成器的输出。
 
-When multiple goroutines concurrently access the same message, the following
-rules apply:
+多 goroutine 并发访问同一消息时，需遵循以下规则：
 
-*   Accessing (reading) fields concurrently is safe, with one exception:
-    *   Accessing a [lazy field](https://github.com/protocolbuffers/protobuf/blob/cacb096002994000f8ccc6d9b8e1b5b0783ee561/src/google/protobuf/descriptor.proto#L609)
-        for the first time is a modification.
-*   Modifying different fields in the same message is safe.
-*   Modifying a field concurrently is not safe.
-*   Modifying a message in any way concurrently with functions of the
-    [`proto` package](https://pkg.go.dev/google.golang.org/protobuf/proto?tab=doc),
-    such as
+* 并发读取字段是安全的，唯一例外是：
+    * 首次访问 [lazy 字段](https://github.com/protocolbuffers/protobuf/blob/cacb096002994000f8ccc6d9b8e1b5b0783ee561/src/google/protobuf/descriptor.proto#L609) 属于修改操作。
+* 并发修改不同字段是安全的。
+* 并发修改同一字段不安全。
+* 并发修改消息与调用 [`proto` 包](https://pkg.go.dev/google.golang.org/protobuf/proto?tab=doc) 的函数（如
     [`proto.Marshal`](https://pkg.go.dev/google.golang.org/protobuf/proto#Marshal)
-    or [`proto.Size`](https://pkg.go.dev/google.golang.org/protobuf/proto#Size)
-    is not safe.
+    或 [`proto.Size`](https://pkg.go.dev/google.golang.org/protobuf/proto#Size)
+    ）不安全。
 
-### Nested Types
+### 嵌套类型
 
-A message can be declared inside another message. For example:
+消息可嵌套声明。例如：
 
 ```proto
 message Artist {
@@ -235,86 +162,66 @@ message Artist {
 }
 ```
 
-In this case, the compiler generates two structs: `Artist` and `Artist_Name`.
+此时编译器会生成两个结构体：`Artist` 和 `Artist_Name`。
 
-## Fields
+## 字段
 
-The protocol buffer compiler generates a struct field for each field defined
-within a message. The exact nature of this field depends on its type and whether
-it is a singular, repeated, map, or oneof field.
+编译器会为消息中定义的每个字段生成结构体字段。字段类型及其为单个、repeated、map 或 oneof 字段决定了具体生成方式。
 
-Note that the generated Go field names always use camel-case naming, even if the
-field name in the `.proto` file uses lower-case with underscores
-([as it should](./programming-guides/style#message-field-names)).
-The case-conversion works as follows:
+注意，生成的 Go 字段名总是采用驼峰命名，即使 `.proto` 文件中使用下划线（[推荐如此](./programming-guides/style#message-field-names)）。
+大小写转换规则如下：
 
-1.  The first letter is capitalized for export. If the first character is an
-    underscore, it is removed and a capital X is prepended.
-2.  If an interior underscore is followed by a lower-case letter, the underscore
-    is removed, and the following letter is capitalized.
+1. 首字母大写以导出。如果首字符为下划线，则移除并加前缀 X。
+2. 内部下划线后跟小写字母时，移除下划线并将后字母大写。
 
-Thus, the proto field `birth_year` becomes `BirthYear` in Go, and
-`_birth_year_2` becomes `XBirthYear_2`.
+因此，proto 字段 `birth_year` 变为 Go 的 `BirthYear`，`_birth_year_2` 变为 `XBirthYear_2`。
 
-### Singular Scalar Fields (proto2) {#singular-scalar-proto2}
+### 单一标量字段（proto2） {#singular-scalar-proto2}
 
-For either of these field definitions:
+如下字段定义：
 
 ```proto
 optional int32 birth_year = 1;
 required int32 birth_year = 1;
 ```
 
-the compiler generates a struct with an `*int32` field named `BirthYear` and an
-accessor method `GetBirthYear()` which returns the `int32` value in `Artist` or
-the default value if the field is unset. If the default is not explicitly set,
-the [zero value](https://golang.org/ref/spec#The_zero_value) of that
-type is used instead (`0` for numbers, the empty string for strings).
+编译器会生成带有 `*int32` 字段 `BirthYear` 的结构体，并生成 `GetBirthYear()` 方法，返回 `Artist` 中的 `int32` 值或默认值。若未显式设置默认值，则使用该类型的[零值](https://golang.org/ref/spec#The_zero_value)（数字为 0，字符串为空）。
 
-For other scalar field types (including `bool`, `bytes`, and `string`), `*int32`
-is replaced with the corresponding Go type according to the
-[scalar value types table](./programming-guides/proto2#scalar).
+其他标量类型（如 `bool`、`bytes`、`string`）会用对应的 Go 类型，详见
+[标量值类型表](./programming-guides/proto2#scalar)。
 
-### Singular Scalar Fields (proto3) {#singular-scalar-proto3}
+### 单一标量字段（proto3） {#singular-scalar-proto3}
 
-For this field definition:
+如下字段定义：
 
 ```proto
 int32 birth_year = 1;
 optional int32 first_active_year = 2;
 ```
 
-The compiler will generate a struct with an `int32` field named `BirthYear` and
-an accessor method `GetBirthYear()` which returns the `int32` value in
-`birth_year` or the
-[zero value](https://golang.org/ref/spec#The_zero_value) of that type
-if the field is unset (`0` for numbers, the empty string for strings).
+编译器会生成带有 `int32` 字段 `BirthYear` 的结构体，并生成 `GetBirthYear()` 方法，返回 `birth_year` 的 `int32` 值或该类型的[零值](https://golang.org/ref/spec#The_zero_value)（数字为 0，字符串为空）。
 
-The `FirstActiveYear` struct field will be of type `*int32`, because it is
-marked `optional`.
+`FirstActiveYear` 字段为 `*int32` 类型，因为它被标记为 `optional`。
 
-For other scalar field types (including `bool`, `bytes`, and `string`), `int32`
-is replaced with the corresponding Go type according to the
-[scalar value types table](./programming-guides/proto3#scalar).
-Unset values in the proto will be represented as the
-[zero value](https://golang.org/ref/spec#The_zero_value) of that type
-(`0` for numbers, the empty string for strings).
+其他标量类型（如 `bool`、`bytes`、`string`）会用对应的 Go 类型，详见
+[标量值类型表](./programming-guides/proto3#scalar)。
+proto 中未设置的值会以该类型的[零值](https://golang.org/ref/spec#The_zero_value)表示。
 
-### Singular Message Fields {#singular-message}
+### 单一消息字段 {#singular-message}
 
-Given the message type:
+给定如下消息类型：
 
 ```proto
 message Band {}
 ```
 
-For a message with a `Band` field:
+消息中有 `Band` 字段：
 
 ```proto
 // proto2
 message Concert {
   optional Band headliner = 1;
-  // The generated code is the same result if required instead of optional.
+  // required 效果相同
 }
 
 // proto3
@@ -323,7 +230,7 @@ message Concert {
 }
 ```
 
-The compiler will generate a Go struct
+编译器会生成如下 Go 结构体：
 
 ```go
 type Concert struct {
@@ -331,34 +238,27 @@ type Concert struct {
 }
 ```
 
-Message fields can be set to `nil`, which means that the field is unset,
-effectively clearing the field. This is not equivalent to setting the value to
-an \"empty\" instance of the message struct.
+消息字段可设为 `nil`，表示未设置（即清除字段），这与赋值为空结构体不同。
 
-The compiler also generates a `func (m *Concert) GetHeadliner() *Band` helper
-function. This function returns a `nil` `*Band` if `m` is nil or `headliner` is
-unset. This makes it possible to chain get calls without intermediate `nil`
-checks:
+编译器还会生成 `func (m *Concert) GetHeadliner() *Band` 辅助函数。若 `m` 为 nil 或 `headliner` 未设置，则返回 nil，可链式调用避免中间 nil 检查：
 
 ```go
-var m *Concert // defaults to nil
+var m *Concert // 默认为 nil
 log.Infof("GetFoundingYear() = %d (no panic!)", m.GetHeadliner().GetFoundingYear())
 ```
 
-### Repeated Fields {#repeated}
+### repeated 字段 {#repeated}
 
-Each repeated field generates a slice of `T` field in the struct in Go, where
-`T` is the field's element type. For this message with a repeated field:
+每个 repeated 字段在 Go 结构体中生成 `T` 类型的切片字段，`T` 为元素类型。例如：
 
 ```proto
 message Concert {
-  // Best practice: use pluralized names for repeated fields:
-  // /programming-guides/style#repeated-fields
+  // 最佳实践：repeated 字段用复数名
   repeated Band support_acts = 1;
 }
 ```
 
-the compiler generates the Go struct:
+编译器生成：
 
 ```go
 type Concert struct {
@@ -366,47 +266,40 @@ type Concert struct {
 }
 ```
 
-Likewise, for the field definition `repeated bytes band_promo_images = 1;` the
-compiler will generate a Go struct with a `[][]byte` field named
-`BandPromoImage`. For a repeated [enumeration](#enum) like `repeated MusicGenre
-genres = 2;`, the compiler generates a struct with a `[]MusicGenre` field called
-`Genre`.
+如 `repeated bytes band_promo_images = 1;`，则生成 `[][]byte` 字段 `BandPromoImage`。如 repeated 枚举 `repeated MusicGenre genres = 2;`，则生成 `[]MusicGenre` 字段 `Genre`。
 
-The following example shows how to set the field:
+设置字段示例：
 
 ```go
 concert := &Concert{
   SupportActs: []*Band{
-    {}, // First element.
-    {}, // Second element.
+    {}, // 第一个元素
+    {}, // 第二个元素
   },
 }
 ```
 
-To access the field, you can do the following:
+访问字段示例：
 
 ```go
-support := concert.GetSupportActs() // support type is []*Band.
-b1 := support[0] // b1 type is *Band, the first element in support_acts.
+support := concert.GetSupportActs() // 类型为 []*Band
+b1 := support[0] // 类型为 *Band，为 support_acts 的第一个元素
 ```
 
-### Map Fields {#map}
+### map 字段 {#map}
 
-Each map field generates a field in the struct of type `map[TKey]TValue` where
-`TKey` is the field's key type and `TValue` is the field's value type. For this
-message with a map field:
+每个 map 字段在结构体中生成 `map[TKey]TValue` 类型字段，`TKey` 为键类型，`TValue` 为值类型。例如：
 
 ```proto
 message MerchItem {}
 
 message MerchBooth {
-  // items maps from merchandise item name ("Signed T-Shirt") to
-  // a MerchItem message with more details about the item.
+  // items 映射商品名到 MerchItem 消息
   map<string, MerchItem> items = 1;
 }
 ```
 
-the compiler generates the Go struct:
+编译器生成：
 
 ```go
 type MerchBooth struct {
@@ -414,14 +307,11 @@ type MerchBooth struct {
 }
 ```
 
-### Oneof Fields {#oneof}
+### oneof 字段 {#oneof}
 
-For a oneof field, the protobuf compiler generates a single field with an
-interface type `isMessageName_MyField`. It also generates a struct for each of
-the [singular fields](#singular-scalar-proto2) within the oneof. These all
-implement this `isMessageName_MyField` interface.
+对于 oneof 字段，编译器生成一个接口类型字段 `isMessageName_MyField`，并为 oneof 内的每个[单一字段](#singular-scalar-proto2)生成结构体，这些结构体都实现该接口。
 
-For this message with a oneof field:
+例如：
 
 ```proto
 package account;
@@ -433,11 +323,11 @@ message Profile {
 }
 ```
 
-the compiler generates the structs:
+编译器生成：
 
 ```go
 type Profile struct {
-    // Types that are valid to be assigned to Avatar:
+    // 可赋值类型：
     //  *Profile_ImageUrl
     //  *Profile_ImageData
     Avatar isProfile_Avatar `protobuf_oneof:"avatar"`
@@ -451,48 +341,42 @@ type Profile_ImageData struct {
 }
 ```
 
-Both `*Profile_ImageUrl` and `*Profile_ImageData` implement `isProfile_Avatar`
-by providing an empty `isProfile_Avatar()` method.
+`*Profile_ImageUrl` 和 `*Profile_ImageData` 都通过空方法实现 `isProfile_Avatar`。
 
-The following example shows how to set the field:
+设置字段示例：
 
 ```go
 p1 := &account.Profile{
   Avatar: &account.Profile_ImageUrl{ImageUrl: "http://example.com/image.png"},
 }
 
-// imageData is []byte
+// imageData 为 []byte
 imageData := getImageData()
 p2 := &account.Profile{
   Avatar: &account.Profile_ImageData{ImageData: imageData},
 }
 ```
 
-To access the field, you can use a type switch on the value to handle the
-different message types.
+访问字段时可用类型 switch：
 
 ```go
 switch x := m.Avatar.(type) {
 case *account.Profile_ImageUrl:
-    // Load profile image based on URL
-    // using x.ImageUrl
+    // 通过 x.ImageUrl 加载图片
 case *account.Profile_ImageData:
-    // Load profile image based on bytes
-    // using x.ImageData
+    // 通过 x.ImageData 加载图片
 case nil:
-    // The field is not set.
+    // 字段未设置
 default:
-    return fmt.Errorf("Profile.Avatar has unexpected type %T", x)
+    return fmt.Errorf("Profile.Avatar 类型异常 %T", x)
 }
 ```
 
-The compiler also generates get methods `func (m *Profile) GetImageUrl() string`
-and `func (m *Profile) GetImageData() []byte`. Each get function returns the
-value for that field or the zero value if it is not set.
+编译器还会生成 `func (m *Profile) GetImageUrl() string` 和 `func (m *Profile) GetImageData() []byte` 方法。每个 get 方法返回字段值或未设置时的零值。
 
-## Enumerations {#enum}
+## 枚举 {#enum}
 
-Given an enumeration like:
+给定如下枚举：
 
 ```proto
 message Venue {
@@ -508,8 +392,7 @@ message Venue {
 }
 ```
 
-the protocol buffer compiler generates a type and a series of constants with
-that type:
+编译器生成类型及常量：
 
 ```go
 type Venue_Kind int32
@@ -523,14 +406,13 @@ const (
 )
 ```
 
-For enums within a message (like the one above), the type name begins with the
-message name:
+消息内的枚举类型名以消息名为前缀：
 
 ```go
 type Venue_Kind int32
 ```
 
-For a package-level enum:
+包级枚举：
 
 ```proto
 enum Genre {
@@ -542,24 +424,21 @@ enum Genre {
 }
 ```
 
-the Go type name is unmodified from the proto enum name:
+Go 类型名与 proto 枚举名一致：
 
 ```go
 type Genre int32
 ```
 
-This type has a `String()` method that returns the name of a given value.
+该类型有 `String()` 方法返回值名。
 
-The `Enum()` method initializes freshly allocated memory with a given value and
-returns the corresponding pointer:
+`Enum()` 方法初始化新分配的内存并返回指针：
 
 ```go
 func (Genre) Enum() *Genre
 ```
 
-The protocol buffer compiler generates a constant for each value in the enum.
-For enums within a message, the constants begin with the enclosing message's
-name:
+编译器为每个枚举值生成常量。消息内枚举常量以消息名为前缀：
 
 ```go
 const (
@@ -571,7 +450,7 @@ const (
 )
 ```
 
-For a package-level enum, the constants begin with the enum name instead:
+包级枚举常量以枚举名为前缀：
 
 ```go
 const (
@@ -582,8 +461,7 @@ const (
 )
 ```
 
-The protobuf compiler also generates a map from integer values to the string
-names and a map from the names to the values:
+编译器还会生成从整数到字符串名、从字符串名到整数的映射：
 
 ```go
 var Genre_name = map[int32]string{
@@ -600,15 +478,11 @@ var Genre_value = map[string]int32{
 }
 ```
 
-Note that the `.proto` language allows multiple enum symbols to have the same
-numeric value. Symbols with the same numeric value are synonyms. These are
-represented in Go in exactly the same way, with multiple names corresponding to
-the same numeric value. The reverse mapping contains a single entry for the
-numeric value to the name which appears first in the .proto file.
+注意，`.proto` 语言允许多个枚举符号有相同数值，这些为同义词。在 Go 中表现为多个名称对应同一数值。反向映射只包含 `.proto` 文件中首个出现的名称。
 
-## Extensions (proto2) {#extensions}
+## 扩展（proto2） {#extensions}
 
-Given an extension definition:
+给定扩展定义：
 
 ```proto
 extend Concert {
@@ -616,29 +490,24 @@ extend Concert {
 }
 ```
 
-The protocol buffer compiler will generate a
+编译器会生成名为 `E_Promo_id` 的
 [`protoreflect.ExtensionType`](https://pkg.go.dev/google.golang.org/protobuf/reflect/protoreflect?tab=doc#ExtensionType)
-value named `E_Promo_id`. This value may be used with the
-[`proto.GetExtension`](https://pkg.go.dev/google.golang.org/protobuf/proto?tab=doc#GetExtension),
-[`proto.SetExtension`](https://pkg.go.dev/google.golang.org/protobuf/proto?tab=doc#SetExtension),
-[`proto.HasExtension`](https://pkg.go.dev/google.golang.org/protobuf/proto?tab=doc#HasExtension),
-and
+值。可用
+[`proto.GetExtension`](https://pkg.go.dev/google.golang.org/protobuf/proto?tab=doc#GetExtension)、
+[`proto.SetExtension`](https://pkg.go.dev/google.golang.org/protobuf/proto?tab=doc#SetExtension)、
+[`proto.HasExtension`](https://pkg.go.dev/google.golang.org/protobuf/proto?tab=doc#HasExtension)、
 [`proto.ClearExtension`](https://pkg.go.dev/google.golang.org/protobuf/proto?tab=doc#ClearExtension)
-functions to access an extension in a message. The `GetExtension` function and
-`SetExtension` functions respectively return and accept an `interface{}` value
-containing the extension value type.
+等函数访问扩展。`GetExtension` 和 `SetExtension` 分别返回和接受包含扩展值类型的 `interface{}`。
 
-For singular scalar extension fields, the extension value type is the
-corresponding Go type from the
-[scalar value types table](./programming-guides/proto3#scalar).
+单一标量扩展字段的类型为
+[标量值类型表](./programming-guides/proto3#scalar)
+中的 Go 类型。
 
-For singular embedded message extension fields, the extension value type is
-`*M`, where `M` is the field message type.
+单一嵌入消息扩展字段类型为 `*M`，`M` 为消息类型。
 
-For repeated extension fields, the extension value type is a slice of the
-singular type.
+repeated 扩展字段类型为单一类型的切片。
 
-For example, given the following definition:
+例如：
 
 ```proto
 extend Concert {
@@ -648,7 +517,7 @@ extend Concert {
 }
 ```
 
-Extension values may be accessed as:
+扩展值访问示例：
 
 ```go
 m := &somepb.Concert{}
@@ -661,8 +530,7 @@ v2 := proto.GetExtension(m, extpb.E_RepeatedString).([][]byte)
 v3 := proto.GetExtension(m, extpb.E_SingularMessage).(*extpb.Band)
 ```
 
-Extensions can be declared nested inside of another type. For example, a common
-pattern is to do something like this:
+扩展可嵌套声明。例如：
 
 ```proto
 message Promo {
@@ -672,11 +540,9 @@ message Promo {
 }
 ```
 
-In this case, the `ExtensionType` value is named `E_Promo_Concert`.
+此时 `ExtensionType` 名为 `E_Promo_Concert`。
 
-## Services {#service}
+## 服务 {#service}
 
-The Go code generator does not produce output for services by default. If you
-enable the [gRPC](https://www.grpc.io/) plugin (see the
-[gRPC Go Quickstart guide](https://github.com/grpc/grpc-go/tree/master/examples))
-then code will be generated to support gRPC.
+Go 代码生成器默认不为服务生成代码。如需支持 [gRPC](https://www.grpc.io/)，请启用 gRPC 插件（参见
+[gRPC Go 快速入门](https://github.com/grpc/grpc-go/tree/master/examples)）。

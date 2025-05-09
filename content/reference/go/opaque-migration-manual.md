@@ -1,32 +1,22 @@
 +++
-title = "Go Opaque API: Manual Migration"
+title = "Go Opaque API：手动迁移"
 weight = 660
-linkTitle = "Opaque API: Manual Migration"
-description = "Describes a manual migration to the Opaque API."
+linkTitle = "Opaque API：手动迁移"
+description = "介绍如何手动迁移到 Opaque API。"
 type = "docs"
 +++
 
-The Opaque API is the latest version of the Protocol Buffers implementation for
-the Go programming language. The old version is now called Open Struct API. See
-the [Go Protobuf: Releasing the Opaque API](https://go.dev/blog/protobuf-opaque)
-blog post for an introduction.
+Opaque API 是 Protocol Buffers 在 Go 语言中的最新实现。旧版本现在称为 Open Struct API。请参阅 [Go Protobuf: Releasing the Opaque API](https://go.dev/blog/protobuf-opaque) 博客文章以了解简介。
 
-This is a user guide for migrating Go Protobuf usages from the older Open Struct
-API to the new Opaque API.
+本文档为将 Go Protobuf 用法从旧的 Open Struct API 迁移到新的 Opaque API 的用户指南。
 
-{{% alert title="Warning" color="warning" %}} You
-are looking at the manual migration guide. Typically you’re better off using the
-`open2opaque` tool to automate the migration. See
-[Opaque API Migration](./reference/go/opaque-migration)
-instead. {{% /alert %}}
+{{% alert title="警告" color="warning" %}} 您正在查看手动迁移指南。通常建议使用 `open2opaque` 工具自动迁移。请参阅 [Opaque API 迁移](./reference/go/opaque-migration) 获取更多信息。{{% /alert %}}
 
-The
-[Generated Code Guide](./reference/go/go-generated-opaque)
-provides more detail. This guide compares the old and new API side-by-side.
+[生成代码指南](./reference/go/go-generated-opaque) 提供了更多细节。本文将新旧 API 进行对比。
 
-### Message Construction
+### 消息构造
 
-Suppose there is a protobuf message defined like this:
+假设有如下 protobuf 消息定义：
 
 ```proto
 message Foo {
@@ -41,12 +31,12 @@ message Foo {
 }
 ```
 
-Here is an example of how to construct this message from literal values:
+以下是如何从字面值构造该消息的示例：
 
 <table width="100%">
         <tr>
-                <td width="50%">Open Struct API (old)</td>
-                <td width="50%">Opaque API (new)</td>
+                <td width="50%">Open Struct API（旧）</td>
+                <td width="50%">Opaque API（新）</td>
         </tr>
 <tr>
 <td>
@@ -72,30 +62,23 @@ m := pb.Foo_builder{
 </tr>
 </table>
 
-As you can see, the builder structs allow for an almost 1:1 translation between
-Open Struct API (old) and Opaque API (new).
+可以看到，builder 结构体允许 Open Struct API（旧）与 Opaque API（新）之间几乎 1:1 的转换。
 
-Generally, prefer using builders for readability. Only in rare cases, like
-creating Protobuf messages in a hot inner loop, might it be preferable to use
-setters instead of builders. See
-[the Opaque API FAQ: Should I use builders or setters?](./reference/go/opaque-faq#builders-vs-setters)
-for more detail.
+通常建议使用 builder 以提高可读性。仅在极少数情况下（如在高频循环中创建 Protobuf 消息）才建议使用 setter。详情请参阅 [Opaque API 常见问题：应使用 builder 还是 setter？](./reference/go/opaque-faq#builders-vs-setters)。
 
-An exception to the above example is when working with [oneofs](#oneofs): The
-Open Struct API (old) uses a wrapper struct type for each oneof case, whereas
-the Opaque API (new) treats oneof fields like regular message fields:
+对于 [oneof](#oneofs) 字段有例外：Open Struct API（旧）为每个 oneof case 使用包装结构体类型，而 Opaque API（新）将 oneof 字段视为普通消息字段：
 
 <table width="100%">
         <tr>
-                <td width="50%">Open Struct API (old)</td>
-                <td width="50%">Opaque API (new)</td>
+                <td width="50%">Open Struct API（旧）</td>
+                <td width="50%">Opaque API（新）</td>
         </tr>
 <tr>
 <td>
 
 ```go
 m := &pb.Foo{
-  Uint32: myScalar,  // could be nil
+  Uint32: myScalar,  // 可能为 nil
   Union:  &pb.Foo_String{myString},
   Kind:   pb.Foo_SPECIAL_KIND.Enum(),
 }
@@ -116,13 +99,11 @@ m := pb.Foo_builder{
 </tr>
 </table>
 
-For the set of Go struct fields associated with a oneof union, only one field
-may be populated. If multiple oneof case fields are populated, the last one (in
-field declaration order in your .proto file) wins.
+对于 oneof union 相关的 Go 结构体字段，只能有一个字段被赋值。如果多个 oneof case 字段被赋值，则以 .proto 文件中字段声明顺序的最后一个为准。
 
-### Scalar fields
+### 标量字段
 
-Suppose there is a message defined with a scalar field:
+假设有如下带标量字段的消息定义：
 
 ```proto
 message Artist {
@@ -130,14 +111,9 @@ message Artist {
 }
 ```
 
-Protobuf message fields for which Go uses scalar types (bool, int32, int64,
-uint32, uint64, float32, float64, string, []byte, and enum) will have `Get` and
-`Set` accessor methods. Fields with
-[explicit presence](./programming-guides/field_presence/)
-will also have `Has` and `Clear` methods.
+对于 Go 使用标量类型（bool、int32、int64、uint32、uint64、float32、float64、string、[]byte 和 enum）的 Protobuf 字段，会生成 `Get` 和 `Set` 访问器方法。具有 [显式存在性](./programming-guides/field_presence/) 的字段还会有 `Has` 和 `Clear` 方法。
 
-For a field of type `int32` named `birth_year`, the following accessor methods
-will be generated for it:
+对于名为 `birth_year` 的 int32 字段，将生成如下访问器方法：
 
 ```go
 func (m *Artist) GetBirthYear() int32
@@ -146,46 +122,37 @@ func (m *Artist) HasBirthYear() bool
 func (m *Artist) ClearBirthYear()
 ```
 
-`Get` returns a value for the field. If the field is not set or the message
-receiver is nil, it returns the default value. The default value is the
-[zero value](https://go.dev/ref/spec#The_zero_value), unless explicitly set with
-the default option.
+`Get` 返回字段的值。如果字段未设置或消息接收者为 nil，则返回默认值。默认值为 [零值](https://go.dev/ref/spec#The_zero_value)，除非通过 default 选项显式设置。
 
-`Set` stores the provided value into the field. It panics when called on a nil
-message receiver.
+`Set` 将提供的值存储到字段中。若在 nil 消息接收者上调用会 panic。
 
-For bytes fields, calling `Set` with a nil []byte will be considered set. For
-example, calling `Has` immediately after returns true. Calling `Get` immediately
-after will return a zero-length slice (can either be nil or empty slice). Users
-should use `Has` for determining presence and not rely on whether `Get` returns
-nil.
+对于 bytes 字段，使用 nil []byte 调用 `Set` 也会被视为已设置。例如，随后调用 `Has` 会返回 true。随后调用 `Get` 会返回零长度切片（可能为 nil 或空切片）。用户应使用 `Has` 判断存在性，而不是依赖 `Get` 是否返回 nil。
 
-`Has` reports whether the field is populated. It returns false when called on a
-nil message receiver.
+`Has` 报告字段是否已赋值。在 nil 消息接收者上调用返回 false。
 
-`Clear` clears the field. It panics when called on a nil message receiver.
+`Clear` 清除字段。在 nil 消息接收者上调用会 panic。
 
-**Example code snippets using a string field in:**
+**字符串字段示例代码：**
 
 <table width="100%">
         <tr>
-                <td width="50%">Open Struct API (old)</td>
-                <td width="50%">Opaque API (new)</td>
+                <td width="50%">Open Struct API（旧）</td>
+                <td width="50%">Opaque API（新）</td>
         </tr>
 <tr>
 <td>
 
 ```go
-// Getting the value.
+// 获取字段值
 s := m.GetBirthYear()
 
-// Setting the field.
+// 设置字段
 m.BirthYear = proto.Int32(1989)
 
-// Check for presence.
+// 检查是否存在
 if s.BirthYear != nil { … }
 
-// Clearing the field.
+// 清除字段
 m.BirthYear = nil
 ```
 
@@ -193,16 +160,16 @@ m.BirthYear = nil
 <td>
 
 ```go
-// Getting the field value.
+// 获取字段值
 s := m.GetBirthYear()
 
-// Setting the field.
+// 设置字段
 m.SetBirthYear(1989)
 
-// Check for presence.
+// 检查是否存在
 if m.HasBirthYear() { … }
 
-// Clearing the field
+// 清除字段
 m.ClearBirthYear()
 ```
 
@@ -210,9 +177,9 @@ m.ClearBirthYear()
 </tr>
 </table>
 
-### Message fields
+### 消息字段
 
-Suppose there is a message defined with a message-typed field:
+假设有如下带消息类型字段的消息定义：
 
 ```proto
 message Band {}
@@ -222,11 +189,9 @@ message Concert {
 }
 ```
 
-Protobuf message fields of type message will have `Get`, `Set`, `Has` and
-`Clear` methods.
+消息类型字段会生成 `Get`、`Set`、`Has` 和 `Clear` 方法。
 
-For a message-typed field named `headliner`, the following accessor methods will
-be generated for it:
+对于名为 `headliner` 的消息类型字段，将生成如下访问器方法：
 
 ```go
 func (m *Concert) GetHeadliner() *Band
@@ -235,40 +200,35 @@ func (m *Concert) HasHeadliner() bool
 func (m *Concert) ClearHeadliner()
 ```
 
-`Get` returns a value for the field. It returns nil if not set or when called on
-a nil message receiver. Checking if `Get` returns nil is equivalent to checking
-if `Has` returns false.
+`Get` 返回字段的值。如果未设置或在 nil 消息接收者上调用则返回 nil。判断 `Get` 是否为 nil 等价于判断 `Has` 是否为 false。
 
-`Set` stores the provided value into the field. It panics when called on a nil
-message receiver. Calling `Set` with a nil pointer is equivalent to calling
-`Clear`.
+`Set` 将提供的值存储到字段中。在 nil 消息接收者上调用会 panic。用 nil 指针调用 `Set` 等价于调用 `Clear`。
 
-`Has` reports whether the field is populated. It returns false when called on a
-nil message receiver.
+`Has` 报告字段是否已赋值。在 nil 消息接收者上调用返回 false。
 
-`Clear` clears the field. It panics when called on a nil message receiver.
+`Clear` 清除字段。在 nil 消息接收者上调用会 panic。
 
-**Example code snippets**
+**示例代码：**
 
 <table width="100%">
         <tr>
-                <td width="50%">Open Struct API (old)</td>
-                <td width="50%">Opaque (new)</td>
+                <td width="50%">Open Struct API（旧）</td>
+                <td width="50%">Opaque（新）</td>
         </tr>
 <tr>
 <td>
 
 ```go
-// Getting the value.
+// 获取字段值
 b := m.GetHeadliner()
 
-// Setting the field.
+// 设置字段
 m.Headliner = &pb.Band{}
 
-// Check for presence.
+// 检查是否存在
 if s.Headliner != nil { … }
 
-// Clearing the field.
+// 清除字段
 m.Headliner = nil
 ```
 
@@ -276,16 +236,16 @@ m.Headliner = nil
 <td>
 
 ```go
-// Getting the value.
+// 获取字段值
 s := m.GetHeadliner()
 
-// Setting the field.
+// 设置字段
 m.SetHeadliner(&pb.Band{})
 
-// Check for presence.
+// 检查是否存在
 if m.HasHeadliner() { … }
 
-// Clearing the field
+// 清除字段
 m.ClearHeadliner()
 ```
 
@@ -293,9 +253,9 @@ m.ClearHeadliner()
 </tr>
 </table>
 
-### Repeated fields
+### 重复字段
 
-Suppose there is a message defined with a repeated message-typed field:
+假设有如下带重复消息类型字段的消息定义：
 
 ```proto
 message Concert {
@@ -303,60 +263,53 @@ message Concert {
 }
 ```
 
-Repeated fields will have `Get` and `Set` methods.
+重复字段会生成 `Get` 和 `Set` 方法。
 
-`Get` returns a value for the field. It returns nil if the field is not set or
-the message receiver is nil.
+`Get` 返回字段的值。如果字段未设置或消息接收者为 nil，则返回 nil。
 
-`Set` stores the provided value into the field. It panics when called on a nil
-message receiver. `Set` will store a copy of the slice header that is provided.
-Changes to the slice contents are observable in the repeated field. Hence, if
-`Set` is called with an empty slice, calling `Get` immediately after will return
-the same slice. For the wire or text marshaling output, a passed-in nil slice is
-indistinguishable from an empty slice.
+`Set` 将提供的值存储到字段中。在 nil 消息接收者上调用会 panic。`Set` 会存储传入切片头的副本。对切片内容的更改会反映到重复字段中。因此，如果用空切片调用 `Set`，随后调用 `Get` 会返回同一个切片。对于 wire 或文本序列化输出，传入的 nil 切片与空切片无区别。
 
-For a repeated message-typed field named `support_acts` on message `Concert`,
-the following accessor methods will be generated for it:
+对于消息 `Concert` 上名为 `support_acts` 的重复消息类型字段，将生成如下访问器方法：
 
 ```go
 func (m *Concert) GetSupportActs() []*Band
 func (m *Concert) SetSupportActs([]*Band)
 ```
 
-**Example code snippets**
+**示例代码：**
 
 <table width="100%">
         <tr>
-                <td width="50%">Open Struct API (old)</td>
-                <td width="50%">Opaque API (new)</td>
+                <td width="50%">Open Struct API（旧）</td>
+                <td width="50%">Opaque API（新）</td>
         </tr>
 <tr>
 <td>
 
 ```go
-// Getting the entire repeated value.
+// 获取整个重复字段
 v := m.GetSupportActs()
 
-// Setting the field.
+// 设置字段
 m.SupportActs = v
 
-// Get an element in a repeated field.
+// 获取某个元素
 e := m.SupportActs[i]
 
-// Set an element in a repeated field.
+// 设置某个元素
 m.SupportActs[i] = e
 
-// Get the length of a repeated field.
+// 获取长度
 n := len(m.GetSupportActs())
 
-// Truncate a repeated field.
+// 截断
 m.SupportActs = m.SupportActs[:i]
 
-// Append to a repeated field.
+// 追加
 m.SupportActs = append(m.GetSupportActs(), e)
 m.SupportActs = append(m.GetSupportActs(), v...)
 
-// Clearing the field.
+// 清除字段
 m.SupportActs = nil
 ```
 
@@ -364,29 +317,29 @@ m.SupportActs = nil
 <td>
 
 ```go
-// Getting the entire repeated value.
+// 获取整个重复字段
 v := m.GetSupportActs()
 
-// Setting the field.
+// 设置字段
 m.SetSupportActs(v)
 
-// Get an element in a repeated field.
+// 获取某个元素
 e := m.GetSupportActs()[i]
 
-// Set an element in a repeated field.
+// 设置某个元素
 m.GetSupportActs()[i] = e
 
-// Get the length of a repeated field.
+// 获取长度
 n := len(m.GetSupportActs())
 
-// Truncate a repeated field.
+// 截断
 m.SetSupportActs(m.GetSupportActs()[:i])
 
-// Append to a repeated field.
+// 追加
 m.SetSupportActs(append(m.GetSupportActs(), e))
 m.SetSupportActs(append(m.GetSupportActs(), v...))
 
-// Clearing the field.
+// 清除字段
 m.SetSupportActs(nil)
 ```
 
@@ -394,9 +347,9 @@ m.SetSupportActs(nil)
 </tr>
 </table>
 
-### Maps
+### Map 字段
 
-Suppose there is a message defined with a map-typed field:
+假设有如下带 map 类型字段的消息定义：
 
 ```proto
 message MerchBooth {
@@ -404,57 +357,51 @@ message MerchBooth {
 }
 ```
 
-Map fields will have `Get` and `Set` methods.
+Map 字段会生成 `Get` 和 `Set` 方法。
 
-`Get` returns a value for the field. It returns nil if the field is not set or
-the message receiver is nil.
+`Get` 返回字段的值。如果字段未设置或消息接收者为 nil，则返回 nil。
 
-`Set` stores the provided value into the field. It panics when called on a nil
-message receiver. `Set` will store a copy of the provided map reference. Changes
-to the provided map are observable in the map field.
+`Set` 将提供的值存储到字段中。在 nil 消息接收者上调用会 panic。`Set` 会存储传入 map 引用的副本。对传入 map 的更改会反映到字段中。
 
-For a map field named `items` on message `MerchBooth`, the following accessor
-methods will be generated for it:
+对于消息 `MerchBooth` 上名为 `items` 的 map 字段，将生成如下访问器方法：
 
 ```go
 func (m *MerchBooth) GetItems() map[string]*MerchItem
 func (m *MerchBooth) SetItems(map[string]*MerchItem)
 ```
 
-**Example code snippets**
+**示例代码：**
 
 <table width="100%">
         <tr>
-                <td width="50%">Open Struct API (old)</td>
-                <td width="50%">Opaque API (new)</td>
+                <td width="50%">Open Struct API（旧）</td>
+                <td width="50%">Opaque API（新）</td>
         </tr>
 <tr>
 <td>
 
 ```go
-// Getting the entire map value.
+// 获取整个 map
 v := m.GetItems()
 
-// Setting the field.
+// 设置字段
 m.Items = v
 
-// Get an element in a map field.
+// 获取某个元素
 v := m.Items[k]
 
-// Set an element in a map field.
-// This will panic if m.Items is nil.
-// You should check m.Items for nil
-// before doing the assignment to ensure
-// it won't panic.
+// 设置某个元素
+// 若 m.Items 为 nil 会 panic
+// 应先检查 m.Items 是否为 nil
 m.Items[k] = v
 
-// Delete an element in a map field.
+// 删除元素
 delete(m.Items, k)
 
-// Get the size of a map field.
+// 获取 map 长度
 n := len(m.GetItems())
 
-// Clearing the field.
+// 清除字段
 m.Items = nil
 ```
 
@@ -462,29 +409,27 @@ m.Items = nil
 <td>
 
 ```go
-// Getting the entire map value.
+// 获取整个 map
 v := m.GetItems()
 
-// Setting the field.
+// 设置字段
 m.SetItems(v)
 
-// Get an element in a map field.
+// 获取某个元素
 v := m.GetItems()[k]
 
-// Set an element in a map field.
-// This will panic if m.GetItems() is nil.
-// You should check m.GetItems() for nil
-// before doing the assignment to ensure
-// it won't panic.
+// 设置某个元素
+// 若 m.GetItems() 为 nil 会 panic
+// 应先检查 m.GetItems() 是否为 nil
 m.GetItems()[k] = v
 
-// Delete an element in a map field.
+// 删除元素
 delete(m.GetItems(), k)
 
-// Get the size of a map field.
+// 获取 map 长度
 n := len(m.GetItems())
 
-// Clearing the field.
+// 清除字段
 m.SetItems(nil)
 ```
 
@@ -492,14 +437,11 @@ m.SetItems(nil)
 </tr>
 </table>
 
-### Oneofs
+### Oneof 字段
 
-For each oneof union grouping, there will be a `Which`, `Has` and `Clear` method
-on the message. There will also be a `Get`, `Set`, `Has`, and `Clear` method on
-each oneof case field in that union.
+对于每个 oneof union 分组，消息上会有 `Which`、`Has` 和 `Clear` 方法。每个 oneof case 字段也会有 `Get`、`Set`、`Has` 和 `Clear` 方法。
 
-Suppose there is a message defined with oneof fields `image_url` and
-`image_data` in oneof `avatar` like:
+假设有如下 oneof 字段 `image_url` 和 `image_data`，位于 oneof `avatar` 中：
 
 ```proto
 message Profile {
@@ -510,7 +452,7 @@ message Profile {
 }
 ```
 
-The generated Opaque API for this oneof will be:
+该 oneof 的 Opaque API 生成如下：
 
 ```go
 func (m *Profile) WhichAvatar() case_Profile_Avatar { … }
@@ -526,16 +468,13 @@ const (
 )
 ```
 
-`Which` reports which case field is set by returning the field number. It
-returns 0 when none are set or when called on a nil message receiver.
+`Which` 返回已设置的 case 字段编号。若未设置或在 nil 消息接收者上调用则返回 0。
 
-`Has` reports whether any of the fields within the oneof is set. It returns
-false when called on a nil message receiver.
+`Has` 报告 oneof 内是否有字段被设置。在 nil 消息接收者上调用返回 false。
 
-`Clear` clears the currently set case field in the oneof. It panics on a nil
-message receiver.
+`Clear` 清除当前已设置的 oneof 字段。在 nil 消息接收者上调用会 panic。
 
-The generated Opaque API for each oneof case field will be:
+每个 oneof case 字段的 Opaque API 生成如下：
 
 ```go
 func (m *Profile) GetImageUrl() string { … }
@@ -551,33 +490,26 @@ func (m *Profile) ClearImageUrl() { … }
 func (m *Profile) ClearImageData() { … }
 ```
 
-`Get` returns a value for the case field. It will return the zero value if the
-case field is not set or when called on a nil message receiver.
+`Get` 返回 case 字段的值。若 case 字段未设置或在 nil 消息接收者上调用则返回零值。
 
-`Set` stores the provided value into the case field. It also implicitly clears
-the case field that was previously populated within the oneof union. Calling
-`Set` on a oneof message case field with nil value will set the field to an
-empty message. It panics when called on a nil message receiver.
+`Set` 将提供的值存储到 case 字段，并隐式清除 oneof union 中之前已赋值的 case 字段。对 oneof 消息类型 case 字段用 nil 值调用 `Set` 会设置为空消息。在 nil 消息接收者上调用会 panic。
 
-`Has` reports whether the case field is set or not. It returns false when called
-on a nil message receiver.
+`Has` 报告 case 字段是否被设置。在 nil 消息接收者上调用返回 false。
 
-`Clear` clears the case field. If it was previously set, the oneof union is also
-cleared. If the oneof union is set to different field, it will not clear the
-oneof union. It panics when called on a nil message receiver.
+`Clear` 清除 case 字段。如果之前已设置，则 oneof union 也会被清除。如果 oneof union 已设置为其他字段，则不会清除。在 nil 消息接收者上调用会 panic。
 
-**Example code snippets**
+**示例代码：**
 
 <table width="100%">
         <tr>
-                <td width="50%">Open Struct API (old)</td>
-                <td width="50%">Opaque API (new)</td>
+                <td width="50%">Open Struct API（旧）</td>
+                <td width="50%">Opaque API（新）</td>
         </tr>
 <tr>
 <td>
 
 ```go
-// Getting the oneof field that is set.
+// 获取已设置的 oneof 字段
 switch m.GetAvatar().(type) {
 case *pb.Profile_ImageUrl:
   … = m.GetImageUrl()
@@ -585,27 +517,27 @@ case *pb.Profile_ImageData:
   … = m.GetImageData()
 }
 
-// Setting the fields.
+// 设置字段
 m.Avatar = &pb.Profile_ImageUrl{"http://"}
 m.Avatar = &pb.Profile_ImageData{img}
 
-// Checking whether any oneof field is set
+// 检查是否有 oneof 字段被设置
 if m.Avatar != nil { … }
 
-// Clearing the field.
+// 清除字段
 m.Avatar = nil
 
-// Checking if a specific field is set.
+// 检查特定字段是否被设置
 _, ok := m.GetAvatar().(*pb.Profile_ImageUrl)
 if ok { … }
 
-// Clearing a specific field
+// 清除特定字段
 _, ok := m.GetAvatar().(*pb.Profile_ImageUrl)
 if ok {
   m.Avatar = nil
 }
 
-// Copy a oneof field.
+// 拷贝 oneof 字段
 m.Avatar = src.Avatar
 ```
 
@@ -613,7 +545,7 @@ m.Avatar = src.Avatar
 <td>
 
 ```go
-// Getting the oneof field that is set.
+// 获取已设置的 oneof 字段
 switch m.WhichAvatar() {
 case pb.Profile_ImageUrl_case:
   … = m.GetImageUrl()
@@ -621,23 +553,23 @@ case pb.Profile_ImageData_case:
   … = m.GetImageData()
 }
 
-// Setting the fields.
+// 设置字段
 m.SetImageUrl("http://")
 m.SetImageData([]byte("…"))
 
-// Checking whether any oneof field is set
+// 检查是否有 oneof 字段被设置
 if m.HasAvatar() { … }
 
-// Clearing the field.
+// 清除字段
 m.ClearAvatar()
 
-// Checking if a specific field is set.
+// 检查特定字段是否被设置
 if m.HasImageUrl() { … }
 
-// Clearing a specific field.
+// 清除特定字段
 m.ClearImageUrl()
 
-// Copy a oneof field
+// 拷贝 oneof 字段
 switch src.WhichAvatar() {
 case pb.Profile_ImageUrl_case:
   m.SetImageUrl(src.GetImageUrl())
@@ -651,19 +583,14 @@ case pb.Profile_ImageData_case:
 
 </table>
 
-### Reflection
+### 反射
 
-Code that use Go `reflect` package on proto message types to access struct
-fields and tags will no longer work when migrating away from the Open Struct
-API. Code will need to migrate to use
-[protoreflect](https://pkg.go.dev/google.golang.org/protobuf/reflect/protoreflect)
+在 proto 消息类型上使用 Go 的 `reflect` 包访问结构体字段和标签的代码，在迁移离 Open Struct API 后将不再可用。代码需要迁移到 [protoreflect](https://pkg.go.dev/google.golang.org/protobuf/reflect/protoreflect)。
 
-Some common libraries do use Go `reflect` under the hood, examples are:
+一些常见库在底层使用 Go `reflect`，例如：
 
 *   [encoding/json](https://pkg.go.dev/encoding/json/)
-    *   Use
-        [protobuf/encoding/protojson](https://pkg.go.dev/google.golang.org/protobuf/encoding/protojson).
+    *   请使用 [protobuf/encoding/protojson](https://pkg.go.dev/google.golang.org/protobuf/encoding/protojson)。
 *   [pretty](https://pkg.go.dev/github.com/kr/pretty)
 *   [cmp](https://pkg.go.dev/github.com/google/go-cmp/cmp)
-    *   To use `cmp.Equal` properly with protobuf messages, use
-        [protocmp.Transform](https://pkg.go.dev/google.golang.org/protobuf/testing/protocmp#Transform)
+    *   若要正确使用 `cmp.Equal` 比较 protobuf 消息，请使用 [protocmp.Transform](https://pkg.go.dev/google.golang.org/protobuf/testing/protocmp#Transform)

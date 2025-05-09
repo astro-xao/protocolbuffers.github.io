@@ -1,33 +1,22 @@
 +++
-title = "Go Opaque API Migration"
+title = "Go Opaque API 迁移"
 weight = 650
-linkTitle = "Opaque API Migration"
-description = "Describes the automated migration to the Opaque API."
+linkTitle = "Opaque API 迁移"
+description = "介绍自动迁移到 Opaque API 的方法。"
 type = "docs"
 +++
 
-The Opaque API is the latest version of the Protocol Buffers implementation for
-the Go programming language. The old version is now called Open Struct API. See
-the [Go Protobuf: Releasing the Opaque API](https://go.dev/blog/protobuf-opaque)
-blog post for an introduction.
+Opaque API 是 Protocol Buffers 针对 Go 编程语言的最新实现版本。旧版本现在称为 Open Struct API。请参阅 [Go Protobuf: Releasing the Opaque API](https://go.dev/blog/protobuf-opaque) 博客文章以了解介绍。
 
-The migration to the Opaque API happens incrementally, on a per-proto-message or
-per-`.proto`-file basis, by setting the Protobuf Editions feature `api_level`
-option to one of its possible values:
+迁移到 Opaque API 是逐步进行的，可以按每个 proto 消息或每个 `.proto` 文件进行，通过设置 Protobuf Editions 功能的 `api_level` 选项为以下值之一：
 
-*   `API_OPEN` selects the Open Struct API; this was the only API before
-    December 2024.
-*   `API_HYBRID` is a step between Open and Opaque: The Hybrid API also includes
-    accessor methods (so you can update your code), but still exports the struct
-    fields as before. There is no performance difference; this API level only
-    helps with the migration.
-*   `API_OPAQUE` selects the Opaque API.
+*   `API_OPEN` 选择 Open Struct API；这是 2024 年 12 月之前的唯一 API。
+*   `API_HYBRID` 是 Open 和 Opaque 之间的过渡：Hybrid API 也包含访问器方法（便于你更新代码），但仍然像以前一样导出结构体字段。性能没有差异；此 API 级别仅用于迁移。
+*   `API_OPAQUE` 选择 Opaque API。
 
-Today, the default is `API_OPEN`, but the upcoming
-[Protobuf Edition 2024](./editions/overview) will change
-the default to `API_OPAQUE`.
+目前，默认值为 `API_OPEN`，但即将发布的 [Protobuf Edition 2024](./editions/overview) 将默认值更改为 `API_OPAQUE`。
 
-To use the Opaque API before Edition 2024, set the `api_level` like so:
+要在 Edition 2024 之前使用 Opaque API，请如下设置 `api_level`：
 
 ```proto
 edition = "2023";
@@ -40,100 +29,75 @@ option features.(pb.go).api_level = API_OPAQUE;
 message LogEntry { … }
 ```
 
-Before you can change the `api_level` to `API_OPAQUE` for existing files, all
-existing usages of the generated proto code need to be updated. The
-`open2opaque` tool helps with this.
+在你将现有文件的 `api_level` 更改为 `API_OPAQUE` 之前，所有对生成的 proto 代码的现有用法都需要更新。`open2opaque` 工具可以帮助完成此操作。
 
-For your convenience, you can also override the default API level with a
-`protoc` command-line flag:
+为了方便起见，你还可以通过 `protoc` 命令行参数覆盖默认 API 级别：
 
 ```
 protoc […] --go_opt=default_api_level=API_OPAQUE
 ```
 
-To override the default API level for a specific file (instead of all files),
-use the `apilevelM` mapping flag (similar to
-[the `M` flag for import paths](./reference/go/go-generated/#package)):
+要为特定文件（而不是所有文件）覆盖默认 API 级别，请使用 `apilevelM` 映射参数（类似于 [导入路径的 `M` 参数](./reference/go/go-generated/#package)）：
 
 ```
 protoc […] --go_opt=apilevelMhello.proto=API_OPAQUE
 ```
 
-The command-line flags also work for `.proto` files still using proto2 or proto3
-syntax, but if you want to select the API level from within the `.proto` file,
-you need to migrate said file to editions first.
+这些命令行参数同样适用于仍然使用 proto2 或 proto3 语法的 `.proto` 文件，但如果你想在 `.proto` 文件内部选择 API 级别，则需要先将该文件迁移到 editions。
 
-## Automated migration {#automated}
+## 自动化迁移 {#automated}
 
-We try to make migrating existing projects to the Opaque API as easy as possible
-for you: our open2opaque tool does most of the work!
+我们尽量让你将现有项目迁移到 Opaque API 变得尽可能简单：我们的 open2opaque 工具可以完成大部分工作！
 
-To install the migration tool, use:
+安装迁移工具的方法如下：
 
 ```
 go install google.golang.org/open2opaque@latest
 ```
 
-{{% alert title="Note" color="info" %}}If
-you encounter any issues with the automated migration approach, refer to the
-[Opaque API: Manual Migration](./reference/go/opaque-migration-manual)
-guide. {{% /alert %}}
+{{% alert title="注意" color="info" %}}如果你在自动迁移过程中遇到任何问题，请参阅 [Opaque API: 手动迁移](./reference/go/opaque-migration-manual) 指南。{{% /alert %}}
 
-### Project Preparation {#projectprep}
+### 项目准备 {#projectprep}
 
-Ensure your build environment and project are using recent-enough versions of
-Protocol Buffers and Go Protobuf:
+确保你的构建环境和项目使用的是足够新的 Protocol Buffers 和 Go Protobuf 版本：
 
-1.  Update the protobuf compiler (protoc) from
-    [the protobuf release page](https://github.com/protocolbuffers/protobuf/releases/latest)
-    to version 29.0 or newer.
+1.  从 [protobuf 发布页面](https://github.com/protocolbuffers/protobuf/releases/latest) 更新 protobuf 编译器（protoc）到 29.0 或更高版本。
 
-1.  Update the protobuf compiler Go plugin (protoc-gen-go) to version 1.36.0 or
-    newer:
+1.  更新 protobuf 编译器 Go 插件（protoc-gen-go）到 1.36.0 或更高版本：
 
     ```
     go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
     ```
 
-1.  In each project, update the `go.mod` file to use the protobuf module in
-    version 1.36.0 or newer:
+1.  在每个项目中，将 `go.mod` 文件中的 protobuf 模块更新到 1.36.0 或更高版本：
 
     ```
     go get google.golang.org/protobuf@latest
     ```
 
-    {{% alert title="Note" color="note" %}} If you
-    are not yet importing `google.golang.org/protobuf`, you might still be on an
-    older module. See
-    [the `google.golang.org/protobuf` announcement (from 2020)](https://go.dev/blog/protobuf-apiv2)
-    and migrate your code before returning to this
-    page.{{% /alert %}}
+    {{% alert title="注意" color="note" %}}如果你还没有导入 `google.golang.org/protobuf`，你可能还在使用旧模块。请参阅 [google.golang.org/protobuf 公告（2020）](https://go.dev/blog/protobuf-apiv2)，并在返回本页面前完成代码迁移。{{% /alert %}}
 
-### Step 1. Switch to the Hybrid API {#setup}
+### 步骤 1. 切换到 Hybrid API {#setup}
 
-Use the `open2opaque` tool to switch your `.proto` files to the Hybrid API:
+使用 `open2opaque` 工具将你的 `.proto` 文件切换到 Hybrid API：
 
 ```
 open2opaque setapi -api HYBRID $(find . -name "*.proto")
 ```
 
-Your existing code will continue to build. The Hybrid API is a step between the
-Open and Opaque API which adds the new accessor methods but keeps struct fields
-visible.
+你的现有代码将继续构建。Hybrid API 是 Open 和 Opaque API 之间的过渡，添加了新的访问器方法，但保持结构体字段可见。
 
-### Step 2. `open2opaque rewrite` {#rewrite}
+### 步骤 2. `open2opaque rewrite` {#rewrite}
 
-To rewrite your Go code to use the Opaque API, run the `open2opaque rewrite`
-command:
+要将你的 Go 代码重写为使用 Opaque API，请运行 `open2opaque rewrite` 命令：
 
 ```
 open2opaque rewrite -levels=red github.com/robustirc/robustirc/...
 ```
 
-You can specify one or more
-[packages or patterns](https://pkg.go.dev/cmd/go#hdr-Package_lists_and_patterns).
+你可以指定一个或多个 [包或模式](https://pkg.go.dev/cmd/go#hdr-Package_lists_and_patterns)。
 
-As an example, if you had code like this:
+例如，如果你有如下代码：
 
 ```go
 logEntry := &logpb.LogEntry{}
@@ -143,7 +107,7 @@ if req.IPAddress != nil {
 logEntry.BackendServer = proto.String(host)
 ```
 
-The tool would rewrite it to use accessors:
+工具会将其重写为使用访问器：
 
 ```go
 logEntry := &logpb.LogEntry{}
@@ -153,8 +117,7 @@ if req.HasIPAddress() {
 logEntry.SetBackendServer(host)
 ```
 
-Another common example is to initialize a protobuf message with a struct
-literal:
+另一个常见示例是用结构体字面量初始化 protobuf 消息：
 
 ```go
 return &logpb.LogEntry{
@@ -162,7 +125,7 @@ return &logpb.LogEntry{
 }
 ```
 
-In the Opaque API, the equivalent is to use a Builder:
+在 Opaque API 中，等价写法是使用 Builder：
 
 ```go
 return logpb.LogEntry_builder{
@@ -170,46 +133,26 @@ return logpb.LogEntry_builder{
 }.Build()
 ```
 
-The tool classifies its available rewrites into different levels. The
-`-levels=red` argument enables all rewrites, including those that require human
-review. The following levels are available:
+该工具将可用的重写分为不同级别。`-levels=red` 参数启用所有重写，包括需要人工审核的更改。可用的级别如下：
 
-*   <span style="background-color: lightgreen">green:</span> Safe rewrites (high
-    confidence). Includes most changes the tool makes. These changes do not
-    require a close look and could even be submitted by automation, without any
-    human oversight.
-*   <span style="background-color: yellow">yellow:</span> (reasonable
-    confidence) These rewrites require human review. They should be correct, but
-    please review them.
-*   <span style="background-color: salmon">red:</span> Potentially dangerous
-    rewrites, changing rare and complicated patterns. These require careful
-    human review. For example, when an existing function takes a `*string`
-    parameter, the typical fix of using `proto.String(msg.GetFoo())` does not
-    work if the function meant to change the field value by writing to the
-    pointer (`*foo = "value"`).
+*   <span style="background-color: lightgreen">green：</span> 安全重写（高置信度）。包括工具所做的大多数更改。这些更改无需仔细检查，甚至可以自动提交，无需人工监督。
+*   <span style="background-color: yellow">yellow：</span>（合理置信度）这些重写需要人工审核。它们应该是正确的，但请务必检查。
+*   <span style="background-color: salmon">red：</span> 潜在危险的重写，涉及罕见和复杂的模式。这些需要仔细人工审核。例如，当现有函数接受 `*string` 参数时，典型的修复方式 `proto.String(msg.GetFoo())` 并不适用，如果该函数意图通过写指针（`*foo = "value"`）来更改字段值。
 
-Many programs can be fully migrated with only green changes. Before you can
-migrate a proto message or file to the Opaque API, you need to complete all
-rewrites of all levels, at which point no direct struct access remains in your
-code.
+许多程序只需绿色更改即可完全迁移。在你将 proto 消息或文件迁移到 Opaque API 之前，必须完成所有级别的重写，此时你的代码中不再有直接结构体访问。
 
-### Step 3. Migrate and Verify {#migrate-and-verify}
+### 步骤 3. 迁移与验证 {#migrate-and-verify}
 
-To complete the migration, use the `open2opaque` tool to switch your `.proto`
-files to the Opaque API:
+要完成迁移，使用 `open2opaque` 工具将你的 `.proto` 文件切换到 Opaque API：
 
 ```
 open2opaque setapi -api OPAQUE $(find . -name "*.proto")
 ```
 
-Now, any remaining code that was not rewritten to the Opaque API yet will no
-longer compile.
+现在，任何尚未重写为 Opaque API 的代码都将无法编译。
 
-Run your unit tests, integration tests and other verification steps, if any.
+运行你的单元测试、集成测试和其他验证步骤（如有）。
 
-## Questions? Issues?
+## 有疑问？遇到问题？
 
-First, check out the
-[Opaque API FAQ](./reference/go/opaque-faq). If that
-doesn't answer your question or resolve your issue, see
-[Where can I ask questions or report issues?](./reference/go/opaque-faq#questions)
+首先，请查看 [Opaque API 常见问题](./reference/go/opaque-faq)。如果仍未解决你的问题，请参阅 [在哪里可以提问或报告问题？](./reference/go/opaque-faq#questions)
