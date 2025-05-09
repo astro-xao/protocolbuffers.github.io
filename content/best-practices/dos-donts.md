@@ -45,7 +45,7 @@ aliases = "/programming-guides/dos-donts"
 ## **不要**更改字段类型 {#change-type}
 
 几乎不要更改字段类型；这会导致反序列化出错，与重复使用标签号类似。
-[protobuf 文档](/programming-guides/proto2#updating)
+[protobuf 文档](./programming-guides/proto2#updating)
 列举了极少数可以更改的情况（如 `int32`、`uint32`、`int64` 和 `bool` 之间）。但更改字段的消息类型**会导致破坏**，除非新消息是旧消息的超集。
 
 <a id="dont-add-a-required-field"></a>
@@ -119,7 +119,7 @@ aliases = "/programming-guides/dos-donts"
 如果这些类型会被项目外广泛使用，建议将其放在无依赖的独立文件中。这样其他人可以轻松使用这些类型，而不会引入你其他 proto 文件的传递依赖。
 
 更多内容见
-[1-1-1 规则](/best-practices/1-1-1)。
+[1-1-1 规则](./best-practices/1-1-1)。
 
 <a id="dont-change-the-default-value-of-a-field"></a>
 
@@ -172,13 +172,13 @@ proto 序列化的稳定性在不同二进制文件或同一二进制的不同�
 ## **不要**将 Java proto 生成在与其他代码相同的包中 {#generate-java-protos}
 
 应将 Java proto 源码生成到与手写 Java 源码不同的包中。`package`、`java_package` 和 `java_alt_api_package` 选项控制
-[生成的 Java 源码的输出位置](/reference/java/java-generated#package)。
+[生成的 Java 源码的输出位置](./reference/java/java-generated#package)。
 确保手写 Java 代码不在同一包下。常见做法是将 proto 生成到项目的 `proto` 子包中，该包**只**包含 proto（即没有手写源码）。
 
 ## 避免将语言关键字用作字段名 {#avoid-keywords}
 
 如果消息、字段、枚举或枚举值的名称是目标语言的关键字，protobuf 可能会更改字段名，并且访问方式可能与普通字段不同。例如，参见
-[关于 Python 的警告](/reference/python/python-generated#keyword-conflicts)。
+[关于 Python 的警告](./reference/python/python-generated#keyword-conflicts)。
 
 还应避免在文件路径中使用关键字，这也可能导致问题。
 
@@ -195,5 +195,5 @@ option java_outer_classname = "StudentRecordRequestProto";
 ### API 最佳实践 {#api-best-practices}
 
 本文仅列出极易导致破坏的更改。关于如何优雅地扩展 proto API 的更高层次建议，请参见
-[API 最佳实践](/best-practices/api)。
+[API 最佳实践](./best-practices/api)。
 

@@ -14,7 +14,7 @@ This topic explains how to implement editions in new runtimes and generators.
 The first edition released is Edition 2023, which is designed to unify proto2
 and proto3 syntax. The features we’ve added to cover the difference in behaviors
 are detailed in
-[Feature Settings for Editions](/editions/features).
+[Feature Settings for Editions](./editions/features).
 
 ### Feature Definition {#feature-definition}
 
@@ -98,7 +98,7 @@ usable for protos stuck on older editions, giving them time to migrate.
 
 Flags that control optional behaviors you have no intention of removing are
 better implemented as
-[custom options](/programming-guides/proto2/#customoptions).
+[custom options](./programming-guides/proto2/#customoptions).
 This is related to the reason we’ve restricted features to be either boolean or
 enum types. Any behavior controlled by a (relatively) unbounded number of values
 probably isn’t a good fit for the editions framework, since it’s not realistic

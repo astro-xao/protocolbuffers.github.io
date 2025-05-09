@@ -141,7 +141,7 @@ The first listed value should be a zero value enum and have the suffix of either
 `_UNSPECIFIED` or `_UNKNOWN`. This value may be used as an unknown/default value
 and should be distinct from any of the semantic values you expect to be
 explicitly set. For more information on the unspecified enum value, see
-[the Proto Best Practices page](/best-practices/dos-donts#unspecified-enum).
+[the Proto Best Practices page](./best-practices/dos-donts#unspecified-enum).
 
 #### Enum Value Prefixing {#enum-value-prefixing}
 
@@ -194,11 +194,11 @@ service FooService {
 ```
 
 For more service-related guidance, see
-[Create Unique Protos per Method](/best-practices/api#unique-protos)
+[Create Unique Protos per Method](./best-practices/api#unique-protos)
 and
-[Don't Include Primitive Types in a Top-level Request or Response Proto](/programming-guides/api#dont-include-primitive-types)
+[Don't Include Primitive Types in a Top-level Request or Response Proto](./programming-guides/api#dont-include-primitive-types)
 in the API Best Practices topic, and
-[Define Message Types in Separate Files](/best-practices/dos-donts#separate-files)
+[Define Message Types in Separate Files](./best-practices/dos-donts#separate-files)
 in Proto Best Practices.
 
 ## Things to Avoid {#avoid}
@@ -221,7 +221,7 @@ don't really need to process, the semantics of `required` has proven too harmful
 for those long-term evolution goals, and so is now very strongly discouraged.
 
 See
-[Required is Strongly Deprecated](/programming-guides/proto2#required-deprecated).
+[Required is Strongly Deprecated](./programming-guides/proto2#required-deprecated).
 
 ### Groups {#groups}
 
@@ -230,4 +230,4 @@ considered deprecated in proto2 and were removed from proto3. You should use a
 nested message definition and field of that type instead of using the group
 syntax.
 
-See [groups](/programming-guides/proto2#groups).
+See [groups](./programming-guides/proto2#groups).

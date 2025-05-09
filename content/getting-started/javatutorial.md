@@ -16,15 +16,15 @@ shows you how to
 
 This isn't a comprehensive guide to using protocol buffers in Java. For more
 detailed reference information, see the
-[Protocol Buffer Language Guide (proto2)](/programming-guides/proto2),
+[Protocol Buffer Language Guide (proto2)](./programming-guides/proto2),
 the
-[Protocol Buffer Language Guide (proto3)](/programming-guides/proto3),
+[Protocol Buffer Language Guide (proto3)](./programming-guides/proto3),
 the
-[Java API Reference](/reference/java/api-docs/overview-summary.html),
+[Java API Reference](./reference/java/api-docs/overview-summary.html),
 the
-[Java Generated Code Guide](/reference/java/java-generated),
+[Java Generated Code Guide](./reference/java/java-generated),
 and the
-[Encoding Reference](/programming-guides/encoding).
+[Encoding Reference](./programming-guides/encoding).
 
 ## The Problem Domain {#problem-domain}
 
@@ -67,7 +67,7 @@ that the code can still read data encoded with the old format.
 ## Where to Find the Example Code {#example-code}
 
 The example code is included in the source code package, under the "examples"
-directory. [Download it here.](/downloads)
+directory. [Download it here.](./downloads)
 
 ## Defining Your Protocol Format {#protocol-format}
 
@@ -189,7 +189,7 @@ most messages defined in proto2 syntax use `optional` and `repeated` only.
 
 You'll find a complete guide to writing `.proto` files -- including all the
 possible field types -- in the
-[Protocol Buffer Language Guide](/programming-guides/proto2).
+[Protocol Buffer Language Guide](./programming-guides/proto2).
 Don't go looking for facilities similar to class inheritance, though -- protocol
 buffers don't do that.
 
@@ -201,7 +201,7 @@ classes you'll need to read and write `AddressBook` (and hence `Person` and
 compiler `protoc` on your `.proto`:
 
 1.  If you haven't installed the compiler,
-    [download the package](/downloads) and follow the
+    [download the package](./downloads) and follow the
     instructions in the README.
 
 1.  Now run the compiler, specifying the source directory (where your
@@ -301,12 +301,12 @@ automatically by the protocol buffer compiler so that the generated classes
 match standard Java style conventions. You should always use
 lowercase-with-underscores for field names in your `.proto` files; this ensures
 good naming practice in all the generated languages. See the
-[style guide](/programming-guides/style) for more on good
+[style guide](./programming-guides/style) for more on good
 `.proto` style.
 
 For more information on exactly what members the protocol compiler generates for
 any particular field definition, see the
-[Java generated code reference](/reference/java/java-generated).
+[Java generated code reference](./reference/java/java-generated).
 
 ### Enums and Nested Classes {#enums-nested-classes}
 
@@ -370,13 +370,13 @@ you check or manipulate the entire message, including:
 
 These methods implement the `Message` and `Message.Builder` interfaces shared by
 all Java messages and builders. For more information, see the
-[complete API documentation for `Message`](/reference/java/api-docs/com/google/protobuf/Message.html).
+[complete API documentation for `Message`](./reference/java/api-docs/com/google/protobuf/Message.html).
 
 ### Parsing and Serialization {#parsing-serialization}
 
 Finally, each protocol buffer class has methods for writing and reading messages
 of your chosen type using the protocol buffer
-[binary format](/programming-guides/encoding). These
+[binary format](./programming-guides/encoding). These
 include:
 
 -   `byte[] toByteArray();`: serializes the message and returns a byte array
@@ -390,7 +390,7 @@ include:
 
 These are just a couple of the options provided for parsing and serialization.
 Again, see the
-[`Message` API reference](/reference/java/api-docs/com/google/protobuf/Message.html)
+[`Message` API reference](./reference/java/api-docs/com/google/protobuf/Message.html)
 for a complete list.
 
 {{% alert title="Important" color="warning" %}} **Protocol Buffers and Object Oriented Design**
@@ -580,7 +580,7 @@ some rules you need to follow. In the new version of the protocol buffer:
     not even by deleted fields).
 
 (There are
-[some exceptions](/programming-guides/proto2#updating) to
+[some exceptions](./programming-guides/proto2#updating) to
 these rules, but they are rarely used.)
 
 If you follow these rules, old code will happily read new messages and simply
@@ -601,7 +601,7 @@ or never set at all (by old code) since there is no `has_` flag for it.
 
 Protocol buffers have uses that go beyond simple accessors and serialization. Be
 sure to explore the
-[Java API reference](/reference/java/api-docs/index-all.html)
+[Java API reference](./reference/java/api-docs/index-all.html)
 to see what else you can do with them.
 
 One key feature provided by protocol message classes is *reflection*. You can
@@ -616,7 +616,7 @@ Protocol Buffers to a much wider range of problems than you might initially
 expect!
 
 Reflection is provided as part of the
-[`Message`](/reference/java/api-docs/com/google/protobuf/Message.html)
+[`Message`](./reference/java/api-docs/com/google/protobuf/Message.html)
 and
-[`Message.Builder`](/reference/java/api-docs/com/google/protobuf/Message.Builder.html)
+[`Message.Builder`](./reference/java/api-docs/com/google/protobuf/Message.Builder.html)
 interfaces.

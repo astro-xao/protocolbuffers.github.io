@@ -261,8 +261,8 @@ no_whitespace: "first""second"'third''fourth'
 
 Fields that are part of the containing message use simple `Identifiers` as
 names.
-[`Extension`](/programming-guides/proto2#extensions) and
-[`Any`](/programming-guides/proto3#any) field names are
+[`Extension`](./programming-guides/proto2#extensions) and
+[`Any`](./programming-guides/proto3#any) field names are
 wrapped in square brackets and fully-qualified. `Any` field names are prefixed
 with a qualifying domain name, such as `type.googleapis.com/`.
 
@@ -299,7 +299,7 @@ a numeric representation of the value, but this is inherently lossy because the
 wire-type information is ignored. For comparison, wire-format is non-lossy
 because it includes the wire-type in each field tag as `(field_number << 3) |
 wire_type`. For more information on encoding, see the
-[Encoding](/programming-guides/encoding.md) topic.
+[Encoding](./programming-guides/encoding.md) topic.
 
 Without information about the field type from the message schema, the value
 cannot be correctly encoded into a wire-format proto message.
@@ -528,7 +528,7 @@ locations.
 ## `Any` Fields {#any}
 
 Text format supports an expanded form of the
-[`google.protobuf.Any`](/programming-guides/proto3#any)
+[`google.protobuf.Any`](./programming-guides/proto3#any)
 well-known type using a special syntax resembling extension fields. Example:
 
 ```textproto
@@ -580,7 +580,7 @@ optional.
 ## `map` Fields {#map}
 
 Text format does not provide a custom syntax for specifying map field entries.
-When a [`map`](/programming-guides/proto2#maps) field is
+When a [`map`](./programming-guides/proto2#maps) field is
 defined in a *.proto* file, an implicit `Entry` message is defined containing
 `key` and `value` fields. Map fields are always repeated, accepting multiple
 key/value entries. Example:

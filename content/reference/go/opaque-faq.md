@@ -30,7 +30,7 @@ This FAQ answers common questions about the new API and the migration process.
 
 We recommend you select the Opaque API for new development. Protobuf Edition
 2024 (see
-[Protobuf Editions Overview](/editions/overview/)) will
+[Protobuf Editions Overview](./editions/overview/)) will
 make the Opaque API the default.
 
 ## How Do I Enable the New Opaque API for My Messages? {#enable}
@@ -72,7 +72,7 @@ protoc […] --go_opt=default_api_level=API_HYBRID
 
 To override the default API level for a specific file (instead of all files),
 use the `apilevelM` mapping flag (similar to
-[the `M` flag for import paths](/reference/go/go-generated/#package)):
+[the `M` flag for import paths](./reference/go/go-generated/#package)):
 
 ```
 protoc […] --go_opt=apilevelMhello.proto=API_HYBRID
@@ -310,7 +310,7 @@ performance exploration:
 ## How Does Proto2, Proto3, and Editions Relate to the Opaque API? {#proto23editions}
 
 The terms proto2 and proto3 refer to different syntax versions in your `.proto`
-files. [Protobuf Editions](/editions/overview) is the
+files. [Protobuf Editions](./editions/overview) is the
 successor to both proto2 and proto3.
 
 The Opaque API affects only the generated code in `.pb.go` files, not what you

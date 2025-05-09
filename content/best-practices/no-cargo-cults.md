@@ -12,7 +12,7 @@ type = "docs"
 ## 针对 Editions 的最佳实践 {#editions}
 
 除非确有必要，避免在 `.proto` 文件中应用
-[editions 功能](/editions/features)。
+[editions 功能](./editions/features)。
 这些功能通常表示使用了实验性的未来行为或已弃用的过去行为。最新 edition 的最佳实践始终为默认。新的 proto schema 定义内容应保持无功能设置，除非你希望提前采用某个即将推出的功能。
 
 在不了解设置原因的情况下复制功能设置，可能会导致代码出现意外行为。

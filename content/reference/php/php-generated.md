@@ -7,7 +7,7 @@ type = "docs"
 +++
 
 You should read the
-[proto3 language guide](/programming-guides/proto3)
+[proto3 language guide](./programming-guides/proto3)
 before reading this document. Note that the protocol buffer compiler currently
 only supports proto3 code generation for PHP.
 
@@ -169,7 +169,7 @@ are undefined.
 
 You can see the corresponding PHP type for each scalar protocol buffers type in
 the
-[scalar value types table](/programming-guides/proto3#scalar).
+[scalar value types table](./programming-guides/proto3#scalar).
 
 ### Singular Message Fields {#embedded_message}
 
@@ -265,7 +265,7 @@ specified, it is prepended to all generated enum classes.
 
 ## Oneof
 
-For a [oneof](/programming-guides/proto3#oneof)s, the
+For a [oneof](./programming-guides/proto3#oneof)s, the
 protocol buffer compiler generates the same code as it would for regular
 singular fields, but also adds a special accessor method that lets you find out
 which oneof field (if any) is set. So, given this message:

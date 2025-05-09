@@ -1,4 +1,4 @@
-//[protobuf-kotlin](/reference/kotlin/api-docs/)/[com.google.protobuf.kotlin](/reference/kotlin/api-docs/protobuf-kotlin/com.google.protobuf.kotlin/)/[ExtensionList]()/hashCode
+//[protobuf-kotlin](./reference/kotlin/api-docs/)/[com.google.protobuf.kotlin](./reference/kotlin/api-docs/protobuf-kotlin/com.google.protobuf.kotlin/)/[ExtensionList]()/hashCode
 
 # hashCode
 

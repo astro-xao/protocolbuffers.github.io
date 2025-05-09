@@ -10,9 +10,9 @@ Any differences between proto2 and proto3 generated code are highlighted - note
 that these differences are in the generated code as described in this document,
 not the base message classes/interfaces, which are the same in both versions.
 You should read the
-[proto2 language guide](/programming-guides/proto2)
+[proto2 language guide](./programming-guides/proto2)
 and/or
-[proto3 language guide](/programming-guides/proto3)
+[proto3 language guide](./programming-guides/proto3)
 before reading this document.
 
 ## Compiler Invocation {#invocation}
@@ -64,7 +64,7 @@ message Foo {}
 
 The protocol buffer compiler generates a class called `Foo`, which publicly
 derives from
-[`google::protobuf::Message`](/reference/cpp/api-docs/google.protobuf.message).
+[`google::protobuf::Message`](./reference/cpp/api-docs/google.protobuf.message).
 The class is a concrete class; no pure-virtual methods are left unimplemented.
 Methods that are virtual in `Message` but not pure-virtual may or may not be
 overridden by `Foo`, depending on the optimization mode. By default, `Foo`
@@ -86,7 +86,7 @@ option optimize_for = LITE_RUNTIME;
 
 then `Foo` will include fast implementations of all methods, but will implement
 the
-[`google::protobuf::MessageLite`](/reference/cpp/api-docs/google.protobuf.message_lite)
+[`google::protobuf::MessageLite`](./reference/cpp/api-docs/google.protobuf.message_lite)
 interface, which only contains a subset of the methods of `Message`. In
 particular, it does not support descriptors or reflection. However, in this
 mode, the generated code only needs to link against `libprotobuf-lite.so`
@@ -141,7 +141,7 @@ The class also defines the following static methods:
 -   `static const Descriptor* descriptor()`: Returns the type's descriptor. This
     contains information about the type, including what fields it has and what
     their types are. This can be used with
-    [reflection](/reference/cpp/api-docs/google.protobuf.message#Reflection)
+    [reflection](./reference/cpp/api-docs/google.protobuf.message#Reflection)
     to inspect fields programmatically.
 -   `static const Foo& default_instance()`: Returns a const singleton instance
     of `Foo` which is identical to a newly-constructed instance of `Foo` (so all
@@ -254,7 +254,7 @@ The compiler will generate the following accessor methods:
 
 For other numeric field types (including `bool`), `int32` is replaced with the
 corresponding C++ type according to the
-[scalar value types table](/programming-guides/proto3#scalar).
+[scalar value types table](./programming-guides/proto3#scalar).
 
 ### Implicit Presence Numeric Fields (proto3) {#implicit-numeric}
 
@@ -275,14 +275,14 @@ The compiler will generate the following accessor methods:
 
 For other numeric field types (including `bool`), `int32` is replaced with the
 corresponding C++ type according to the
-[scalar value types table](/programming-guides/proto3#scalar).
+[scalar value types table](./programming-guides/proto3#scalar).
 
 ### Optional String/Bytes Fields (proto2 and proto3) {#string}
 
 **Note:** As of edition 2023, if
-[`features.(pb.cpp).string_type`](/editions/features#string_type)
+[`features.(pb.cpp).string_type`](./editions/features#string_type)
 is set to `VIEW`,
-[string_view](/reference/cpp/string-view#singular-view)
+[string_view](./reference/cpp/string-view#singular-view)
 APIs will be generated instead.
 
 For any of these field definitions:
@@ -341,9 +341,9 @@ The compiler will generate the following accessor methods:
 ### Implicit Presence String/Bytes Fields (proto3) {#implicit-string}
 
 **Note:** As of edition 2023, if
-[`features.(pb.cpp).string_type`](/editions/features#string_type)
+[`features.(pb.cpp).string_type`](./editions/features#string_type)
 is set to `VIEW`,
-[string_view](/reference/cpp/string-view#singular-view)
+[string_view](./reference/cpp/string-view#singular-view)
 APIs will be generated instead.
 
 For either of these field definitions:
@@ -534,7 +534,7 @@ The compiler will generate the following accessor methods:
 
 -   `int foo_size() const`: Returns the number of elements currently in the
     field. To check for an empty set, consider using the
-    [`empty()`](/reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField)
+    [`empty()`](./reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField)
     method in the underlying `RepeatedField` instead of this method.
 -   `int32 foo(int index) const`: Returns the element at the given zero-based
     index. Calling this method with index outside of [0, foo_size()) yields
@@ -546,7 +546,7 @@ The compiler will generate the following accessor methods:
 -   `void clear_foo()`: Removes all elements from the field. After calling this,
     `foo_size()` will return zero.
 -   `const RepeatedField<int32>& foo() const`: Returns the underlying
-    [`RepeatedField`](/reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedField)
+    [`RepeatedField`](./reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedField)
     that stores the field's elements. This container class provides STL-like
     iterators and other methods.
 -   `RepeatedField<int32>* mutable_foo()`: Returns a pointer to the underlying
@@ -555,14 +555,14 @@ The compiler will generate the following accessor methods:
 
 For other numeric field types (including `bool`), `int32` is replaced with the
 corresponding C++ type according to the
-[scalar value types table](/programming-guides/proto2#scalar).
+[scalar value types table](./programming-guides/proto2#scalar).
 
 ### Repeated String Fields {#repeatedstring}
 
 **Note:** As of edition 2023, if
-[`features.(pb.cpp).string_type`](/editions/features#string_type)
+[`features.(pb.cpp).string_type`](./editions/features#string_type)
 is set to `VIEW`,
-[string_view](/reference/cpp/string-view#singular-view)
+[string_view](./reference/cpp/string-view#singular-view)
 APIs will be generated instead.
 
 For either of these field definitions:
@@ -576,7 +576,7 @@ The compiler will generate the following accessor methods:
 
 -   `int foo_size() const`: Returns the number of elements currently in the
     field. To check for an empty set, consider using the
-    [`empty()`](/reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField)
+    [`empty()`](./reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField)
     method in the underlying `RepeatedField` instead of this method.
 -   `const string& foo(int index) const`: Returns the element at the given
     zero-based index. Calling this method with index outside of [0,
@@ -613,7 +613,7 @@ The compiler will generate the following accessor methods:
 -   `void clear_foo()`: Removes all elements from the field. After calling this,
     `foo_size()` will return zero.
 -   `const RepeatedPtrField<string>& foo() const`: Returns the underlying
-    [`RepeatedPtrField`](/reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField)
+    [`RepeatedPtrField`](./reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField)
     that stores the field's elements. This container class provides STL-like
     iterators and other methods.
 -   `RepeatedPtrField<string>* mutable_foo()`: Returns a pointer to the
@@ -642,7 +642,7 @@ The compiler will generate the following accessor methods:
 
 -   `int bar_size() const`: Returns the number of elements currently in the
     field. To check for an empty set, consider using the
-    [`empty()`](/reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField)
+    [`empty()`](./reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField)
     method in the underlying `RepeatedField` instead of this method.
 -   `Bar bar(int index) const`: Returns the element at the given zero-based
     index. Calling this method with index outside of [0, bar_size()) yields
@@ -658,7 +658,7 @@ The compiler will generate the following accessor methods:
 -   `void clear_bar()`: Removes all elements from the field. After calling this,
     `bar_size()` will return zero.
 -   `const RepeatedField<int>& bar() const`: Returns the underlying
-    [`RepeatedField`](/reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedField)
+    [`RepeatedField`](./reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedField)
     that stores the field's elements. This container class provides STL-like
     iterators and other methods.
 -   `RepeatedField<int>* mutable_bar()`: Returns a pointer to the underlying
@@ -683,7 +683,7 @@ The compiler will generate the following accessor methods:
 
 -   `int bar_size() const`: Returns the number of elements currently in the
     field. To check for an empty set, consider using the
-    [`empty()`](/reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField)
+    [`empty()`](./reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField)
     method in the underlying `RepeatedField` instead of this method.
 -   `const Bar& bar(int index) const`: Returns the element at the given
     zero-based index. Calling this method with index outside of [0, bar_size())
@@ -697,7 +697,7 @@ The compiler will generate the following accessor methods:
 -   `void clear_bar()`: Removes all elements from the field. After calling this,
     `bar_size()` will return zero.
 -   `const RepeatedPtrField<Bar>& bar() const`: Returns the underlying
-    [`RepeatedPtrField`](/reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField)
+    [`RepeatedPtrField`](./reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField)
     that stores the field's elements. This container class provides STL-like
     iterators and other methods.
 -   `RepeatedPtrField<Bar>* mutable_bar()`: Returns a pointer to the underlying
@@ -734,12 +734,12 @@ The compiler will generate the following accessor methods:
 
 For other numeric field types (including `bool`),`int32` is replaced with the
 corresponding C++ type according to the
-[scalar value types table](/programming-guides/proto3#scalar).
+[scalar value types table](./programming-guides/proto3#scalar).
 
 ### Oneof String Fields {#oneof-string}
 
 **Note:** As of edition 2023
-[string_view](/reference/cpp/string-view#oneof-view) APIs
+[string_view](./reference/cpp/string-view#oneof-view) APIs
 may be generated instead
 
 For any of these [oneof](#oneof) field definitions:
@@ -917,7 +917,7 @@ The compiler will generate the following accessor methods:
     `Map`.
 
 A
-[`google::protobuf::Map`](/reference/cpp/api-docs/google.protobuf.map)
+[`google::protobuf::Map`](./reference/cpp/api-docs/google.protobuf.map)
 is a special container type used in protocol buffers to store map fields. As you
 can see from its interface below, it uses a commonly-used subset of `std::map`
 and `std::unordered_map` methods.
@@ -1024,7 +1024,7 @@ it is put into a map field as if it is a known enum value.
 
 ## Any {#any}
 
-Given an [`Any`](/programming-guides/proto3#any) field
+Given an [`Any`](./programming-guides/proto3#any) field
 like this:
 
 ```proto
@@ -1095,7 +1095,7 @@ In addition, it will generate these methods:
 
 **Note:** As of edition 2024, `string_view` APIs may be generated with certain
 feature settings. See
-[Enumeration Name Helper](/reference/cpp/string-view#enum-name)
+[Enumeration Name Helper](./reference/cpp/string-view#enum-name)
 for more on this topic.
 
 Given an enum definition like:
@@ -1137,7 +1137,7 @@ or the results may be undefined. If in doubt, use the generated `Foo_IsValid()`
 function to test if the cast is valid. Setting an enum-typed field of a proto2
 message to an invalid value may cause an assertion failure. If an invalid enum
 value is read when parsing a proto2 message, it will be treated as an
-[unknown field](/reference/cpp/api-docs/google.protobuf.unknown_field_set).
+[unknown field](./reference/cpp/api-docs/google.protobuf.unknown_field_set).
 These semantics have been changed in proto3. It's safe to cast any integer to a
 proto3 enum value as long as it fits into int32. Invalid enum values will also
 be kept when parsing a proto3 message and returned by enum field accessors.
@@ -1255,7 +1255,7 @@ Arena allocation is a C++-only feature that helps you optimize your memory usage
 and improve performance when working with protocol buffers. Enabling arena
 allocation in your `.proto` adds additional code for working with arenas to your
 C++ generated code. You can find out more about the arena allocation API in the
-[Arena Allocation Guide](/reference/cpp/arenas).
+[Arena Allocation Guide](./reference/cpp/arenas).
 
 ## Services {#service}
 
@@ -1280,7 +1280,7 @@ generic services are deprecated. (Note that prior to 2.4.0, the option defaults
 to `true`)
 
 RPC systems based on `.proto`-language service definitions should provide
-[plugins](/reference/cpp/api-docs/google.protobuf.compiler.plugin.pb)
+[plugins](./reference/cpp/api-docs/google.protobuf.compiler.plugin.pb)
 to generate code appropriate for the system. These plugins are likely to require
 that abstract services are disabled, so that they can generate their own classes
 of the same names.
@@ -1321,7 +1321,7 @@ implement its methods as appropriate.
 automatically generates implementations of the methods of `Service` as follows:
 
 -   `GetDescriptor`: Returns the service's
-    [`ServiceDescriptor`](/reference/cpp/api-docs/google.protobuf.descriptor#ServiceDescriptor).
+    [`ServiceDescriptor`](./reference/cpp/api-docs/google.protobuf.descriptor#ServiceDescriptor).
 -   `CallMethod`: Determines which method is being called based on the provided
     method descriptor and calls it directly, down-casting the request and
     response messages objects to the correct types.
@@ -1362,16 +1362,16 @@ The Protocol Buffer library does not include an RPC implementation. However, it
 includes all of the tools you need to hook up a generated service class to any
 arbitrary RPC implementation of your choice. You need only provide
 implementations of
-[`RpcChannel`](/reference/cpp/api-docs/google.protobuf.service#RpcChannel)
+[`RpcChannel`](./reference/cpp/api-docs/google.protobuf.service#RpcChannel)
 and
-[`RpcController`](/reference/cpp/api-docs/google.protobuf.service#RpcController).
+[`RpcController`](./reference/cpp/api-docs/google.protobuf.service#RpcController).
 See the documentation for
-[`service.h`](/reference/cpp/api-docs/google.protobuf.service)
+[`service.h`](./reference/cpp/api-docs/google.protobuf.service)
 for more information.
 
 ## Plugin Insertion Points {#plugins}
 
-[Code generator plugins](/reference/cpp/api-docs/google.protobuf.compiler.plugin.pb)
+[Code generator plugins](./reference/cpp/api-docs/google.protobuf.compiler.plugin.pb)
 which want to extend the output of the C++ code generator may insert code of the
 following types using the given insertion point names. Each insertion point
 appears in both the `.pb.cc` file and the `.pb.h` file unless otherwise noted.

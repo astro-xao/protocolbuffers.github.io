@@ -17,7 +17,7 @@ The syntax is specified using
 ```
 
 For more information about using proto2, see the
-[language guide](/programming-guides/proto2).
+[language guide](./programming-guides/proto2).
 
 ## Lexical Elements {#lexical_elements}
 
@@ -100,7 +100,7 @@ constant = fullIdent | ( [ "-" | "+" ] intLit ) | ( [ "-" | "+" ] floatLit ) |
 ```
 
 `MessageValue` is defined in the
-[Text Format Language Specification](/reference/protobuf/textformat-spec#fields).
+[Text Format Language Specification](./reference/protobuf/textformat-spec#fields).
 
 ## Syntax
 
@@ -143,7 +143,7 @@ package foo.bar;
 
 Options can be used in proto files, messages, enums and services. An option can
 be a protobuf defined option or a custom option. For more information, see
-[Options](/programming-guides/proto2#options) in the
+[Options](./programming-guides/proto2#options) in the
 language guide.
 
 ```
@@ -273,7 +273,7 @@ extensions 4, 20 to max;
 ```
 
 For more on this topic, see
-[Extension Declarations](/programming-guides/extension_declarations).
+[Extension Declarations](./programming-guides/extension_declarations).
 
 ### Reserved
 

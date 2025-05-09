@@ -20,7 +20,7 @@ languages via plugins. A plugin is just a program which reads a
 `CodeGeneratorRequest` protocol buffer from standard input and then writes a
 `CodeGeneratorResponse` protocol buffer to standard output. These message types
 are defined in
-[`plugin.proto`](/reference/cpp/api-docs/google.protobuf.compiler.plugin.pb).
+[`plugin.proto`](./reference/cpp/api-docs/google.protobuf.compiler.plugin.pb).
 We recommend that all third-party code generators be written as plugins, as this
 allows all generators to provide a consistent interface and share a single
 parser implementation.

@@ -73,7 +73,7 @@ Note that message-typed fields are always explicit presence fields (with
 hazzers). Proto3 defaults to scalar fields having implicit presence (without
 hazzers) unless they are explicitly marked `optional`, while Proto2 does not
 support implicit presence. With
-[Editions](/editions/features#field_presence), explicit
+[Editions](./editions/features#field_presence), explicit
 presence is the default behavior unless an implicit presence feature is used.
 With the forward expectation that almost all fields will have explicit presence,
 the ergonomic concerns that come with nullable getters are expected to be more

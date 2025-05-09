@@ -8,11 +8,11 @@ type = "docs"
 
 This page describes exactly what C++ code the protocol
 buffer compiler generates in addition to the code described in the
-[C++ Generated Code Guide](/reference/cpp/cpp-generated)
+[C++ Generated Code Guide](./reference/cpp/cpp-generated)
 when arena allocation is enabled. It assumes that you are familiar with the
 material in the
-[language guide](/programming-guides/proto2) and the
-[C++ Generated Code Guide](/reference/cpp/cpp-generated).
+[language guide](./programming-guides/proto2) and the
+[C++ Generated Code Guide](./reference/cpp/cpp-generated).
 
 ## Why Use Arena Allocation? {#why}
 
@@ -81,7 +81,7 @@ can see a more extensive [example](#example) at the end of the document.
 ## Arena Class API {#arenaclass}
 
 You create message objects on the arena using the
-[`google::protobuf::Arena`](/reference/cpp/api-docs/google.protobuf.arena.md)
+[`google::protobuf::Arena`](./reference/cpp/api-docs/google.protobuf.arena.md)
 class. This class implements the following public methods.
 
 ### Constructors {#constructors}
@@ -214,7 +214,7 @@ allocation.
     unspecified state.
 -   `void Swap(Message* other)`: If both messages to be swapped are not on
     arenas or are on the *same* arena,
-    [`Swap()`](/reference/cpp/cpp-generated#message)
+    [`Swap()`](./reference/cpp/cpp-generated#message)
     behaves as it does without having arena allocation enabled: it efficiently
     swaps the message objects' contents, almost exclusively through cheap
     pointer swaps, avoiding copies. However, if only one message is on an arena,
@@ -262,7 +262,7 @@ required Bar foo = 1;
 
 The following methods are added or have some special behavior when arena
 allocation is enabled. Otherwise, accessor methods just use the
-[default behavior](/reference/cpp/cpp-generated#embeddedmessage).
+[default behavior](./reference/cpp/cpp-generated#embeddedmessage).
 
 -   `Bar* mutable_foo()`: Returns a mutable pointer to the submessage instance.
     If the parent object is on an arena then the returned object will be as
@@ -299,7 +299,7 @@ allocation is enabled. Otherwise, accessor methods just use the
 
 ### String Fields {#arenastring}
 
-String fields store their data on the heap even when their parent message is on the arena. Because of this, string accessor methods use the [default behavior](/reference/cpp/cpp-generated#string) even when arena allocation is enabled.
+String fields store their data on the heap even when their parent message is on the arena. Because of this, string accessor methods use the [default behavior](./reference/cpp/cpp-generated#string) even when arena allocation is enabled.
 
 ### Repeated Fields {#arenarepeated}
 

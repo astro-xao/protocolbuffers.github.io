@@ -8,7 +8,7 @@ type = "docs"
 
 This tutorial provides a basic C# programmer's introduction to working with
 protocol buffers, using the
-[proto3](/programming-guides/proto3) version of the
+[proto3](./programming-guides/proto3) version of the
 protocol buffers language. By walking through creating a simple example
 application, it shows you how to
 
@@ -18,11 +18,11 @@ application, it shows you how to
 
 This isn't a comprehensive guide to using protocol buffers in C#. For more
 detailed reference information, see the
-[Protocol Buffer Language Guide](/programming-guides/proto3),
-the [C# API Reference](/reference/csharp/api-docs), the
-[C# Generated Code Guide](/reference/csharp/csharp-generated),
+[Protocol Buffer Language Guide](./programming-guides/proto3),
+the [C# API Reference](./reference/csharp/api-docs), the
+[C# Generated Code Guide](./reference/csharp/csharp-generated),
 and the
-[Encoding Reference](/programming-guides/encoding).
+[Encoding Reference](./programming-guides/encoding).
 
 ## The Problem Domain {#problem-domain}
 
@@ -68,7 +68,7 @@ the old format.
 
 Our example is a command-line application for managing an address book data
 file, encoded using protocol buffers. The command `AddressBook` (see:
-[Program.cs](//github.com/protocolbuffers/protobuf/blob/master/csharp/src/AddressBook/Program.cs))
+[Program.cs](.//github.com/protocolbuffers/protobuf/blob/master/csharp/src/AddressBook/Program.cs))
 can add a new entry to the data file or parse the data file and print the data
 to the console.
 
@@ -159,7 +159,7 @@ re-encoding the tag number, so repeated fields are particularly good candidates
 for this optimization.
 
 If a field value isn't set, a
-[default value](/programming-guides/proto3#default) is
+[default value](./programming-guides/proto3#default) is
 used: zero for numeric types, the empty string for strings, false for bools. For
 embedded messages, the default value is always the "default instance" or
 "prototype" of the message, which has none of its fields set. Calling the
@@ -172,7 +172,7 @@ protocol buffer. Think of repeated fields as dynamically sized arrays.
 
 You'll find a complete guide to writing `.proto` files -- including all the
 possible field types -- in the
-[Protocol Buffer Language Guide](/programming-guides/proto3).
+[Protocol Buffer Language Guide](./programming-guides/proto3).
 Don't go looking for facilities similar to class inheritance, though -- protocol
 buffers don't do that.
 
@@ -184,7 +184,7 @@ classes you'll need to read and write `AddressBook` (and hence `Person` and
 compiler `protoc` on your `.proto`:
 
 1.  If you haven't installed the compiler,
-    [download the package](/downloads) and follow the
+    [download the package](./downloads) and follow the
     instructions in the README.
 
 2.  Now run the compiler, specifying the source directory (where your
@@ -216,7 +216,7 @@ Generating `Addressbook.cs` gives you five useful types:
 -   A `PhoneType` enum, also nested in `Person.Types`.
 
 You can read more about the details of exactly what's generated in the
-[C# Generated Code guide](/reference/csharp/csharp-generated),
+[C# Generated Code guide](./reference/csharp/csharp-generated),
 but for the most part you can treat these as perfectly ordinary C# types. One
 point to highlight is that any properties corresponding to repeated fields are
 read-only. You can add items to the collection or remove items from it, but you
@@ -302,7 +302,7 @@ some rules you need to follow. In the new version of the protocol buffer:
     fields).
 
 (There are
-[some exceptions](/programming-guides/proto3#updating) to
+[some exceptions](./programming-guides/proto3#updating) to
 these rules, but they are rarely used.)
 
 If you follow these rules, old code will happily read new messages and simply
@@ -312,7 +312,7 @@ code will also transparently read old messages.
 
 However, keep in mind that new fields will not be present in old messages, so
 you will need to do something reasonable with the default value. A type-specific
-[default value](/programming-guides/proto3#default) is
+[default value](./programming-guides/proto3#default) is
 used: for strings, the default value is the empty string. For booleans, the
 default value is false. For numeric types, the default value is zero.
 

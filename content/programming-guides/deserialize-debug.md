@@ -12,7 +12,7 @@ APIs (`proto2::ShortFormat`, `proto2::Utf8Format`), Abseil string functions
 `absl::Substitute`), and Abseil logging API will begin to automatically convert
 proto arguments into a new debugging format
 . See the related announcement
-[here](/news/2024-12-04/).
+[here](./news/2024-12-04/).
 
 Unlike the Protobuf DebugString output format, the new debugging format
 automatically redacts sensitive fields by replacing their values with the string

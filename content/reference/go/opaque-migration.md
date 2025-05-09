@@ -24,7 +24,7 @@ option to one of its possible values:
 *   `API_OPAQUE` selects the Opaque API.
 
 Today, the default is `API_OPEN`, but the upcoming
-[Protobuf Edition 2024](/editions/overview) will change
+[Protobuf Edition 2024](./editions/overview) will change
 the default to `API_OPAQUE`.
 
 To use the Opaque API before Edition 2024, set the `api_level` like so:
@@ -53,7 +53,7 @@ protoc […] --go_opt=default_api_level=API_OPAQUE
 
 To override the default API level for a specific file (instead of all files),
 use the `apilevelM` mapping flag (similar to
-[the `M` flag for import paths](/reference/go/go-generated/#package)):
+[the `M` flag for import paths](./reference/go/go-generated/#package)):
 
 ```
 protoc […] --go_opt=apilevelMhello.proto=API_OPAQUE
@@ -76,7 +76,7 @@ go install google.golang.org/open2opaque@latest
 
 {{% alert title="Note" color="info" %}}If
 you encounter any issues with the automated migration approach, refer to the
-[Opaque API: Manual Migration](/reference/go/opaque-migration-manual)
+[Opaque API: Manual Migration](./reference/go/opaque-migration-manual)
 guide. {{% /alert %}}
 
 ### Project Preparation {#projectprep}
@@ -210,6 +210,6 @@ Run your unit tests, integration tests and other verification steps, if any.
 ## Questions? Issues?
 
 First, check out the
-[Opaque API FAQ](/reference/go/opaque-faq). If that
+[Opaque API FAQ](./reference/go/opaque-faq). If that
 doesn't answer your question or resolve your issue, see
-[Where can I ask questions or report issues?](/reference/go/opaque-faq#questions)
+[Where can I ask questions or report issues?](./reference/go/opaque-faq#questions)

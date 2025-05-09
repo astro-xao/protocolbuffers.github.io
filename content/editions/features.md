@@ -7,11 +7,11 @@ type = "docs"
 
 This topic provides an overview of the features that are included in Edition
 2023. Each subsequent edition's features will be added to this topic. We
-announce new editions in [the News section](/news).
+announce new editions in [the News section](./news).
 
 Before configuring feature settings in your new schema definition content, make
 sure you understand why you are using them. Avoid
-[cargo-culting](/best-practices/no-cargo-cults) with
+[cargo-culting](./best-practices/no-cargo-cults) with
 features.
 
 ## Prototiller {#prototiller}
@@ -27,7 +27,7 @@ features in Edition 2023. [Preserving proto2 or proto3 Behavior](#preserving)
 shows how to override the default behaviors so that your proto definition files
 act like proto2 or proto3 files. For more information on how Editions and
 Features work together to set behavior, see
-[Protobuf Editions Overview](/editions/overview).
+[Protobuf Editions Overview](./editions/overview).
 
 <span id="cascading"> Feature settings apply at different levels:</span>
 
@@ -85,7 +85,7 @@ Garply message, "`WALDO`" overrides "`QUUX`."
 
 This feature sets the behavior for how enum values that aren't contained within
 the defined set are handled. See
-[Enum Behavior](/programming-guides/enum) for more
+[Enum Behavior](./programming-guides/enum) for more
 information on open and closed enums.
 
 This feature doesn't impact proto3 files, so this section doesn't have a before
@@ -161,7 +161,7 @@ whether a protobuf field has a value.
 
 **Behavior in proto3:** `IMPLICIT` unless the field has the `optional` label, in
 which case it behaves like `EXPLICIT`. See
-[Presence in Proto3 APIs](/programming-guides/field_presence#presence-in-proto3-apis)
+[Presence in Proto3 APIs](./programming-guides/field_presence#presence-in-proto3-apis)
 for more information.
 
 **Note:** Feature settings on different schema elements
@@ -293,9 +293,9 @@ the following conditions are met:
 **Values available:**
 
 *   `LENGTH_PREFIXED`: Fields are encoded using the LEN wire type described in
-    [Message Structure](/programming-guides/encoding#structure).
+    [Message Structure](./programming-guides/encoding#structure).
 *   `DELIMITED`: Message-typed fields are encoded as
-    [groups](/programming-guides/proto2#groups).
+    [groups](./programming-guides/proto2#groups).
 
 **Applicable to the following scopes:** File, Field
 
@@ -339,7 +339,7 @@ message Foo {
 ### `features.repeated_field_encoding` {#repeated_field_encoding}
 
 This feature is what the proto2/proto3
-[`packed` option](/programming-guides/encoding#packed)
+[`packed` option](./programming-guides/encoding#packed)
 for `repeated` fields has been migrated to in Editions.
 
 **Values available:**
@@ -467,7 +467,7 @@ sections show these imports.
 
 This feature determines whether a field with an open enum type should be behave
 as if it was a closed enum. This allows editions to reproduce
-[non-conformant behavior](/programming-guides/enum) in
+[non-conformant behavior](./programming-guides/enum) in
 Java and C++ from proto2 and proto3.
 
 This feature doesn't impact proto3 files, and so this section doesn't have a

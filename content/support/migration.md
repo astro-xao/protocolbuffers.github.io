@@ -12,7 +12,7 @@ The following is a list of the breaking changes made to versions of the
 libraries, and how to update your code to accommodate the changes.
 
 This covers breaking changes announced in
-[News Announcements for v30.x](/news/v30) and
+[News Announcements for v30.x](./news/v30) and
 [Release Notes for v30.0](https://github.com/protocolbuffers/protobuf/releases/tag/v30.0).
 
 ### Replaced CMake Submodules with Fetched Deps
@@ -260,7 +260,7 @@ deserializable format can use `TextFormat.printer().printToString(proto)`, but
 this does not redact sensitive fields and so should be used with caution.
 
 Read more about this in the
-[news article released December 4, 2024](/news/2024-12-04.md).
+[news article released December 4, 2024](./news/2024-12-04.md).
 
 ### Removed Deprecated APIs {#remove-deprecated}
 
@@ -601,7 +601,7 @@ gives you more time to migrate.
 ## C++ API Changes in v22.0 {#cpp-22}
 
 4.22.0 has breaking changes for C++ runtime and protoc, as
-[announced in August](/news/2022-08-03#cpp-changes).
+[announced in August](./news/2022-08-03#cpp-changes).
 
 ### Autotools Turndown {#autotools}
 
@@ -680,7 +680,7 @@ Prior to v22.x, Protobuf incorrectly removed the macro definition for
 including `<protobuf/util/time_util.h>`. Starting with v22.x, Protobuf preserves
 the macro definition. This may break customer code relying on the previous
 behavior, such as if they use the expression
-[`google::protobuf::util::TimeUtil::GetCurrentTime()`](/reference/cpp/api-docs/google.protobuf.util.time_util#TimeUtil).
+[`google::protobuf::util::TimeUtil::GetCurrentTime()`](./reference/cpp/api-docs/google.protobuf.util.time_util#TimeUtil).
 
 To migrate your app to the new behavior, change your code to do one of the
 following:

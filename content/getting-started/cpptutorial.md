@@ -16,13 +16,13 @@ shows you how to
 
 This isn't a comprehensive guide to using protocol buffers in C++. For more
 detailed reference information, see the
-[Protocol Buffer Language Guide (proto2)](/programming-guides/proto2),
+[Protocol Buffer Language Guide (proto2)](./programming-guides/proto2),
 the
-[Protocol Buffer Language Guide (proto3)](/programming-guides/proto3),
-the [C++ API Reference](/reference/cpp/api-docs), the
-[C++ Generated Code Guide](/reference/cpp/cpp-generated),
+[Protocol Buffer Language Guide (proto3)](./programming-guides/proto3),
+the [C++ API Reference](./reference/cpp/api-docs), the
+[C++ Generated Code Guide](./reference/cpp/cpp-generated),
 and the
-[Encoding Reference](/programming-guides/encoding).
+[Encoding Reference](./programming-guides/encoding).
 
 ## The Problem Domain {#problem-domain}
 
@@ -169,7 +169,7 @@ most messages defined in proto2 syntax use `optional` and `repeated` only.
 
 You'll find a complete guide to writing `.proto` files -- including all the
 possible field types -- in the
-[Protocol Buffer Language Guide](/programming-guides/proto2).
+[Protocol Buffer Language Guide](./programming-guides/proto2).
 Don't go looking for facilities similar to class inheritance, though -- protocol
 buffers don't do that.
 
@@ -181,7 +181,7 @@ classes you'll need to read and write `AddressBook` (and hence `Person` and
 compiler `protoc` on your `.proto`:
 
 1.  If you haven't installed the compiler,
-    [download the package](/downloads) and follow the
+    [download the package](./downloads) and follow the
     instructions in the README.
 
 2.  Now run the compiler, specifying the source directory (where your
@@ -270,7 +270,7 @@ the repeated `phones` field, you'll see that you can
 
 For more information on exactly what members the protocol compiler generates for
 any particular field definition, see the
-[C++ generated code reference](/reference/cpp/cpp-generated).
+[C++ generated code reference](./reference/cpp/cpp-generated).
 
 ### Enums and Nested Classes {#enums-nested-classes}
 
@@ -304,13 +304,13 @@ manipulate the entire message, including:
 These and the I/O methods described in the following section implement the
 `Message` interface shared by all C++ protocol buffer classes. For more info,
 see the
-[complete API documentation for `Message`](/reference/cpp/api-docs/google.protobuf.message#Message).
+[complete API documentation for `Message`](./reference/cpp/api-docs/google.protobuf.message#Message).
 
 ### Parsing and Serialization {#parsing-serialization}
 
 Finally, each protocol buffer class has methods for writing and reading messages
 of your chosen type using the protocol buffer
-[binary format](/programming-guides/encoding). These
+[binary format](./programming-guides/encoding). These
 include:
 
 -   `bool SerializeToString(string* output) const;`: serializes the message and
@@ -325,7 +325,7 @@ include:
 
 These are just a couple of the options provided for parsing and serialization.
 Again, see the
-[`Message` API reference](/reference/cpp/api-docs/google.protobuf.message#Message)
+[`Message` API reference](./reference/cpp/api-docs/google.protobuf.message#Message)
 for a complete list.
 
 {{% alert title="Important" color="warning" %}} **Protocol Buffers and Object Oriented Design**
@@ -557,7 +557,7 @@ some rules you need to follow. In the new version of the protocol buffer:
     buffer, not even by deleted fields).
 
 (There are
-[some exceptions](/programming-guides/proto2#updating) to
+[some exceptions](./programming-guides/proto2#updating) to
 these rules, but they are rarely used.)
 
 If you follow these rules, old code will happily read new messages and simply
@@ -596,7 +596,7 @@ last drop of speed out of the library:
 ## Advanced Usage {#advanced-usage}
 
 Protocol buffers have uses that go beyond simple accessors and serialization. Be
-sure to explore the [C++ API reference](/reference/cpp)
+sure to explore the [C++ API reference](./reference/cpp)
 to see what else you can do with them.
 
 One key feature provided by protocol message classes is *reflection*. You can
@@ -611,4 +611,4 @@ Protocol Buffers to a much wider range of problems than you might initially
 expect!
 
 Reflection is provided by the
-[`Message::Reflection` interface](/reference/cpp/api-docs/google.protobuf.message#Reflection).
+[`Message::Reflection` interface](./reference/cpp/api-docs/google.protobuf.message#Reflection).

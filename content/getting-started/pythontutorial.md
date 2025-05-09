@@ -16,13 +16,13 @@ shows you how to
 
 This isn't a comprehensive guide to using protocol buffers in Python. For more
 detailed reference information, see the
-[Protocol Buffer Language Guide (proto2)](/programming-guides/proto2),
+[Protocol Buffer Language Guide (proto2)](./programming-guides/proto2),
 the
-[Protocol Buffer Language Guide (proto3)](/programming-guides/proto3),
+[Protocol Buffer Language Guide (proto3)](./programming-guides/proto3),
 the [Python API Reference](https://googleapis.dev/python/protobuf/latest/), the
-[Python Generated Code Guide](/reference/python/python-generated),
+[Python Generated Code Guide](./reference/python/python-generated),
 and the
-[Encoding Reference](/programming-guides/encoding).
+[Encoding Reference](./programming-guides/encoding).
 
 ## The Problem Domain {#problem-domain}
 
@@ -65,7 +65,7 @@ that the code can still read data encoded with the old format.
 ## Where to Find the Example Code {#example-code}
 
 The example code is included in the source code package, under the "examples"
-directory. [Download it here.](/downloads)
+directory. [Download it here.](./downloads)
 
 ## Defining Your Protocol Format {#protocol-format}
 
@@ -137,7 +137,7 @@ for this optimization.
 
 You'll find a complete guide to writing `.proto` files -- including all the
 possible field types -- in the
-[Protocol Buffer Language Guide](/programming-guides/editions).
+[Protocol Buffer Language Guide](./programming-guides/editions).
 Don't go looking for facilities similar to class inheritance, though -- protocol
 buffers don't do that.
 
@@ -149,7 +149,7 @@ classes you'll need to read and write `AddressBook` (and hence `Person` and
 compiler `protoc` on your `.proto`:
 
 1.  If you haven't installed the compiler,
-    [download the package](/downloads) and follow the
+    [download the package](./downloads) and follow the
     instructions in the README.
 
 2.  Now run the compiler, specifying the source directory (where your
@@ -252,7 +252,7 @@ person.id = "1234"        # raises TypeError
 
 For more information on exactly what members the protocol compiler generates for
 any particular field definition, see the
-[Python generated code reference](/reference/python/python-generated).
+[Python generated code reference](./reference/python/python-generated).
 
 ### Enums {#enums}
 
@@ -280,7 +280,7 @@ These methods implement the `Message` interface. For more information, see the
 
 Finally, each protocol buffer class has methods for writing and reading messages
 of your chosen type using the protocol buffer
-[binary format](/programming-guides/encoding). These
+[binary format](./programming-guides/encoding). These
 include:
 
 -   `SerializeToString()`: serializes the message and returns it as a string.
@@ -436,7 +436,7 @@ some rules you need to follow. In the new version of the protocol buffer:
     not even by deleted fields).
 
 (There are
-[some exceptions](/programming-guides/proto2#updating) to
+[some exceptions](./programming-guides/proto2#updating) to
 these rules, but they are rarely used.)
 
 If you follow these rules, old code will happily read new messages and simply

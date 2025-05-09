@@ -10,9 +10,9 @@ Any differences between
 proto2 and proto3 generated code are highlighted - note that these differences
 are in the generated code as described in this document, not the base API, which
 are the same in both versions. You should read the
-[proto2 language guide](/programming-guides/proto2)
+[proto2 language guide](./programming-guides/proto2)
 and/or the
-[proto3 language guide](/programming-guides/proto3)
+[proto3 language guide](./programming-guides/proto3)
 before reading this document.
 
 ## Compiler Invocation {#invocation}
@@ -98,7 +98,7 @@ message in the `.proto` file.
 
 Note that the generated names always use camel-case naming, even if the field
 name in the `.proto` file uses lower-case with underscores
-([as it should](/programming-guides/style)). The
+([as it should](./programming-guides/style)). The
 case-conversion works as follows:
 
 1.  For each underscore in the name, the underscore is removed, and the
@@ -130,7 +130,7 @@ The compiler will generate the following accessor methods in the message class:
 
 For other simple field types, the corresponding Dart type is chosen according to
 the
-[scalar value types table](/programming-guides/proto2#scalar).
+[scalar value types table](./programming-guides/proto2#scalar).
 For message and enum types, the value type is replaced with the message or enum
 class.
 
@@ -154,7 +154,7 @@ The compiler will generate the following accessor methods in the message class:
     {{% alert title="Note" color="note" %}} Due to a
     quirk in the Dart proto3 implementation, the following methods are generated
     even if the `optional` modifier, used to request
-    [presence semantics](/programming-guides/field_presence#presence-in-proto3-apis),
+    [presence semantics](./programming-guides/field_presence#presence-in-proto3-apis),
     isn't in the proto
     definition.{{% /alert %}}
 
@@ -246,7 +246,7 @@ import 'package:fixnum/fixnum.dart';
 
 ### Map Fields
 
-Given a [`map`](/programming-guides/proto3#maps) field
+Given a [`map`](./programming-guides/proto3#maps) field
 definition like this:
 
 ```proto
@@ -261,7 +261,7 @@ The compiler will generate the following getter:
 
 ## Any
 
-Given an [`Any`](/programming-guides/proto3#any) field
+Given an [`Any`](./programming-guides/proto3#any) field
 like this:
 
 ```proto
@@ -305,7 +305,7 @@ and unpack the `Any`'s values:
 
 ## Oneof
 
-Given a [`oneof`](/programming-guides/proto3#oneof)
+Given a [`oneof`](./programming-guides/proto3#oneof)
 definition like this:
 
 ```proto
@@ -417,7 +417,7 @@ The protocol buffer compiler will generate a class called `Bar`, which extends
 ## Extensions (proto2 only) {#extension}
 
 Given a file `foo_test.proto` including a message with an
-[extension range](/programming-guides/proto2#extensions)
+[extension range](./programming-guides/proto2#extensions)
 and a top-level extension definition:
 
 ```proto
@@ -501,6 +501,6 @@ service Foo {
 
 The protocol buffer compiler can be invoked with the \`grpc\` option (e.g.
 `--dart_out=grpc:output_folder`), in which case it will generate code to support
-[gRPC](//www.grpc.io/). See the
+[gRPC](.//www.grpc.io/). See the
 [gRPC Dart Quickstart guide](https://grpc.io/docs/quickstart/dart.html)
 for more details.

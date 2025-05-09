@@ -17,11 +17,11 @@ API to the new Opaque API.
 {{% alert title="Warning" color="warning" %}} You
 are looking at the manual migration guide. Typically you’re better off using the
 `open2opaque` tool to automate the migration. See
-[Opaque API Migration](/reference/go/opaque-migration)
+[Opaque API Migration](./reference/go/opaque-migration)
 instead. {{% /alert %}}
 
 The
-[Generated Code Guide](/reference/go/go-generated-opaque)
+[Generated Code Guide](./reference/go/go-generated-opaque)
 provides more detail. This guide compares the old and new API side-by-side.
 
 ### Message Construction
@@ -78,7 +78,7 @@ Open Struct API (old) and Opaque API (new).
 Generally, prefer using builders for readability. Only in rare cases, like
 creating Protobuf messages in a hot inner loop, might it be preferable to use
 setters instead of builders. See
-[the Opaque API FAQ: Should I use builders or setters?](/reference/go/opaque-faq#builders-vs-setters)
+[the Opaque API FAQ: Should I use builders or setters?](./reference/go/opaque-faq#builders-vs-setters)
 for more detail.
 
 An exception to the above example is when working with [oneofs](#oneofs): The
@@ -133,7 +133,7 @@ message Artist {
 Protobuf message fields for which Go uses scalar types (bool, int32, int64,
 uint32, uint64, float32, float64, string, []byte, and enum) will have `Get` and
 `Set` accessor methods. Fields with
-[explicit presence](/programming-guides/field_presence/)
+[explicit presence](./programming-guides/field_presence/)
 will also have `Has` and `Clear` methods.
 
 For a field of type `int32` named `birth_year`, the following accessor methods

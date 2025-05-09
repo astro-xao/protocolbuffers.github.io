@@ -113,7 +113,7 @@ global registry.
 
 Every protobuf declaration (for example, enums, enum values, or messages) has an
 absolute name, which is the concatenation of the
-[package name](/programming-guides/proto2#packages) with
+[package name](./programming-guides/proto2#packages) with
 the relative name of the declaration in the `.proto` source file (for example,
 `my.proto.package.MyMessage.NestedMessage`). The protobuf language assumes that
 all declarations are universally unique.
@@ -234,7 +234,7 @@ according to [`errors.Is`](https://pkg.go.dev/errors?tab=doc#Is).
 ### Why does the output of [`protojson`](https://pkg.go.dev/google.golang.org/protobuf/encoding/protojson) keep changing? {#unstable-json}
 
 We make no promises about the long-term stability of Go's implementation of the
-[JSON format for protocol buffers](/programming-guides/proto3#json).
+[JSON format for protocol buffers](./programming-guides/proto3#json).
 The specification only specifies what is valid JSON, but provides no
 specification for a *canonical* format for how a marshaler ought to *exactly*
 format a given message. To avoid giving the illusion that the output is stable,

@@ -1,10 +1,10 @@
-//[protobuf-kotlin](/reference/kotlin/api-docs/)/[com.google.protobuf.kotlin](/reference/kotlin/api-docs/protobuf-kotlin/com.google.protobuf.kotlin/)/ExtensionList
+//[protobuf-kotlin](./reference/kotlin/api-docs/)/[com.google.protobuf.kotlin](./reference/kotlin/api-docs/protobuf-kotlin/com.google.protobuf.kotlin/)/ExtensionList
 
 # ExtensionList
 
 [JVM] class [ExtensionList]()<[E](), [M]() :
-[MessageLite](/reference/java/api-docs/com/google/protobuf/MessageLite.html)>constructor(**extension**:
-[ExtensionLite](/reference/java/api-docs/com/google/protobuf/ExtensionLite.html)<[M](),
+[MessageLite](./reference/java/api-docs/com/google/protobuf/MessageLite.html)>constructor(**extension**:
+[ExtensionLite](./reference/java/api-docs/com/google/protobuf/ExtensionLite.html)<[M](),
 [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)<[E]()>>,
 **delegate**:
 [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)<[E]()>) :
@@ -19,7 +19,7 @@ extension.
 
 Name | Summary
 --- | ---
-[ExtensionList]() | [JVM] fun <[E](), [M]() : [MessageLite](/reference/java/api-docs/com/google/protobuf/MessageLite.html)> [ExtensionList]()(extension: [ExtensionLite](/reference/java/api-docs/com/google/protobuf/ExtensionLite.html)<[M](), [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)<[E]()\>\>, delegate: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)<[E]()>)
+[ExtensionList]() | [JVM] fun <[E](), [M]() : [MessageLite](./reference/java/api-docs/com/google/protobuf/MessageLite.html)> [ExtensionList]()(extension: [ExtensionLite](./reference/java/api-docs/com/google/protobuf/ExtensionLite.html)<[M](), [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)<[E]()\>\>, delegate: [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)<[E]()>)
 
 
 ## Functions
@@ -48,5 +48,5 @@ Name                                                                            
 
 Name                                                                                                                              | Summary
 --------------------------------------------------------------------------------------------------------------------------------- | -------
-<a name="com.google.protobuf.kotlin/ExtensionList/extension/#/PointingToDeclaration/"></a>[extension](extension)                  | <a name="com.google.protobuf.kotlin/ExtensionList/extension/#/PointingToDeclaration/"></a> [JVM] val [extension](extension): [ExtensionLite](/reference/java/api-docs/com/google/protobuf/ExtensionLite.html)<[M](), [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)<[E]()>> <br>
+<a name="com.google.protobuf.kotlin/ExtensionList/extension/#/PointingToDeclaration/"></a>[extension](extension)                  | <a name="com.google.protobuf.kotlin/ExtensionList/extension/#/PointingToDeclaration/"></a> [JVM] val [extension](extension): [ExtensionLite](./reference/java/api-docs/com/google/protobuf/ExtensionLite.html)<[M](), [List](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)<[E]()>> <br>
 <a name="com.google.protobuf.kotlin/ExtensionList/size/#/PointingToDeclaration/"></a>[size](#648753719%2FProperties%2F-246181541) | <a name="com.google.protobuf.kotlin/ExtensionList/size/#/PointingToDeclaration/"></a> [JVM] open override val [size](#648753719%2FProperties%2F-246181541): [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) <br>

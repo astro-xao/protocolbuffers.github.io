@@ -56,7 +56,7 @@ not* offer the same stability guarantees.
 
 **The descriptor.proto schema can change.** In minor or patch releases, we may
 add new message, fields, enums, enum values, editions, editions
-[features](/editions/features) etc. We may also mark
+[features](./editions/features) etc. We may also mark
 existing elements as deprecated. In a major release, we may remove deprecated
 options, enums, enum values, messages, fields, etc.
 
@@ -384,7 +384,7 @@ The maintenance support window for the Protobuf Java 3.x release will be 36
 months rather than the typical 12 months for the final release in a major
 version line. Future major version updates (5.x, planned for Q1 2027) will adopt
 an improved
-["rolling compatibility window"](/support/cross-version-runtime-guarantee/#major)
+["rolling compatibility window"](./support/cross-version-runtime-guarantee/#major)
 that should allow a return to 12-month support windows. There will be no major
 version bumps in Q1 2025 and Q1 2026.{{% /alert %}}
 

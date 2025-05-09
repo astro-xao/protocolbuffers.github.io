@@ -6,7 +6,7 @@ description = "The C++ implementation of Protocol Buffers has an explicit depend
 type = "docs"
 +++
 
-In [version 22.x](/news/v22#abseil-dep), C++ protobuf
+In [version 22.x](./news/v22#abseil-dep), C++ protobuf
 added an explicit dependency on Abseil.
 
 ## Bazel Support {#bazel}

@@ -9,7 +9,7 @@ aliases = "/programming-guides/api"
 已针对 proto3 更新。欢迎补丁！
 
 本文档是
-[Proto 最佳实践](/best-practices/dos-donts) 的补充。
+[Proto 最佳实践](./best-practices/dos-donts) 的补充。
 它不是针对 Java/C++/Go 及其他 API 的规定。
 
 如果你在代码评审中发现 proto 偏离了这些指南，请将作者指向本主题，帮助传播最佳实践。
@@ -51,7 +51,7 @@ FooConfig foo_config = 3;
 用尽量少的文字描述每个字段的约束、期望和解释。
 
 你可以使用自定义 proto 注解。
-参见 [自定义选项](/programming-guides/proto2#options)
+参见 [自定义选项](./programming-guides/proto2#options)
 以定义跨语言常量，如上例中的 `max_length`。
 proto2 和 proto3 均支持。
 
@@ -81,7 +81,7 @@ proto2 和 proto3 均支持。
     * 系统不基于客户端结构化数据做决策
     * 系统仅按客户端请求存储、加载、查询
 
-    如果你实现的是日志系统或基于 proto 的通用存储包装器，建议让客户端消息尽可能透明地进入存储后端，避免依赖集中。可考虑用扩展或[通过 Web 安全编码二进制 proto 序列化将不透明数据编码为字符串](/best-practices/api#encode-opaque-data-in-strings)。
+    如果你实现的是日志系统或基于 proto 的通用存储包装器，建议让客户端消息尽可能透明地进入存储后端，避免依赖集中。可考虑用扩展或[通过 Web 安全编码二进制 proto 序列化将不透明数据编码为字符串](./best-practices/api#encode-opaque-data-in-strings)。
 
 ## 对变更操作，支持部分更新或仅追加更新，而非全量替换 {#support-partial-updates}
 
@@ -193,7 +193,7 @@ message InternalFooRef {
 当服务有多语言客户端时尤其糟糕。每个客户端都要选合适的解析器或构造器，甚至自己写。
 
 更一般地，选择合适的原始类型。参见
-[协议缓冲区语言指南](/programming-guides/proto2#scalar)中的标量值类型表。
+[协议缓冲区语言指南](./programming-guides/proto2#scalar)中的标量值类型表。
 
 ### 不要在前端 proto 返回 HTML {#returning-html}
 
@@ -334,7 +334,7 @@ message BarReadMask {
 
 如用推荐的 `google.protobuf.FieldMask`，可用
 `FieldMaskUtil`
-([Java](/reference/java/api-docs/com/google/protobuf/util/FieldMaskUtil.html)/[C++](/reference/cpp/api-docs/google.protobuf.util.field_mask_util.md))
+([Java](./reference/java/api-docs/com/google/protobuf/util/FieldMaskUtil.html)/[C++](./reference/cpp/api-docs/google.protobuf.util.field_mask_util.md))
 库自动过滤 proto。
 
 读取掩码让客户端明确期望，控制返回数据量，后端也可只取所需数据。
@@ -449,14 +449,14 @@ map 也一样。若值已是消息类型，后续加字段更容易；否则要�
 
 例外：
 
-对延迟极敏感的应用，原始类型并行数组比消息数组更快、更省空间（用 [[packed=true]](/programming-guides/encoding#packed) 可省略字段标签）。分配固定数量数组比分配 N 个消息更省事。
-[Proto3](/programming-guides/proto3) 默认打包，无需显式指定。
+对延迟极敏感的应用，原始类型并行数组比消息数组更快、更省空间（用 [[packed=true]](./programming-guides/encoding#packed) 可省略字段标签）。分配固定数量数组比分配 N 个消息更省事。
+[Proto3](./programming-guides/proto3) 默认打包，无需显式指定。
 
 ## 使用 Proto Map {#use-proto-maps}
 
 在
-[Proto3](/programming-guides/proto3) 引入
-[Proto3 map](/programming-guides/proto3#maps) 前，服务常用 KVPair 消息配合标量字段表示数据。后续客户端需更深结构时，只能解析 key 或 value。参见
+[Proto3](./programming-guides/proto3) 引入
+[Proto3 map](./programming-guides/proto3#maps) 前，服务常用 KVPair 消息配合标量字段表示数据。后续客户端需更深结构时，只能解析 key 或 value。参见
 [不要将数据编码为字符串](#dont-encode-data-in-a-string)。
 
 用（可扩展的）消息类型做 value 立刻优于原始设计。
@@ -466,7 +466,7 @@ map 已回移植到 proto2，故用 `map<scalar, **message**>` 比自造 KVPair 
 [^3]: proto 中含 `map<k,v>` 字段时，不要用作 MapReduce 的 reduce key。proto3 map 项的线性化和迭代顺序*未定义*，会导致 map 分片不一致。
 
 若需表示*任意*未知结构的数据，用
-[`google.protobuf.Any`](/reference/protobuf/textformat-spec#any)。
+[`google.protobuf.Any`](./reference/protobuf/textformat-spec#any)。
 
 ## 优先保证幂等性 {#prefer-idempotency}
 

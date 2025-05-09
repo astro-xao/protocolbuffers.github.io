@@ -1,11 +1,11 @@
-//[protobuf-kotlin](/reference/kotlin/api-docs/)/[com.google.protobuf.kotlin](/reference/kotlin/api-docs/protobuf-kotlin/com.google.protobuf.kotlin/)/[get]()
+//[protobuf-kotlin](./reference/kotlin/api-docs/)/[com.google.protobuf.kotlin](./reference/kotlin/api-docs/protobuf-kotlin/com.google.protobuf.kotlin/)/[get]()
 
 # get
 
 [JVM] \
 Content \
 operator fun
-[ByteString](/reference/java/api-docs/com/google/protobuf/ByteString.html).[get]()(index:
+[ByteString](./reference/java/api-docs/com/google/protobuf/ByteString.html).[get]()(index:
 [Int](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)):
 [Byte](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-byte/index.html)
 
@@ -20,7 +20,7 @@ operator fun <[M]() :
 [T]() :
 [Any](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html)>
 [MorBT]().[get]()(extension:
-[ExtensionLite](/reference/java/api-docs/com/google/protobuf/ExtensionLite.html)<[M](),
+[ExtensionLite](./reference/java/api-docs/com/google/protobuf/ExtensionLite.html)<[M](),
 [T]()>): [T]() 
 
 Gets the current value of the proto extension.

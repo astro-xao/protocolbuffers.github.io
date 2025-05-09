@@ -10,15 +10,15 @@ Any differences between
 proto2 and proto3 generated code are highlighted - note that these differences
 are in the generated code as described in this document, not the base API, which
 are the same in both versions. You should read the
-[proto2 language guide](/programming-guides/proto2)
+[proto2 language guide](./programming-guides/proto2)
 and/or the
-[proto3 language guide](/programming-guides/proto3)
+[proto3 language guide](./programming-guides/proto3)
 before reading this document.
 
 {{% alert title="Note" color="warning" %}}You are
 looking at documentation for the old generated code API (Open Struct API).
 See
-[Go Generated Code (Opaque)](/reference/go/go-generated-opaque)
+[Go Generated Code (Opaque)](./reference/go/go-generated-opaque)
 for the corresponding documentation of the (new) Opaque API. See
 [Go Protobuf: The new Opaque API](https://go.dev/blog/protobuf-opaque) for the
 introduction of the Opaque API. {{% /alert %}}
@@ -131,7 +131,7 @@ the same package). The import path is also used to construct output filenames.
 See the \"Compiler Invocation\" section above for details.
 
 There is no correlation between the Go import path and the
-[`package` specifier](/programming-guides/proto3#packages)
+[`package` specifier](./programming-guides/proto3#packages)
 in the `.proto` file. The latter is only relevant to the protobuf namespace,
 while the former is only relevant to the Go namespace. Also, there is no
 correlation between the Go import path and the `.proto` import path.
@@ -174,7 +174,7 @@ protoc […] --go_opt=default_api_level=API_HYBRID
 
 To override the default API level for a specific file (instead of all files),
 use the `apilevelM` mapping flag (similar to [the `M` flag for import
-paths](/reference/go/go-generated/#package)):
+paths](./reference/go/go-generated/#package)):
 
 ```
 protoc […] --go_opt=apilevelMhello.proto=API_HYBRID
@@ -245,7 +245,7 @@ it is a singular, repeated, map, or oneof field.
 
 Note that the generated Go field names always use camel-case naming, even if the
 field name in the `.proto` file uses lower-case with underscores
-([as it should](/programming-guides/style#message-field-names)).
+([as it should](./programming-guides/style#message-field-names)).
 The case-conversion works as follows:
 
 1.  The first letter is capitalized for export. If the first character is an
@@ -273,7 +273,7 @@ type is used instead (`0` for numbers, the empty string for strings).
 
 For other scalar field types (including `bool`, `bytes`, and `string`), `*int32`
 is replaced with the corresponding Go type according to the
-[scalar value types table](/programming-guides/proto2#scalar).
+[scalar value types table](./programming-guides/proto2#scalar).
 
 ### Singular Scalar Fields (proto3) {#singular-scalar-proto3}
 
@@ -295,7 +295,7 @@ marked `optional`.
 
 For other scalar field types (including `bool`, `bytes`, and `string`), `int32`
 is replaced with the corresponding Go type according to the
-[scalar value types table](/programming-guides/proto3#scalar).
+[scalar value types table](./programming-guides/proto3#scalar).
 Unset values in the proto will be represented as the
 [zero value](https://golang.org/ref/spec#The_zero_value) of that type
 (`0` for numbers, the empty string for strings).
@@ -630,7 +630,7 @@ containing the extension value type.
 
 For singular scalar extension fields, the extension value type is the
 corresponding Go type from the
-[scalar value types table](/programming-guides/proto3#scalar).
+[scalar value types table](./programming-guides/proto3#scalar).
 
 For singular embedded message extension fields, the extension value type is
 `*M`, where `M` is the field message type.

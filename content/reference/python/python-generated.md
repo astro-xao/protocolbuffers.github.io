@@ -11,9 +11,9 @@ differences between proto2 and proto3 generated code are highlighted - note that
 these differences are in the generated code as described in this document, not
 the base message classes/interfaces, which are the same in both versions. You
 should read the
-[proto2 language guide](/programming-guides/proto2)
+[proto2 language guide](./programming-guides/proto2)
 and/or
-[proto3 language guide](/programming-guides/proto3)
+[proto3 language guide](./programming-guides/proto3)
 before reading this document.
 
 The Python Protocol Buffers implementation is a little different from C++ and
@@ -134,7 +134,7 @@ can refer to it as `Foo.Bar`.
 ## Well Known Types {#wkt}
 
 Protocol buffers provides a number of
-[well-known types](/reference/protobuf/google.protobuf)
+[well-known types](./reference/protobuf/google.protobuf)
 that you can use in your .proto files along with your own message types. Some
 WKT messages have special methods in addition to the usual protocol buffer
 message methods, as they subclass both
@@ -555,7 +555,7 @@ message types -- use nested message types instead.**
 
 A group combines a nested message type and a field into a single declaration,
 and uses a different
-[wire format](/programming-guides/encoding) for the
+[wire format](./programming-guides/encoding) for the
 message. The generated message has the same name as the group. The generated
 field's name is the **lowercased** name of the group.
 
@@ -963,7 +963,7 @@ generic services are deprecated. (Note that prior to 2.4.0, the option defaults
 to `true`)
 
 RPC systems based on `.proto`-language service definitions should provide
-[plugins](/reference/cpp/api-docs/google.protobuf.compiler.plugin.pb)
+[plugins](./reference/cpp/api-docs/google.protobuf.compiler.plugin.pb)
 to generate code appropriate for the system. These plugins are likely to require
 that abstract services are disabled, so that they can generate their own classes
 of the same names. Plugins are new in version 2.3.0 (January 2010).
@@ -1030,7 +1030,7 @@ implementations of `RpcChannel` and
 
 ## Plugin Insertion Points {#plugins}
 
-[Code generator plugins](/reference/cpp/api-docs/google.protobuf.compiler.plugin)
+[Code generator plugins](./reference/cpp/api-docs/google.protobuf.compiler.plugin)
 which want to extend the output of the Python code generator may insert code of
 the following types using the given insertion point names.
 

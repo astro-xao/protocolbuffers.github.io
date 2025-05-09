@@ -10,17 +10,17 @@ protocol buffer data, including `.proto` file syntax and how to generate data
 access classes from your `.proto` files. It covers **edition 2023** of the
 protocol buffers language. For information about how editions differ from proto2
 and proto3 conceptually, see
-[Protobuf Editions Overview](/editions/overview).
+[Protobuf Editions Overview](./editions/overview).
 
 For information on the **proto2** syntax, see the
-[Proto2 Language Guide](/programming-guides/proto2).
+[Proto2 Language Guide](./programming-guides/proto2).
 
 For information on **proto3** syntax, see the
-[Proto3 Language Guide](/programming-guides/proto3).
+[Proto3 Language Guide](./programming-guides/proto3).
 
 This is a reference guide – for a step by step example that uses many of the
 features described in this document, see the
-[tutorial](/getting-started)
+[tutorial](./getting-started)
 for your chosen language.
 
 ## Defining A Message Type {#simple}
@@ -47,7 +47,7 @@ message SearchRequest {
         non-empty, non-comment line of the file.
     *   If no `edition` or `syntax` is specified, the protocol buffer compiler
         will assume you are using
-        [proto2](/programming-guides/proto2).
+        [proto2](./programming-guides/proto2).
 
 *   The `SearchRequest` message definition specifies three fields (name/value
     pairs), one for each piece of data that you want to include in this type of
@@ -74,7 +74,7 @@ You must give each field in your message definition a number between `1` and
 
 This number **cannot be changed once your message type is in use** because it
 identifies the field in the
-[message wire format](/programming-guides/encoding).
+[message wire format](./programming-guides/encoding).
 "Changing" a field number is equivalent to deleting that field and creating a
 new field with the same type but a new number. See [Deleting Fields](#deleting)
 for how to do this properly.
@@ -88,7 +88,7 @@ fields. Lower field number values take less space in the wire format. For
 example, field numbers in the range 1 through 15 take one byte to encode. Field
 numbers in the range 16 through 2047 take two bytes. You can find out more about
 this in
-[Protocol Buffer Encoding](/programming-guides/encoding#structure).
+[Protocol Buffer Encoding](./programming-guides/encoding#structure).
 
 #### Consequences of Reusing Field Numbers {#consequences}
 
@@ -116,12 +116,12 @@ Common causes of field number reuse:
 
     -   This has been a very easy mistake to make with
         [extension fields](#extensions) for several reasons.
-        [Extension Declarations](/programming-guides/extension_declarations)
+        [Extension Declarations](./programming-guides/extension_declarations)
         provide a mechanism for reserving extension fields.
 
 The field number is limited to 29 bits rather than 32 bits because three bits
 are used to specify the field's wire format. For more on this, see the
-[Encoding topic](/programming-guides/encoding#structure).
+[Encoding topic](./programming-guides/encoding#structure).
 
 <a id="specifying-field-rules"></a>
 
@@ -151,7 +151,7 @@ Message fields can be one of the following:
     well-formed message. The order of the repeated values will be preserved.
 
 *   `map`: this is a paired key/value field type. See
-    [Maps](/programming-guides/encoding#maps) for more on
+    [Maps](./programming-guides/encoding#maps) for more on
     this field type.
 
 #### Repeated Fields are Packed by Default {#use-packed}
@@ -160,7 +160,7 @@ In proto editions, `repeated` fields of scalar numeric types use `packed`
 encoding by default.
 
 You can find out more about `packed` encoding in
-[Protocol Buffer Encoding](/programming-guides/encoding#packed).
+[Protocol Buffer Encoding](./programming-guides/encoding#packed).
 
 #### Well-formed Messages {#well-formed}
 
@@ -171,7 +171,7 @@ definition file is parseable.
 Singular fields can appear more than once in wire-format bytes. The parser will
 accept the input, but only the last instance of that field will be accessible
 through the generated bindings. See
-[Last One Wins](/programming-guides/encoding#last-one-wins)
+[Last One Wins](./programming-guides/encoding#last-one-wins)
 for more on this topic.
 
 ### Adding More Message Types {#adding-types}
@@ -321,7 +321,7 @@ from an input stream.
 
 You can find out more about using the APIs for each language by following the
 tutorial for your chosen language. For even more API
-details, see the relevant [API reference](/reference/).
+details, see the relevant [API reference](./reference/).
 
 ## Scalar Value Types {#scalar}
 
@@ -630,7 +630,7 @@ machines.
 
 You can find out more about how these types are encoded when you serialize your
 message in
-[Protocol Buffer Encoding](/programming-guides/encoding).
+[Protocol Buffer Encoding](./programming-guides/encoding).
 
 ## Default Field Values {#default}
 
@@ -644,7 +644,7 @@ value for that field. The default values are type-specific:
 *   For numeric types, the default value is zero.
 *   For message fields, the field is not set. Its exact value is
     language-dependent. See the
-    [generated code guide](/reference/) for details.
+    [generated code guide](./reference/) for details.
 *   For enums, the default value is the **first defined enum value**, which must
     be 0. See [Enum Default Value](#enum-default).
 
@@ -674,7 +674,7 @@ following state:
 If the sender does send a value for `result_per_page` the default value of 10 is
 ignored and the sender's value is returned from the "getter".
 
-See the [generated code guide](/reference/) for your
+See the [generated code guide](./reference/) for your
 chosen language for more details about how defaults work in generated code.
 
 Explicit default values cannot be specified for fields that have the
@@ -722,11 +722,11 @@ value zero and should have the name `ENUM_TYPE_NAME_UNSPECIFIED` or
 `ENUM_TYPE_NAME_UNKNOWN`. This is because:
 
 *   The zero value needs to be the first element for compatibility with
-    [proto2](/programming-guides/proto2#enum-default)
+    [proto2](./programming-guides/proto2#enum-default)
     semantics, where the first enum value is the default unless a different
     value is explicitly specified.
 *   There must be a zero value for compatibility with
-    [proto3](/programming-guides/proto3#enum-default)
+    [proto3](./programming-guides/proto3#enum-default)
     semantics, where the zero value is used as the default value for all
     implicit-presence fields using this enum type.
 
@@ -775,7 +775,7 @@ enum EnumNotAllowingAlias {
 
 Enumerator constants must be in the range of a 32-bit integer. Since `enum`
 values use
-[varint encoding](/programming-guides/encoding) on the
+[varint encoding](./programming-guides/encoding) on the
 wire, negative values are inefficient and thus not recommended. You can define
 `enum`s within a message definition, as in the earlier example, or outside –
 these `enum`s can be reused in any message definition in your `.proto` file. You
@@ -808,11 +808,11 @@ will still be serialized with the message.
 {{% alert title="Important" color="warning" %}} For
 information on how enums should work contrasted with how they currently work in
 different languages, see
-[Enum Behavior](/programming-guides/enum).
+[Enum Behavior](./programming-guides/enum).
 {{% /alert %}}
 
 For more information about how to work with message `enum`s in your
-applications, see the [generated code guide](/reference/)
+applications, see the [generated code guide](./reference/)
 for your chosen language.
 
 ### Reserved Values {#reserved}
@@ -911,8 +911,8 @@ project and use fully qualified names for all imports.
 ### Using proto2 and proto3 Message Types {#proto2}
 
 It's possible to import
-[proto2](/programming-guides/proto2) and
-[proto3](/programming-guides/proto3) message types and
+[proto2](./programming-guides/proto2) and
+[proto3](./programming-guides/proto3) message types and
 use them in your editions 2023 messages, and vice versa.
 
 ## Nested Types {#nested}
@@ -972,12 +972,12 @@ wire format.
 
 {{% alert title="Note" color="note" %}} If
 you use JSON or
-[proto text format](/reference/protobuf/textformat-spec)
+[proto text format](./reference/protobuf/textformat-spec)
 to store your protocol buffer messages, the changes that you can make in your
 proto definition are different. {{% /alert %}}
 
 Check
-[Proto Best Practices](/best-practices/dos-donts) and the
+[Proto Best Practices](./best-practices/dos-donts) and the
 following rules:
 
 *   Don't change the field numbers for any existing fields. "Changing" the field
@@ -1018,7 +1018,7 @@ following rules:
     primitive type field or merge all input elements if it's a message type
     field. Note that this is **not** generally safe for numeric types, including
     bools and enums. Repeated fields of numeric types are serialized in the
-    [packed](/programming-guides/encoding#packed) format
+    [packed](./programming-guides/encoding#packed) format
     by default, which will not be parsed correctly when a singular field is
     expected.
 *   `enum` is compatible with `int32`, `uint32`, `int64`, and `uint64` in terms
@@ -1091,7 +1091,7 @@ There are two main reasons to use extensions:
     [Consequences of Reusing Field Numbers](#consequences). If your use case
     requires very low coordination for a large number of extensions, consider
     using the
-    [`Any` message type](/reference/protobuf/google.protobuf#any)
+    [`Any` message type](./reference/protobuf/google.protobuf#any)
     instead.
 
 ### Example Extension {#ext-example}
@@ -1160,7 +1160,7 @@ message UserContent {
 extension field with the fully-qualified name `.kittens.kitten_videos` and the
 fully-qualified type `.kittens.Video`. To learn more about extension
 declarations see
-[Extension Declarations](/programming-guides/extension_declarations).
+[Extension Declarations](./programming-guides/extension_declarations).
 
 Note that the container message's file (`media/user_content.proto`) **does not**
 import the kitten_video extension definition (`kittens/video_ext.proto`)
@@ -1214,7 +1214,7 @@ is added.
 It is safe to split an existing extension range into separate ranges that cover
 the same total range. This might be necessary for migrating a legacy message
 type to
-[Extension Declarations](/programming-guides/extension_declarations).
+[Extension Declarations](./programming-guides/extension_declarations).
 For example, before migration, the range might be defined as:
 
 ```proto
@@ -1263,7 +1263,7 @@ extension field numbers. The same
 extension field numbers.
 
 Choosing unique extension field numbers is simple if the container message uses
-[extension declarations](/programming-guides/extension_declarations).
+[extension declarations](./programming-guides/extension_declarations).
 When defining a new extension, choose the lowest field number above all other
 declarations from the highest extension range defined in the container message.
 For example, if a container message is defined like this:
@@ -1310,7 +1310,7 @@ because the [Consequences of Reusing Field Numbers](#consequences) fall on all
 extenders of a message (not just the developer that didn't follow the
 recommendations). If your use case requires very low coordination, consider
 using the
-[`Any` message](/reference/protobuf/google.protobuf#any)
+[`Any` message](./reference/protobuf/google.protobuf#any)
 instead.
 
 Unverified extension field number allocation strategies are limited to the range
@@ -1439,7 +1439,7 @@ for (const google::protobuf::Any& detail : status.details()) {
 If you want to limit contained messages to a small number of types and to
 require permission before adding new types to the list, consider using
 [extensions](#extensions) with
-[extension declarations](/programming-guides/extension_declarations)
+[extension declarations](./programming-guides/extension_declarations)
 instead of `Any` message types.
 
 ## Oneof {#oneof}
@@ -1480,7 +1480,7 @@ repeated field to a oneof, you can use a message containing the repeated field.
 In your generated code, oneof fields have the same getters and setters as
 regular fields. You also get a special method for checking which value (if any)
 in the oneof is set. You can find out more about the oneof API for your chosen
-language in the relevant [API reference](/reference/).
+language in the relevant [API reference](./reference/).
 
 ### Oneof Features {#oneof-features}
 
@@ -1606,7 +1606,7 @@ map<string, Project> projects = 3;
 
 The generated map API is currently available for all supported languages. You
 can find out more about the map API for your chosen language in the relevant
-[API reference](/reference/).
+[API reference](./reference/).
 
 ### Backwards Compatibility {#backwards}
 
@@ -1708,7 +1708,7 @@ special protocol buffer compiler plugin.
 
 If you don't want to use gRPC, it's also possible to use protocol buffers with
 your own RPC implementation. You can find out more about this in the
-[Proto2 Language Guide](/programming-guides/proto2#services).
+[Proto2 Language Guide](./programming-guides/proto2#services).
 
 There are also a number of ongoing third-party projects to develop RPC
 implementations for Protocol Buffers. For a list of links to projects we know
@@ -1721,7 +1721,7 @@ The standard protobuf binary wire format is the preferred serialization format
 for communication between two systems that use protobufs. For communicating with
 systems that use JSON rather than protobuf wire format, Protobuf supports a
 canonical encoding in
-[ProtoJSON](/programming-guides/json).
+[ProtoJSON](./programming-guides/json).
 
 ## Options {#options}
 
@@ -1817,7 +1817,7 @@ Here are a few of the most commonly used options:
     For legacy reasons, these default to `true`. However, as of version 2.3.0
     (January 2010), it is considered preferable for RPC implementations to
     provide
-    [code generator plugins](/reference/cpp/api-docs/google.protobuf.compiler.plugin.pb)
+    [code generator plugins](./reference/cpp/api-docs/google.protobuf.compiler.plugin.pb)
     to generate code more specific to each system, rather than rely on the
     "abstract" services.
 
@@ -1829,7 +1829,7 @@ Here are a few of the most commonly used options:
     ```
 
 *   `cc_enable_arenas` (file option): Enables
-    [arena allocation](/reference/cpp/arenas) for C++
+    [arena allocation](./reference/cpp/arenas) for C++
     generated code.
 
 *   `objc_class_prefix` (file option): Sets the Objective-C class prefix which
@@ -1902,9 +1902,9 @@ values and to fields.
 Protocol Buffers also allows you to define and use your own options. Note that
 this is an **advanced feature** which most people don't need. If you do think
 you need to create your own options, see the
-[Proto2 Language Guide](/programming-guides/proto2#customoptions)
+[Proto2 Language Guide](./programming-guides/proto2#customoptions)
 for details. Note that creating custom options uses
-[extensions](/programming-guides/proto2#extensions).
+[extensions](./programming-guides/proto2#extensions).
 
 ### Option Retention {#option-retention}
 
@@ -2005,7 +2005,7 @@ To generate the Java, Kotlin, Python, C++, Go, Ruby, Objective-C, or C# code
 that you need to work with the message types defined in a `.proto` file, you
 need to run the protocol buffer compiler `protoc` on the `.proto` file. If you
 haven't installed the compiler,
-[download the package](/downloads) and follow the
+[download the package](./downloads) and follow the
 instructions in the README. For Go, you also need to install a special code
 generator plugin for the compiler; you can find this and installation
 instructions in the [golang/protobuf](https://github.com/golang/protobuf/)
@@ -2039,31 +2039,31 @@ directory of the project.
 *   You can provide one or more *output directives*:
 
     *   `--cpp_out` generates C++ code in `DST_DIR`. See the
-        [C++ generated code reference](/reference/cpp/cpp-generated)
+        [C++ generated code reference](./reference/cpp/cpp-generated)
         for more.
     *   `--java_out` generates Java code in `DST_DIR`. See the
-        [Java generated code reference](/reference/java/java-generated)
+        [Java generated code reference](./reference/java/java-generated)
         for more.
     *   `--kotlin_out` generates additional Kotlin code in `DST_DIR`. See the
-        [Kotlin generated code reference](/reference/kotlin/kotlin-generated)
+        [Kotlin generated code reference](./reference/kotlin/kotlin-generated)
         for more.
     *   `--python_out` generates Python code in `DST_DIR`. See the
-        [Python generated code reference](/reference/python/python-generated)
+        [Python generated code reference](./reference/python/python-generated)
         for more.
     *   `--go_out` generates Go code in `DST_DIR`. See the
-        [Go generated code reference](/reference/go/go-generated-opaque)
+        [Go generated code reference](./reference/go/go-generated-opaque)
         for more.
     *   `--ruby_out` generates Ruby code in `DST_DIR`. See the
-        [Ruby generated code reference](/reference/ruby/ruby-generated)
+        [Ruby generated code reference](./reference/ruby/ruby-generated)
         for more.
     *   `--objc_out` generates Objective-C code in `DST_DIR`. See the
-        [Objective-C generated code reference](/reference/objective-c/objective-c-generated)
+        [Objective-C generated code reference](./reference/objective-c/objective-c-generated)
         for more.
     *   `--csharp_out` generates C# code in `DST_DIR`. See the
-        [C# generated code reference](/reference/csharp/csharp-generated)
+        [C# generated code reference](./reference/csharp/csharp-generated)
         for more.
     *   `--php_out` generates PHP code in `DST_DIR`. See the
-        [PHP generated code reference](/reference/php/php-generated)
+        [PHP generated code reference](./reference/php/php-generated)
         for more.
 
     As an extra convenience, if the `DST_DIR` ends in `.zip` or `.jar`, the

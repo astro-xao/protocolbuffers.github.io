@@ -17,7 +17,7 @@ and how we use them.
 
 {{% alert title="Note" color="note" %}}
 Proto3 does not support extensions (except for
-[declaring custom options](/programming-guides/proto3/#customoptions)).
+[declaring custom options](./programming-guides/proto3/#customoptions)).
 Extensions are fully supported in proto2 and editions
 though.{{% /alert %}}
 
@@ -183,7 +183,7 @@ through other means. Be very careful, though,
 because accidental reuse of an extension number can cause serious problems.
 
 One way to sidestep the issue would be to avoid extensions entirely and use
-[`google.protobuf.Any`](/programming-guides/proto3/#any)
+[`google.protobuf.Any`](./programming-guides/proto3/#any)
 instead. This could be a good choice for APIs that front storage or for
 pass-through systems where the client cares about the contents of the proto but
 the system receiving it does not.

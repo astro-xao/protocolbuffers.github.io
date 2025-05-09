@@ -11,9 +11,9 @@ differences between proto2 and proto3 generated code are highlighted&mdash;note
 that these differences are in the generated code as described in this document,
 not the base message classes/interfaces, which are the same in both versions.
 You should read the
-[proto2 language guide](/programming-guides/proto2)
+[proto2 language guide](./programming-guides/proto2)
 and/or
-[proto3 language guide](/programming-guides/proto3)
+[proto3 language guide](./programming-guides/proto3)
 before reading this document.
 
 Note that no Java protocol buffer methods accept or return nulls unless
@@ -140,7 +140,7 @@ are not expected to start with a backwards domain name.
 ## Messages {#message}
 
 If you are designing a new protocol buffer schema, see
-[the recommendations for Java proto names](/reference/java/java-proto-names).
+[the recommendations for Java proto names](./reference/java/java-proto-names).
 
 Given a simple message declaration:
 
@@ -296,7 +296,7 @@ that modify the value are defined in the builder only.
 
 Note that method names always use camel-case naming, even if the field name in
 the `.proto` file uses lower-case with underscores
-([as it should](/programming-guides/style)). The
+([as it should](./programming-guides/style)). The
 case-conversion works as follows:
 
 *   For each underscore in the name, the underscore is removed, and the
@@ -340,7 +340,7 @@ The compiler will generate the following methods only in the message's builder:
 
 For other simple field types, the corresponding Java type is chosen according to
 the
-[scalar value types table](/programming-guides/proto2#scalar).
+[scalar value types table](./programming-guides/proto2#scalar).
 For message and enum types, the value type is replaced with the message or enum
 class.
 
@@ -391,7 +391,7 @@ The compiler will generate the following methods only in the message's builder:
 
 For other simple field types, the corresponding Java type is chosen according to
 the
-[scalar value types table](/programming-guides/proto2#scalar).
+[scalar value types table](./programming-guides/proto2#scalar).
 For message and enum types, the value type is replaced with the message or enum
 class.
 
@@ -467,7 +467,7 @@ The compiler will generate the following methods only in the message's builder:
 
 For other simple field types, the corresponding Java type is chosen according to
 the
-[scalar value types table](/programming-guides/proto2#scalar).
+[scalar value types table](./programming-guides/proto2#scalar).
 For message and enum types, the type is the message or enum class.
 
 #### Repeated Embedded Message Fields {#repeated-embedded}
@@ -613,7 +613,7 @@ The compiler will generate the following methods only in the message's builder:
 
 For other simple field types, the corresponding Java type is chosen according to
 the
-[scalar value types table](/programming-guides/proto2#scalar).
+[scalar value types table](./programming-guides/proto2#scalar).
 For message and enum types, the value type is replaced with the message or enum
 class.
 
@@ -661,7 +661,7 @@ method in the message's builder:
 
 ## Any {#any-fields}
 
-Given an [`Any`](/programming-guides/proto3#any) field
+Given an [`Any`](./programming-guides/proto3#any) field
 like this:
 
 ```proto
@@ -853,7 +853,7 @@ assert foo.getExtension(Baz.fooExt) == baz;
 ```
 
 When parsing a message that might have extensions, you must provide an
-[`ExtensionRegistry`](/reference/java/api-docs/com/google/protobuf/ExtensionRegistry.html)
+[`ExtensionRegistry`](./reference/java/api-docs/com/google/protobuf/ExtensionRegistry.html)
 in which you have registered any extensions that you want to be able to parse.
 Otherwise, those extensions will be treated like unknown fields and the methods
 observing extensions will behave as if they don't exist.
@@ -894,7 +894,7 @@ generic services are deprecated. (Note that prior to 2.4.0, the option defaults
 to `true`)
 
 RPC systems based on `.proto`-language service definitions should provide
-[plugins](/reference/cpp/api-docs/google.protobuf.compiler.plugin.pb)
+[plugins](./reference/cpp/api-docs/google.protobuf.compiler.plugin.pb)
 to generate code appropriate for the system. These plugins are likely to require
 that abstract services are disabled, so that they can generate their own classes
 of the same names. Plugins are new in version 2.3.0 (January 2010).
@@ -1007,7 +1007,7 @@ sends requests to a particular `BlockingRpcChannel`.
 
 ## Plugin Insertion Points {#plugins}
 
-[Code generator plugins](/reference/cpp/api-docs/google.protobuf.compiler.plugin.pb)
+[Code generator plugins](./reference/cpp/api-docs/google.protobuf.compiler.plugin.pb)
 that want to extend the output of the Java code generator may insert code of the
 following types using the given insertion point names.
 
@@ -1042,6 +1042,6 @@ versions of Protocol Buffers.
 ## Utility Classes {#utility-classes}
 
 Protocol buffer provides
-[utility classes](/reference/java/api-docs/com/google/protobuf/util/package-summary.html)
+[utility classes](./reference/java/api-docs/com/google/protobuf/util/package-summary.html)
 for message comparison, JSON conversion and working with
-[well-known types (predefined protocol buffer messages for common use-cases).](/reference/protobuf/google.protobuf)
+[well-known types (predefined protocol buffer messages for common use-cases).](./reference/protobuf/google.protobuf)

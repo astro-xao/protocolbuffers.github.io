@@ -8,8 +8,8 @@ type = "docs"
 
 You should
 read the language guides for
-[proto2](/programming-guides/proto2) or
-[proto3](/programming-guides/proto3) before reading this
+[proto2](./programming-guides/proto2) or
+[proto3](./programming-guides/proto3) before reading this
 document.
 
 The protocol compiler for Ruby emits Ruby source files that use a DSL to define

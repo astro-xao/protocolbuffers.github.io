@@ -16,9 +16,9 @@ recommend using the following file extensions for these files.
 
 Content                                                                   | Extension
 ------------------------------------------------------------------------- | ---------
-[Text Format](/reference/protobuf/textformat-spec) | `.txtpb`
-[Wire Format](/programming-guides/encoding)        | `.binpb`
-[JSON Format](/programming-guides/proto3#json)     | `.json`
+[Text Format](./reference/protobuf/textformat-spec) | `.txtpb`
+[Wire Format](./programming-guides/encoding)        | `.binpb`
+[JSON Format](./programming-guides/proto3#json)     | `.json`
 
 For Text Format specifically, `.textproto` is also fairly common, but we
 recommend `.txtpb` for its brevity.

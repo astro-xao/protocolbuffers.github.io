@@ -19,10 +19,10 @@ describes the state of the migration as of our 30.x release.
 ## String Field Accessors {#string-type}
 
 As part of edition 2023, the
-[`string_type`](/editions/features#string_type) feature
+[`string_type`](./editions/features#string_type) feature
 was released with a `VIEW` option to allow for the incremental migration to
 generated `string_view` APIs. Using this feature will affect the
-[C++ Generated Code](/reference/cpp/cpp-generated) of
+[C++ Generated Code](./reference/cpp/cpp-generated) of
 `string` and `bytes` fields.
 
 ### Interaction with ctype {#ctype}
@@ -102,7 +102,7 @@ The compiler will generate the following accessor methods:
 -   `void clear_foo()`: Removes all elements from the field. After calling this,
     `foo_size()` will return zero.
 -   `const RepeatedPtrField<string>& foo() const`: Returns the underlying
-    [`RepeatedPtrField`](/reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField)
+    [`RepeatedPtrField`](./reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField)
     that stores the field's elements. This container class provides STL-like
     iterators and other methods.
 -   `RepeatedPtrField<string>* mutable_foo()`: Returns a pointer to the
@@ -162,7 +162,7 @@ enum Foo {
 
 The protocol buffer compiler, in addition to the `Foo` enum, will generate the
 following new function in addition to the standard
-[generated code](/reference/cpp/cpp-generated#enum):
+[generated code](./reference/cpp/cpp-generated#enum):
 
 -   `::absl::string_view Foo_Name(int value)`: Returns the name for given
     numeric value. Returns an empty string if no such value exists. If multiple

@@ -9,9 +9,9 @@ type = "docs"
 Any
 differences between proto2 and proto3 generated code are highlighted. You should
 read the
-[proto2 language guide](/programming-guides/proto2)
+[proto2 language guide](./programming-guides/proto2)
 and/or
-[proto3 language guide](/programming-guides/proto3)
+[proto3 language guide](./programming-guides/proto3)
 before reading this document.
 
 ## Compiler invocation {#invocation}
@@ -53,7 +53,7 @@ distinguished using prefixes, which you can find out about in the next section.
 ## Class prefix {#prefix}
 
 Given the following
-[file option](/programming-guides/proto3#options):
+[file option](./programming-guides/proto3#options):
 
 ```proto
 option objc_class_prefix = "CGOOP";
@@ -169,7 +169,7 @@ The behaviors for this interface are as follows:
 ### Unknown fields (proto2 only)
 
 If a message created with an
-[older version](/programming-guides/proto2#updating) of
+[older version](./programming-guides/proto2#updating) of
 your .proto definition is parsed with code generated from a newer version (or
 vice versa), the message may contain optional or repeated fields that the
 \"new\" code does not recognize. In proto2 generated code, these fields are not
@@ -287,7 +287,7 @@ typedef GPB_ENUM(Foo_FieldNumber) {
 
 #### Default values {#default}
 
-The [default value](/programming-guides/proto3#default)
+The [default value](./programming-guides/proto3#default)
 for numeric types is `0`.
 
 The default value for strings is `@""`, and the default value for bytes is
@@ -441,7 +441,7 @@ typedef GPB_ENUM(Foo_FieldNumber) {
 
 #### Default values (optional fields only) {#default}
 
-The [default value](/programming-guides/proto2#optional)
+The [default value](./programming-guides/proto2#optional)
 for numeric types, if no explicit default was specified by the user, is `0`.
 
 The default value for strings is `@""`, and the default value for bytes is
@@ -540,7 +540,7 @@ For string, bytes and message fields, elements of the array are `NSString*`,
 
 #### Default values {#repeateddefault}
 
-The [default value](/programming-guides/proto3#default)
+The [default value](./programming-guides/proto3#default)
 for a repeated field is to be empty. In Objective-C generated code, this is an
 empty `GPB<VALUE>Array`. If you access an empty repeated field, you'll get back
 an empty array that you can update like any other repeated field array.
@@ -676,7 +676,7 @@ function and to access raw values.
 ### Oneof fields {#oneof}
 
 Given a message with
-[oneof](/programming-guides/proto3#oneof) field
+[oneof](./programming-guides/proto3#oneof) field
 definitions:
 
 ```proto
@@ -768,7 +768,7 @@ where:
 
 #### Default values {#repeateddefault}
 
-The [default value](/programming-guides/proto3#default)
+The [default value](./programming-guides/proto3#default)
 for a map field is empty. In Objective-C generated code, this is an empty
 `GBP<KEY><VALUE>Dictionary`. If you access an empty map field, you'll get back
 an empty dictionary that you can update like any other map field.
@@ -1099,7 +1099,7 @@ If you use any of the message types provided with proto3, they will in general
 just use their proto definitions in generated Objective-C code, though we supply
 some basic conversion methods in categories to make using them simpler. Note
 that we do not have special APIs for all well-known types yet, including
-[`Any`](/programming-guides/proto3#any) (there is
+[`Any`](./programming-guides/proto3#any) (there is
 currently no helper method to convert an `Any`'s message value into a message of
 the appropriate type).
 
@@ -1128,7 +1128,7 @@ the appropriate type).
 ## Extensions (proto2 only) {#extensions}
 
 Given a message with an
-[extension range](/programming-guides/proto2#extensions):
+[extension range](./programming-guides/proto2#extensions):
 
 ```proto
 message Foo {

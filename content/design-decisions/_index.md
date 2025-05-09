@@ -14,4 +14,4 @@ These positions were taken after careful consideration and won't be overturned
 on a whim, but are open to being revisited as we gain new information, and as
 things develop in the broader ecosystem context.
 
-*   [No Nullable Setters/Getters](/design-decisions/nullable-getters-setters)
+*   [No Nullable Setters/Getters](./design-decisions/nullable-getters-setters)

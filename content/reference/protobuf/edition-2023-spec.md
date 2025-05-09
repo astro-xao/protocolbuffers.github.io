@@ -97,7 +97,7 @@ constant = fullIdent | ( [ "-" | "+" ] intLit ) | ( [ "-" | "+" ] floatLit ) |
 ```
 
 `MessageValue` is defined in the
-[Text Format Language Specification](/reference/protobuf/textformat-spec#fields).
+[Text Format Language Specification](./reference/protobuf/textformat-spec#fields).
 
 ## Edition
 
@@ -141,9 +141,9 @@ package foo.bar;
 
 Options can be used in proto files, messages, enums and services. An option can
 be a protobuf defined option or a custom option. For more information, see
-[Options](/programming-guides/proto2#options) in the
+[Options](./programming-guides/proto2#options) in the
 language guide. Options are also be used to control
-[Feature Settings](/editions/features).
+[Feature Settings](./editions/features).
 
 ```
 option = "option" optionName  "=" constant ";"

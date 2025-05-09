@@ -9,8 +9,8 @@ Enums behave differently in different language libraries. This topic covers the
 different behaviors as well as the plans to move protobufs to a state where they
 are consistent across all languages. If you're looking for information on how to
 use enums in general, see the corresponding sections in the
-[proto2](/programming-guides/proto2#enum) and
-[proto3](/programming-guides/proto3#enum) language guide
+[proto2](./programming-guides/proto2#enum) and
+[proto3](./programming-guides/proto3#enum) language guide
 topics.
 
 ## Definitions {#definitions}
@@ -52,7 +52,7 @@ question:
 The behavior of *closed* enums has unexpected consequences when parsing a
 repeated field. When a `repeated Enum` field is parsed all unknown values will
 be placed in the
-[unknown field](/programming-guides/proto3/#unknowns)
+[unknown field](./programming-guides/proto3/#unknowns)
 set. When it is serialized those unknown values will be written again, *but not
 in their original place in the list*. For example, given the `.proto` file:
 
@@ -104,7 +104,7 @@ behave.
 All known C++ releases are out of conformance. When a `proto2` file imports an
 enum defined in a `proto3` file, C++ treats that field as a **closed** enum.
 Under editions, this behavior is represented by the deprecated field feature
-[`features.(pb.cpp).legacy_closed_enum`](/editions/features#legacy_closed_enum).
+[`features.(pb.cpp).legacy_closed_enum`](./editions/features#legacy_closed_enum).
 There are two options for moving to conformant behavior:
 
 *   Remove the field feature. This is the recommended approach, but may cause
@@ -125,7 +125,7 @@ All known Java releases are out of conformance. When a `proto2` file imports an
 enum defined in a `proto3` file, Java treats that field as a **closed** enum.
 
 Under editions, this behavior is represented by the deprecated field feature
-[`features.(pb.java).legacy_closed_enum`](/editions/features#legacy_closed_enum)).
+[`features.(pb.java).legacy_closed_enum`](./editions/features#legacy_closed_enum)).
 There are two options for moving to conformant behavior:
 
 *   Remove the field feature. This may cause runtime behavior changes. Without
