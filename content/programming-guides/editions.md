@@ -13,10 +13,10 @@ and proto3 conceptually, see
 [Protobuf Editions Overview](./editions/overview).
 
 For information on the **proto2** syntax, see the
-[Proto2 Language Guide](./programming-guides/proto2).
+[Proto2 Language Guide](./proto2).
 
 For information on **proto3** syntax, see the
-[Proto3 Language Guide](./programming-guides/proto3).
+[Proto3 Language Guide](./proto3).
 
 This is a reference guide – for a step by step example that uses many of the
 features described in this document, see the
@@ -47,7 +47,7 @@ message SearchRequest {
         non-empty, non-comment line of the file.
     *   If no `edition` or `syntax` is specified, the protocol buffer compiler
         will assume you are using
-        [proto2](./programming-guides/proto2).
+        [proto2](./proto2).
 
 *   The `SearchRequest` message definition specifies three fields (name/value
     pairs), one for each piece of data that you want to include in this type of
@@ -74,7 +74,7 @@ You must give each field in your message definition a number between `1` and
 
 This number **cannot be changed once your message type is in use** because it
 identifies the field in the
-[message wire format](./programming-guides/encoding).
+[message wire format](./encoding).
 "Changing" a field number is equivalent to deleting that field and creating a
 new field with the same type but a new number. See [Deleting Fields](#deleting)
 for how to do this properly.
@@ -88,7 +88,7 @@ fields. Lower field number values take less space in the wire format. For
 example, field numbers in the range 1 through 15 take one byte to encode. Field
 numbers in the range 16 through 2047 take two bytes. You can find out more about
 this in
-[Protocol Buffer Encoding](./programming-guides/encoding#structure).
+[Protocol Buffer Encoding](./encoding#structure).
 
 #### Consequences of Reusing Field Numbers {#consequences}
 
@@ -116,12 +116,12 @@ Common causes of field number reuse:
 
     -   This has been a very easy mistake to make with
         [extension fields](#extensions) for several reasons.
-        [Extension Declarations](./programming-guides/extension_declarations)
+        [Extension Declarations](./extension_declarations)
         provide a mechanism for reserving extension fields.
 
 The field number is limited to 29 bits rather than 32 bits because three bits
 are used to specify the field's wire format. For more on this, see the
-[Encoding topic](./programming-guides/encoding#structure).
+[Encoding topic](./encoding#structure).
 
 <a id="specifying-field-rules"></a>
 
@@ -151,7 +151,7 @@ Message fields can be one of the following:
     well-formed message. The order of the repeated values will be preserved.
 
 *   `map`: this is a paired key/value field type. See
-    [Maps](./programming-guides/encoding#maps) for more on
+    [Maps](./encoding#maps) for more on
     this field type.
 
 #### Repeated Fields are Packed by Default {#use-packed}
@@ -160,7 +160,7 @@ In proto editions, `repeated` fields of scalar numeric types use `packed`
 encoding by default.
 
 You can find out more about `packed` encoding in
-[Protocol Buffer Encoding](./programming-guides/encoding#packed).
+[Protocol Buffer Encoding](./encoding#packed).
 
 #### Well-formed Messages {#well-formed}
 
@@ -171,7 +171,7 @@ definition file is parseable.
 Singular fields can appear more than once in wire-format bytes. The parser will
 accept the input, but only the last instance of that field will be accessible
 through the generated bindings. See
-[Last One Wins](./programming-guides/encoding#last-one-wins)
+[Last One Wins](./encoding#last-one-wins)
 for more on this topic.
 
 ### Adding More Message Types {#adding-types}
@@ -630,7 +630,7 @@ machines.
 
 You can find out more about how these types are encoded when you serialize your
 message in
-[Protocol Buffer Encoding](./programming-guides/encoding).
+[Protocol Buffer Encoding](./encoding).
 
 ## Default Field Values {#default}
 
@@ -722,11 +722,11 @@ value zero and should have the name `ENUM_TYPE_NAME_UNSPECIFIED` or
 `ENUM_TYPE_NAME_UNKNOWN`. This is because:
 
 *   The zero value needs to be the first element for compatibility with
-    [proto2](./programming-guides/proto2#enum-default)
+    [proto2](./proto2#enum-default)
     semantics, where the first enum value is the default unless a different
     value is explicitly specified.
 *   There must be a zero value for compatibility with
-    [proto3](./programming-guides/proto3#enum-default)
+    [proto3](./proto3#enum-default)
     semantics, where the zero value is used as the default value for all
     implicit-presence fields using this enum type.
 
@@ -775,7 +775,7 @@ enum EnumNotAllowingAlias {
 
 Enumerator constants must be in the range of a 32-bit integer. Since `enum`
 values use
-[varint encoding](./programming-guides/encoding) on the
+[varint encoding](./encoding) on the
 wire, negative values are inefficient and thus not recommended. You can define
 `enum`s within a message definition, as in the earlier example, or outside –
 these `enum`s can be reused in any message definition in your `.proto` file. You
@@ -808,7 +808,7 @@ will still be serialized with the message.
 {{% alert title="Important" color="warning" %}} For
 information on how enums should work contrasted with how they currently work in
 different languages, see
-[Enum Behavior](./programming-guides/enum).
+[Enum Behavior](./enum).
 {{% /alert %}}
 
 For more information about how to work with message `enum`s in your
@@ -911,8 +911,8 @@ project and use fully qualified names for all imports.
 ### Using proto2 and proto3 Message Types {#proto2}
 
 It's possible to import
-[proto2](./programming-guides/proto2) and
-[proto3](./programming-guides/proto3) message types and
+[proto2](./proto2) and
+[proto3](./proto3) message types and
 use them in your editions 2023 messages, and vice versa.
 
 ## Nested Types {#nested}
@@ -1018,7 +1018,7 @@ following rules:
     primitive type field or merge all input elements if it's a message type
     field. Note that this is **not** generally safe for numeric types, including
     bools and enums. Repeated fields of numeric types are serialized in the
-    [packed](./programming-guides/encoding#packed) format
+    [packed](./encoding#packed) format
     by default, which will not be parsed correctly when a singular field is
     expected.
 *   `enum` is compatible with `int32`, `uint32`, `int64`, and `uint64` in terms
@@ -1160,7 +1160,7 @@ message UserContent {
 extension field with the fully-qualified name `.kittens.kitten_videos` and the
 fully-qualified type `.kittens.Video`. To learn more about extension
 declarations see
-[Extension Declarations](./programming-guides/extension_declarations).
+[Extension Declarations](./extension_declarations).
 
 Note that the container message's file (`media/user_content.proto`) **does not**
 import the kitten_video extension definition (`kittens/video_ext.proto`)
@@ -1214,7 +1214,7 @@ is added.
 It is safe to split an existing extension range into separate ranges that cover
 the same total range. This might be necessary for migrating a legacy message
 type to
-[Extension Declarations](./programming-guides/extension_declarations).
+[Extension Declarations](./extension_declarations).
 For example, before migration, the range might be defined as:
 
 ```proto
@@ -1263,7 +1263,7 @@ extension field numbers. The same
 extension field numbers.
 
 Choosing unique extension field numbers is simple if the container message uses
-[extension declarations](./programming-guides/extension_declarations).
+[extension declarations](./extension_declarations).
 When defining a new extension, choose the lowest field number above all other
 declarations from the highest extension range defined in the container message.
 For example, if a container message is defined like this:
@@ -1439,7 +1439,7 @@ for (const google::protobuf::Any& detail : status.details()) {
 If you want to limit contained messages to a small number of types and to
 require permission before adding new types to the list, consider using
 [extensions](#extensions) with
-[extension declarations](./programming-guides/extension_declarations)
+[extension declarations](./extension_declarations)
 instead of `Any` message types.
 
 ## Oneof {#oneof}
@@ -1708,7 +1708,7 @@ special protocol buffer compiler plugin.
 
 If you don't want to use gRPC, it's also possible to use protocol buffers with
 your own RPC implementation. You can find out more about this in the
-[Proto2 Language Guide](./programming-guides/proto2#services).
+[Proto2 Language Guide](./proto2#services).
 
 There are also a number of ongoing third-party projects to develop RPC
 implementations for Protocol Buffers. For a list of links to projects we know
@@ -1721,7 +1721,7 @@ The standard protobuf binary wire format is the preferred serialization format
 for communication between two systems that use protobufs. For communicating with
 systems that use JSON rather than protobuf wire format, Protobuf supports a
 canonical encoding in
-[ProtoJSON](./programming-guides/json).
+[ProtoJSON](./json).
 
 ## Options {#options}
 
@@ -1902,9 +1902,9 @@ values and to fields.
 Protocol Buffers also allows you to define and use your own options. Note that
 this is an **advanced feature** which most people don't need. If you do think
 you need to create your own options, see the
-[Proto2 Language Guide](./programming-guides/proto2#customoptions)
+[Proto2 Language Guide](./proto2#customoptions)
 for details. Note that creating custom options uses
-[extensions](./programming-guides/proto2#extensions).
+[extensions](./proto2#extensions).
 
 ### Option Retention {#option-retention}
 
