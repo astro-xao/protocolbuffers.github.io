@@ -1,19 +1,19 @@
 +++
-title = "协议缓冲区"
+title = "Protocol Buffer"
 weight = 5
 toc_hide = "true"
-description = "协议缓冲区是一种与语言和平台无关的可扩展机制，用于序列化结构化数据。"
+description = "Protocol Buffer 是一种与语言和平台无关的可扩展机制，用于序列化结构化数据。"
 type = "docs"
 no_list = "true"
 +++
 
-## 什么是协议缓冲区？
+## 什么是 Protocol Buffer？
 
-协议缓冲区（Protocol Buffers）是 Google 提供的一种与语言和平台无关、可扩展的结构化数据序列化机制——可以把它想象成更小、更快、更简单的 XML。你只需定义一次数据结构，然后就可以使用自动生成的源代码，轻松地在多种数据流和多种语言之间读写你的结构化数据。
+Protocol Buffer是 Google 提供的一种与语言和平台无关、可扩展的结构化数据序列化机制——可以把它想象成更小、更快、更简单的 XML。你只需定义一次数据结构，然后就可以使用自动生成的源代码，轻松地在多种数据流和多种语言之间读写你的结构化数据。
 
 ## 选择你喜欢的语言
 
-协议缓冲区支持在 C++、C#、Dart、Go、Java、Kotlin、Objective-C、Python 和 Ruby 中生成代码。使用 proto3，还可以支持 PHP。
+Protocol Buffer 支持在 C++、C#、Dart、Go、Java、Kotlin、Objective-C、Python 和 Ruby 中生成代码。使用 proto3，还可以支持 PHP。
 
 ## 示例实现
 

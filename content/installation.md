@@ -7,7 +7,7 @@ no_list = "true"
 linkTitle = "Protoc 安装"
 +++
 
-协议缓冲编译器 `protoc` 用于编译包含服务和消息定义的 `.proto` 文件。请选择以下方法之一安装 `protoc`。
+Protocol Buffer 编译器 `protoc` 用于编译包含服务和消息定义的 `.proto` 文件。请选择以下方法之一安装 `protoc`。
 
 ### 安装预编译二进制文件（任意操作系统） {#binary-install}
 
