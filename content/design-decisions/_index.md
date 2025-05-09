@@ -1,17 +1,14 @@
 +++
-title = "Protobuf Team Design Decisions"
+title = "Protobuf 团队设计决策"
 weight = 88
-description = "Covers the design decisions the Protobuf team has made"
+description = "涵盖 Protobuf 团队所做的设计决策"
 type = "docs"
 no_list = "true"
-linkTitle = "Design Decisions"
+linkTitle = "设计决策"
 +++
 
-This section contains some positions of the Protobuf team that inform our design
-and implementation decisions.
+本节包含 Protobuf 团队在设计和实现决策中所依据的一些立场。
 
-These positions were taken after careful consideration and won't be overturned
-on a whim, but are open to being revisited as we gain new information, and as
-things develop in the broader ecosystem context.
+这些立场是在经过仔细考虑后做出的，不会轻易推翻，但随着我们获得新信息以及更广泛生态系统的发展，仍有可能重新审视。
 
-*   [No Nullable Setters/Getters](./design-decisions/nullable-getters-setters)
+*   [不支持可空 Setter/Getter](./design-decisions/nullable-getters-setters)
