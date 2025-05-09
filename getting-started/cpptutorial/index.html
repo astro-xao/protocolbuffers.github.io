@@ -7,13 +7,13 @@
 protocol buffers. By walking through creating a simple example application, it
 shows you how to</p><ul><li>Define message formats in a <code>.proto</code> file.</li><li>Use the protocol buffer compiler.</li><li>Use the C++ protocol buffer API to write and read messages.</li></ul><p>This isn&rsquo;t a comprehensive guide to using protocol buffers in C++. For more
 detailed reference information, see the
-<a href=/programming-guides/proto2>Protocol Buffer Language Guide (proto2)</a>,
+<a href=./programming-guides/proto2>Protocol Buffer Language Guide (proto2)</a>,
 the
-<a href=/programming-guides/proto3>Protocol Buffer Language Guide (proto3)</a>,
-the <a href=/reference/cpp/api-docs>C++ API Reference</a>, the
-<a href=/reference/cpp/cpp-generated>C++ Generated Code Guide</a>,
+<a href=./programming-guides/proto3>Protocol Buffer Language Guide (proto3)</a>,
+the <a href=./reference/cpp/api-docs>C++ API Reference</a>, the
+<a href=./reference/cpp/cpp-generated>C++ Generated Code Guide</a>,
 and the
-<a href=/programming-guides/encoding>Encoding Reference</a>.</p><h2 id=problem-domain>The Problem Domain</h2><p>The example we&rsquo;re going to use is a very simple &ldquo;address book&rdquo; application that
+<a href=./programming-guides/encoding>Encoding Reference</a>.</p><h2 id=problem-domain>The Problem Domain</h2><p>The example we&rsquo;re going to use is a very simple &ldquo;address book&rdquo; application that
 can read and write people&rsquo;s contact details to and from a file. Each person in
 the address book has a name, an ID, an email address, and a contact phone
 number.</p><p>How do you serialize and retrieve structured data like this? There are a few
@@ -118,13 +118,13 @@ your buffers instead. Within Google, <code>required</code> fields are strongly d
 most messages defined in proto2 syntax use <code>optional</code> and <code>repeated</code> only.
 (Proto3 does not support <code>required</code> fields at all.)</div><p>You&rsquo;ll find a complete guide to writing <code>.proto</code> files &ndash; including all the
 possible field types &ndash; in the
-<a href=/programming-guides/proto2>Protocol Buffer Language Guide</a>.
+<a href=./programming-guides/proto2>Protocol Buffer Language Guide</a>.
 Don&rsquo;t go looking for facilities similar to class inheritance, though &ndash; protocol
 buffers don&rsquo;t do that.</p><h2 id=compiling-protocol-buffers>Compiling Your Protocol Buffers</h2><p>Now that you have a <code>.proto</code>, the next thing you need to do is generate the
 classes you&rsquo;ll need to read and write <code>AddressBook</code> (and hence <code>Person</code> and
 <code>PhoneNumber</code>) messages. To do this, you need to run the protocol buffer
 compiler <code>protoc</code> on your <code>.proto</code>:</p><ol><li><p>If you haven&rsquo;t installed the compiler,
-<a href=/downloads>download the package</a> and follow the
+<a href=./downloads>download the package</a> and follow the
 instructions in the README.</p></li><li><p>Now run the compiler, specifying the source directory (where your
 application&rsquo;s source code lives &ndash; the current directory is used if you
 don&rsquo;t provide a value), the destination directory (where you want the
@@ -181,7 +181,7 @@ the repeated <code>phones</code> field, you&rsquo;ll see that you can</p><ul><li
 are associated with this <code>Person</code>).</li><li>get a specified phone number using its index.</li><li>update an existing phone number at the specified index.</li><li>add another phone number to the message which you can then edit (repeated
 scalar types have an <code>add_</code> that just lets you pass in the new value).</li></ul><p>For more information on exactly what members the protocol compiler generates for
 any particular field definition, see the
-<a href=/reference/cpp/cpp-generated>C++ generated code reference</a>.</p><h3 id=enums-nested-classes>Enums and Nested Classes</h3><p>The generated code includes a <code>PhoneType</code> enum that corresponds to your <code>.proto</code>
+<a href=./reference/cpp/cpp-generated>C++ generated code reference</a>.</p><h3 id=enums-nested-classes>Enums and Nested Classes</h3><p>The generated code includes a <code>PhoneType</code> enum that corresponds to your <code>.proto</code>
 enum. You can refer to this type as <code>Person::PhoneType</code> and its values as
 <code>Person::PHONE_TYPE_MOBILE</code>, <code>Person::PHONE_TYPE_HOME</code>, and
 <code>Person::PHONE_TYPE_WORK</code> (the implementation details are a little more
@@ -198,9 +198,9 @@ the message, particularly useful for debugging.</li><li><code>void CopyFrom(cons
 message&rsquo;s values.</li><li><code>void Clear();</code>: clears all the elements back to the empty state.</li></ul><p>These and the I/O methods described in the following section implement the
 <code>Message</code> interface shared by all C++ protocol buffer classes. For more info,
 see the
-<a href=/reference/cpp/api-docs/google.protobuf.message#Message>complete API documentation for <code>Message</code></a>.</p><h3 id=parsing-serialization>Parsing and Serialization</h3><p>Finally, each protocol buffer class has methods for writing and reading messages
+<a href=./reference/cpp/api-docs/google.protobuf.message#Message>complete API documentation for <code>Message</code></a>.</p><h3 id=parsing-serialization>Parsing and Serialization</h3><p>Finally, each protocol buffer class has methods for writing and reading messages
 of your chosen type using the protocol buffer
-<a href=/programming-guides/encoding>binary format</a>. These
+<a href=./programming-guides/encoding>binary format</a>. These
 include:</p><ul><li><code>bool SerializeToString(string* output) const;</code>: serializes the message and
 stores the bytes in the given string. Note that the bytes are binary, not
 text; we only use the <code>string</code> class as a convenient container.</li><li><code>bool ParseFromString(const string& data);</code>: parses a message from the given
@@ -208,7 +208,7 @@ string.</li><li><code>bool SerializeToOstream(ostream* output) const;</code>: wr
 given C++ <code>ostream</code>.</li><li><code>bool ParseFromIstream(istream* input);</code>: parses a message from the given
 C++ <code>istream</code>.</li></ul><p>These are just a couple of the options provided for parsing and serialization.
 Again, see the
-<a href=/reference/cpp/api-docs/google.protobuf.message#Message><code>Message</code> API reference</a>
+<a href=./reference/cpp/api-docs/google.protobuf.message#Message><code>Message</code> API reference</a>
 for a complete list.</p><div class="alert alert-warning" role=alert><h4 class=alert-heading>Important</h4><strong>Protocol Buffers and Object Oriented Design</strong>
 Protocol buffer classes are basically data holders (like structs in C) that
 don&rsquo;t provide additional functionality; they don&rsquo;t make good first class
@@ -407,7 +407,7 @@ forward-compatible &ndash; and you almost certainly do want this &ndash; then th
 some rules you need to follow. In the new version of the protocol buffer:</p><ul><li>you <em>must not</em> change the field numbers of any existing fields.</li><li>you <em>must not</em> add or delete any required fields.</li><li>you <em>may</em> delete optional or repeated fields.</li><li>you <em>may</em> add new optional or repeated fields but you must use fresh field
 numbers (that is, field numbers that were never used in this protocol
 buffer, not even by deleted fields).</li></ul><p>(There are
-<a href=/programming-guides/proto2#updating>some exceptions</a> to
+<a href=./programming-guides/proto2#updating>some exceptions</a> to
 these rules, but they are rarely used.)</p><p>If you follow these rules, old code will happily read new messages and simply
 ignore any new fields. To the old code, optional fields that were deleted will
 simply have their default value, and deleted repeated fields will be empty. New
@@ -433,7 +433,7 @@ sizes of your message objects by calling the <code>SpaceUsed</code> method and d
 them once they get too big.</li><li>Your system&rsquo;s memory allocator may not be well-optimized for allocating lots
 of small objects from multiple threads. Try using
 <a href=https://github.com/google/tcmalloc>Google&rsquo;s TCMalloc</a> instead.</li></ul><h2 id=advanced-usage>Advanced Usage</h2><p>Protocol buffers have uses that go beyond simple accessors and serialization. Be
-sure to explore the <a href=/reference/cpp>C++ API reference</a>
+sure to explore the <a href=./reference/cpp>C++ API reference</a>
 to see what else you can do with them.</p><p>One key feature provided by protocol message classes is <em>reflection</em>. You can
 iterate over the fields of a message and manipulate their values without writing
 your code against any specific message type. One very useful way to use
@@ -444,6 +444,6 @@ expressions for protocol messages&rdquo; in which you can write expressions that
 certain message contents. If you use your imagination, it&rsquo;s possible to apply
 Protocol Buffers to a much wider range of problems than you might initially
 expect!</p><p>Reflection is provided by the
-<a href=/reference/cpp/api-docs/google.protobuf.message#Reflection><code>Message::Reflection</code> interface</a>.</p></div></main></div></div><footer class="bg-dark py-5 row d-print-none"><div class="container-fluid mx-sm-5"><div class=row><div class="col-6 col-sm-4 text-xs-center order-sm-2"><ul class="list-inline mb-0"><li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title="Stack Overflow" aria-label="Stack Overflow"><a class=text-white target=_blank rel=noopener href=https://stackoverflow.com/questions/tagged/protocol-buffers aria-label="Stack Overflow"><i class="fab fa-stack-overflow"></i></a></li></ul><script type=text/javascript id=cookiebanner src=https://cdn.jsdelivr.net/gh/dobarkod/cookie-banner@1.2.2/dist/cookiebanner.min.js data-height=50px data-message="Protobuf.dev uses cookies from Google to deliver and enhance the quality of its services and to analyze traffic." data-bg=#ffb data-fg=#000 data-position=bottom data-padding="10px 16px" data-close-text="OK, got it" data-font-size=18px data-moreinfo=https://policies.google.com/technologies/cookies></script></div><div class="col-6 col-sm-4 text-right text-xs-center order-sm-3"><ul class="list-inline mb-0"><li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title=GitHub aria-label=GitHub><a class=text-white target=_blank rel=noopener href=https://github.com/protocolbuffers/protobuf aria-label=GitHub><i class="fab fa-github"></i></a></li><li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title="Developer mailing list" aria-label="Developer mailing list"><a class=text-white target=_blank rel=noopener href=https://groups.google.com/g/protobuf aria-label="Developer mailing list"><i class="fa fa-envelope"></i></a></li></ul><script type=text/javascript id=cookiebanner src=https://cdn.jsdelivr.net/gh/dobarkod/cookie-banner@1.2.2/dist/cookiebanner.min.js data-height=50px data-message="Protobuf.dev uses cookies from Google to deliver and enhance the quality of its services and to analyze traffic." data-bg=#ffb data-fg=#000 data-position=bottom data-padding="10px 16px" data-close-text="OK, got it" data-font-size=18px data-moreinfo=https://policies.google.com/technologies/cookies></script></div><div class="col-12 col-sm-4 text-center py-2 order-sm-2"><small class=text-white>&copy; 2025 Google LLC All Rights Reserved</small>
+<a href=./reference/cpp/api-docs/google.protobuf.message#Reflection><code>Message::Reflection</code> interface</a>.</p></div></main></div></div><footer class="bg-dark py-5 row d-print-none"><div class="container-fluid mx-sm-5"><div class=row><div class="col-6 col-sm-4 text-xs-center order-sm-2"><ul class="list-inline mb-0"><li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title="Stack Overflow" aria-label="Stack Overflow"><a class=text-white target=_blank rel=noopener href=https://stackoverflow.com/questions/tagged/protocol-buffers aria-label="Stack Overflow"><i class="fab fa-stack-overflow"></i></a></li></ul><script type=text/javascript id=cookiebanner src=https://cdn.jsdelivr.net/gh/dobarkod/cookie-banner@1.2.2/dist/cookiebanner.min.js data-height=50px data-message="Protobuf.dev uses cookies from Google to deliver and enhance the quality of its services and to analyze traffic." data-bg=#ffb data-fg=#000 data-position=bottom data-padding="10px 16px" data-close-text="OK, got it" data-font-size=18px data-moreinfo=https://policies.google.com/technologies/cookies></script></div><div class="col-6 col-sm-4 text-right text-xs-center order-sm-3"><ul class="list-inline mb-0"><li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title=GitHub aria-label=GitHub><a class=text-white target=_blank rel=noopener href=https://github.com/protocolbuffers/protobuf aria-label=GitHub><i class="fab fa-github"></i></a></li><li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title="Developer mailing list" aria-label="Developer mailing list"><a class=text-white target=_blank rel=noopener href=https://groups.google.com/g/protobuf aria-label="Developer mailing list"><i class="fa fa-envelope"></i></a></li></ul><script type=text/javascript id=cookiebanner src=https://cdn.jsdelivr.net/gh/dobarkod/cookie-banner@1.2.2/dist/cookiebanner.min.js data-height=50px data-message="Protobuf.dev uses cookies from Google to deliver and enhance the quality of its services and to analyze traffic." data-bg=#ffb data-fg=#000 data-position=bottom data-padding="10px 16px" data-close-text="OK, got it" data-font-size=18px data-moreinfo=https://policies.google.com/technologies/cookies></script></div><div class="col-12 col-sm-4 text-center py-2 order-sm-2"><small class=text-white>&copy; 2025 Google LLC All Rights Reserved</small>
 <small class=ml-1><a href=https://policies.google.com/privacy target=_blank rel=noopener>Privacy Policy</a></small>
 <span class=text-white>Hosted by GitHub Pages.</span> <a href=https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement target=_blank>GitHub Privacy Statement</a></div></div></div></footer></div><script src=/protocolbuffers.github.io/js/main.min.465e525b7f12005beca2f93e7a2facf1d7da354d8fa99daffa84ddbfba25da98.js integrity="sha256-Rl5SW38SAFvsovk+ei+s8dfaNU2PqZ2v+oTdv7ol2pg=" crossorigin=anonymous></script><script defer src=/protocolbuffers.github.io/js/click-to-copy.min.73478a7d4807698aed7e355eb23f9890ca18fea3158604c8471746d046702bad.js integrity="sha256-c0eKfUgHaYrtfjVesj+YkMoY/qMVhgTIRxdG0EZwK60=" crossorigin=anonymous></script><script src=/protocolbuffers.github.io/js/tabpane-persist.js></script></body></html>

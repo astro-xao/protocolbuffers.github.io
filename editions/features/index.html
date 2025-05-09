@@ -5,9 +5,9 @@
 <a href="https://github.com/astro-xao/protocolbuffers.github.io//issues/new?title=Feature%20Settings%20for%20Editions" class=td-page-meta--issue target=_blank rel=noopener><i class="fa-solid fa-list-check fa-fw"></i> Create documentation issue</a>
 <a href=https://github.com/protocolbuffers/protobuf/issues/new class=td-page-meta--project-issue target=_blank rel=noopener><i class="fa-solid fa-list-check fa-fw"></i> Create project issue</a></div><div class=td-toc><nav id=TableOfContents><ul><li><a href=#prototiller>Prototiller</a></li><li><a href=#features>Features</a><ul><li><a href=#enum_type><code>features.enum_type</code></a></li><li><a href=#field_presence><code>features.field_presence</code></a></li><li><a href=#json_format><code>features.json_format</code></a></li><li><a href=#message_encoding><code>features.message_encoding</code></a></li><li><a href=#repeated_field_encoding><code>features.repeated_field_encoding</code></a></li><li><a href=#utf8_validation><code>features.utf8_validation</code></a></li><li><a href=#lang-specific>Language-specific Features</a></li></ul></li><li><a href=#preserving>Preserving proto2 or proto3 Behavior</a><ul><li><a href=#proto2-behavior>Proto2 Behavior</a></li><li><a href=#proto3-behavior>Proto3 Behavior</a></li><li><a href=#caveats>Caveats and Exceptions</a></li></ul></li></ul></nav></div></aside><main class="col-12 col-md-9 col-xl-8 ps-md-5" role=main><nav aria-label=breadcrumb class=td-breadcrumbs><ol class=breadcrumb><li class=breadcrumb-item><a href=/protocolbuffers.github.io/editions/>Protobuf Editions</a></li><li class="breadcrumb-item active" aria-current=page>Feature Settings for Editions</li></ol></nav><div class=td-content><h1>Feature Settings for Editions</h1><div class=lead>Protobuf Editions features and how they affect protobuf behavior.</div><header class=article-meta></header><p>This topic provides an overview of the features that are included in Edition
 2023. Each subsequent edition&rsquo;s features will be added to this topic. We
-announce new editions in <a href=/news>the News section</a>.</p><p>Before configuring feature settings in your new schema definition content, make
+announce new editions in <a href=./news>the News section</a>.</p><p>Before configuring feature settings in your new schema definition content, make
 sure you understand why you are using them. Avoid
-<a href=/best-practices/no-cargo-cults>cargo-culting</a> with
+<a href=./best-practices/no-cargo-cults>cargo-culting</a> with
 features.</p><h2 id=prototiller>Prototiller</h2><p>Prototiller is a command-line tool that converts proto2 and proto3 definition
 files to Editions syntax. It hasn&rsquo;t been released yet, but is referenced
 throughout this topic.</p><h2 id=features>Features</h2><p>The following sections include all of the behaviors that are configurable using
@@ -15,7 +15,7 @@ features in Edition 2023. <a href=#preserving>Preserving proto2 or proto3 Behavi
 shows how to override the default behaviors so that your proto definition files
 act like proto2 or proto3 files. For more information on how Editions and
 Features work together to set behavior, see
-<a href=/editions/overview>Protobuf Editions Overview</a>.</p><p><span id=cascading>Feature settings apply at different levels:</span></p><p><strong>File-level:</strong> These settings apply to all elements (messages, fields, enums,
+<a href=./editions/overview>Protobuf Editions Overview</a>.</p><p><span id=cascading>Feature settings apply at different levels:</span></p><p><strong>File-level:</strong> These settings apply to all elements (messages, fields, enums,
 and so on) that don&rsquo;t have an overriding setting.</p><p><strong>Non-nested:</strong> Messages, enums, and services can override settings made at the
 file level. They apply to everything within them (message fields, enum values)
 that aren&rsquo;t overridden, but don&rsquo;t apply to other parallel messages and enums.</p><p><strong>Nested:</strong> Oneofs, messages, and enums can override settings from the message
@@ -52,7 +52,7 @@ scope:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-m
 definition overrides the non-nested-scope &ldquo;<code>QUUX</code>&rdquo; setting. And within the
 Garply message, &ldquo;<code>WALDO</code>&rdquo; overrides &ldquo;<code>QUUX</code>.&rdquo;</p><h3 id=enum_type><code>features.enum_type</code></h3><p>This feature sets the behavior for how enum values that aren&rsquo;t contained within
 the defined set are handled. See
-<a href=/programming-guides/enum>Enum Behavior</a> for more
+<a href=./programming-guides/enum>Enum Behavior</a> for more
 information on open and closed enums.</p><p>This feature doesn&rsquo;t impact proto3 files, so this section doesn&rsquo;t have a before
 and after of a proto3 file.</p><p><strong>Values available:</strong></p><ul><li><code>CLOSED:</code> Closed enums store enum values that are out of range in the
 unknown field set.</li><li><code>OPEN:</code> Open enums parse out of range values into their fields directly.</li></ul><p><strong>Applicable to the following scopes:</strong> File, Enum</p><p><strong>Default behavior in Edition 2023:</strong> <code>OPEN</code></p><p><strong>Behavior in proto2:</strong> <code>CLOSED</code></p><p><strong>Behavior in proto3:</strong> <code>OPEN</code></p><p><strong>Note:</strong> Feature settings on different schema elements
@@ -83,7 +83,7 @@ fields set to <code>EXPLICIT</code>.</li><li><code>IMPLICIT</code>: The field ha
 serialized onto the wire (even if it is explicitly set). <code>has_*</code> functions
 are not generated for fields set to <code>IMPLICIT</code>.</li></ul><p><strong>Applicable to the following scopes:</strong> File, Field</p><p><strong>Default behavior in the Edition 2023:</strong> <code>EXPLICIT</code></p><p><strong>Behavior in proto2:</strong> <code>EXPLICIT</code></p><p><strong>Behavior in proto3:</strong> <code>IMPLICIT</code> unless the field has the <code>optional</code> label, in
 which case it behaves like <code>EXPLICIT</code>. See
-<a href=/programming-guides/field_presence#presence-in-proto3-apis>Presence in Proto3 APIs</a>
+<a href=./programming-guides/field_presence#presence-in-proto3-apis>Presence in Proto3 APIs</a>
 for more information.</p><p><strong>Note:</strong> Feature settings on different schema elements
 <a href=#cascading>have different scopes</a>.</p><p>The following code sample shows a proto2 file:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#000>syntax</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#34;proto2&#34;</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000>
@@ -144,8 +144,8 @@ and after of a proto3 file.</p><p>Depending on the language, fields that are &ld
 capitalization in generated code and in text-format, in order to provide
 backwards compatibility with proto2. Message fields are &ldquo;group-like&rdquo; if all of
 the following conditions are met:</p><ul><li>Has <code>DELIMITED</code> message encoding specified</li><li>Message type is defined in the same scope as the field</li><li>Field name is exactly the lowercased type name</li></ul><p><strong>Values available:</strong></p><ul><li><code>LENGTH_PREFIXED</code>: Fields are encoded using the LEN wire type described in
-<a href=/programming-guides/encoding#structure>Message Structure</a>.</li><li><code>DELIMITED</code>: Message-typed fields are encoded as
-<a href=/programming-guides/proto2#groups>groups</a>.</li></ul><p><strong>Applicable to the following scopes:</strong> File, Field</p><p><strong>Default behavior in Edition 2023:</strong> <code>LENGTH_PREFIXED</code></p><p><strong>Behavior in proto2:</strong> <code>LENGTH_PREFIXED</code> except for groups, which default to
+<a href=./programming-guides/encoding#structure>Message Structure</a>.</li><li><code>DELIMITED</code>: Message-typed fields are encoded as
+<a href=./programming-guides/proto2#groups>groups</a>.</li></ul><p><strong>Applicable to the following scopes:</strong> File, Field</p><p><strong>Default behavior in Edition 2023:</strong> <code>LENGTH_PREFIXED</code></p><p><strong>Behavior in proto2:</strong> <code>LENGTH_PREFIXED</code> except for groups, which default to
 <code>DELIMITED</code></p><p><strong>Behavior in proto3:</strong> <code>LENGTH_PREFIXED</code>. Proto3 doesn&rsquo;t support <code>DELIMITED</code>.</p><p><strong>Note:</strong> Feature settings on different schema elements
 <a href=#cascading>have different scopes</a>.</p><p>The following code sample shows a proto2 file:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#000>syntax</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#34;proto2&#34;</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000>
@@ -165,7 +165,7 @@ the following conditions are met:</p><ul><li>Has <code>DELIMITED</code> message 
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span>  <span style=color:#000>Bar</span> <span style=color:#000>bar</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>1</span> <span style=color:#000;font-weight:700>[</span><span style=color:#000>features.message_encoding</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>DELIMITED</span><span style=color:#000;font-weight:700>];</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#000;font-weight:700>}</span><span style=color:#a40000>
 </span></span></span></code></pre></div><h3 id=repeated_field_encoding><code>features.repeated_field_encoding</code></h3><p>This feature is what the proto2/proto3
-<a href=/programming-guides/encoding#packed><code>packed</code> option</a>
+<a href=./programming-guides/encoding#packed><code>packed</code> option</a>
 for <code>repeated</code> fields has been migrated to in Editions.</p><p><strong>Values available:</strong></p><ul><li><code>PACKED</code>: <code>Repeated</code> fields of a primitive type are encoded as a single LEN
 record that contains each element concatenated.</li><li><code>EXPANDED</code>: <code>Repeated</code> fields are each encoded with the field number for
 each value.</li></ul><p><strong>Applicable to the following scopes:</strong> File, Field</p><p><strong>Default behavior in Edition 2023:</strong> <code>PACKED</code></p><p><strong>Behavior in proto2:</strong> <code>EXPANDED</code></p><p><strong>Behavior in proto3:</strong> <code>PACKED</code></p><p><strong>Note:</strong> Feature settings on different schema elements
@@ -217,7 +217,7 @@ languages. Using these features requires you to import the corresponding
 *_features.proto file from the language&rsquo;s runtime. The examples in the following
 sections show these imports.</p><h4 id=legacy_closed_enum><code>features.(pb.cpp/pb.java).legacy_closed_enum</code></h4><p><strong>Languages:</strong> C++, Java</p><p>This feature determines whether a field with an open enum type should be behave
 as if it was a closed enum. This allows editions to reproduce
-<a href=/programming-guides/enum>non-conformant behavior</a> in
+<a href=./programming-guides/enum>non-conformant behavior</a> in
 Java and C++ from proto2 and proto3.</p><p>This feature doesn&rsquo;t impact proto3 files, and so this section doesn&rsquo;t have a
 before and after of a proto3 file.</p><p><strong>Values available:</strong></p><ul><li><code>true</code>: Treats the enum as closed regardless of <a href=#enum_type><code>enum_type</code></a>.</li><li><code>false</code>: Respect whatever is set in the <code>enum_type</code>.</li></ul><p><strong>Applicable to the following scopes:</strong> File, Field</p><p><strong>Default behavior in Edition 2023:</strong> <code>false</code></p><p><strong>Behavior in proto2:</strong> <code>true</code></p><p><strong>Behavior in proto3:</strong> <code>false</code></p><p><strong>Note:</strong> Feature settings on different schema elements
 <a href=#cascading>have different scopes</a>.</p><p>The following code sample shows a proto2 file:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#000>syntax</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#34;proto2&#34;</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>

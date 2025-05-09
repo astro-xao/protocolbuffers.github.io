@@ -7,9 +7,9 @@
 that these differences are in the generated code as described in this document,
 not the base message classes/interfaces, which are the same in both versions.
 You should read the
-<a href=/programming-guides/proto2>proto2 language guide</a>
+<a href=./programming-guides/proto2>proto2 language guide</a>
 and/or
-<a href=/programming-guides/proto3>proto3 language guide</a>
+<a href=./programming-guides/proto3>proto3 language guide</a>
 before reading this document.</p><h2 id=invocation>Compiler Invocation</h2><p>The protocol buffer compiler produces C++ output when invoked with the
 <code>--cpp_out=</code> command-line flag. The parameter to the <code>--cpp_out=</code> option is the
 directory where you want the compiler to write your C++ output. The compiler
@@ -29,7 +29,7 @@ file will be placed in a corresponding C++ namespace. For example, given the
 </span></span></span></code></pre></div><p>All declarations in the file will reside in the <code>foo::bar</code> namespace.</p><h2 id=message>Messages</h2><p>Given a simple message declaration:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>message</span> <span style=color:#000>Foo</span> <span style=color:#000;font-weight:700>{}</span><span style=color:#a40000>
 </span></span></span></code></pre></div><p>The protocol buffer compiler generates a class called <code>Foo</code>, which publicly
 derives from
-<a href=/reference/cpp/api-docs/google.protobuf.message><code>google::protobuf::Message</code></a>.
+<a href=./reference/cpp/api-docs/google.protobuf.message><code>google::protobuf::Message</code></a>.
 The class is a concrete class; no pure-virtual methods are left unimplemented.
 Methods that are virtual in <code>Message</code> but not pure-virtual may or may not be
 overridden by <code>Foo</code>, depending on the optimization mode. By default, <code>Foo</code>
@@ -41,7 +41,7 @@ reduces the size of the generated code, but also reduces performance.
 Alternatively, if the <code>.proto</code> file contains:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>option</span> <span style=color:#000>optimize_for</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000>LITE_RUNTIME</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span></code></pre></div><p>then <code>Foo</code> will include fast implementations of all methods, but will implement
 the
-<a href=/reference/cpp/api-docs/google.protobuf.message_lite><code>google::protobuf::MessageLite</code></a>
+<a href=./reference/cpp/api-docs/google.protobuf.message_lite><code>google::protobuf::MessageLite</code></a>
 interface, which only contains a subset of the methods of <code>Message</code>. In
 particular, it does not support descriptors or reflection. However, in this
 mode, the generated code only needs to link against <code>libprotobuf-lite.so</code>
@@ -69,7 +69,7 @@ might be more common), it is important to note that modifications to a copied
 message will not affect the original message, and vice-versa.</p><p>The class also defines the following static methods:</p><ul><li><code>static const Descriptor* descriptor()</code>: Returns the type&rsquo;s descriptor. This
 contains information about the type, including what fields it has and what
 their types are. This can be used with
-<a href=/reference/cpp/api-docs/google.protobuf.message#Reflection>reflection</a>
+<a href=./reference/cpp/api-docs/google.protobuf.message#Reflection>reflection</a>
 to inspect fields programmatically.</li><li><code>static const Foo& default_instance()</code>: Returns a const singleton instance
 of <code>Foo</code> which is identical to a newly-constructed instance of <code>Foo</code> (so all
 singular fields are unset and all repeated fields are empty). Note that the
@@ -127,16 +127,16 @@ not set, returns the default value.</li><li><code>void set_foo(int32 value)</cod
 this, <code>has_foo()</code> will return <code>true</code> and <code>foo()</code> will return <code>value</code>.</li><li><code>void clear_foo()</code>: Clears the value of the field. After calling this,
 <code>has_foo()</code> will return <code>false</code> and <code>foo()</code> will return the default value.</li></ul><p>For other numeric field types (including <code>bool</code>), <code>int32</code> is replaced with the
 corresponding C++ type according to the
-<a href=/programming-guides/proto3#scalar>scalar value types table</a>.</p><h3 id=implicit-numeric>Implicit Presence Numeric Fields (proto3)</h3><p>For the below field definition:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>int32</span> <span style=color:#000>foo</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>1</span><span style=color:#000;font-weight:700>;</span>  <span style=color:#8f5902;font-style:italic>// no field label specified, defaults to implicit presence.
+<a href=./programming-guides/proto3#scalar>scalar value types table</a>.</p><h3 id=implicit-numeric>Implicit Presence Numeric Fields (proto3)</h3><p>For the below field definition:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>int32</span> <span style=color:#000>foo</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>1</span><span style=color:#000;font-weight:700>;</span>  <span style=color:#8f5902;font-style:italic>// no field label specified, defaults to implicit presence.
 </span></span></span></code></pre></div><p>The compiler will generate the following accessor methods:</p><ul><li><code>int32 foo() const</code>: Returns the current value of the field. If the field is
 not set, returns 0.</li><li><code>void set_foo(int32 value)</code>: Sets the value of the field. After calling
 this, <code>foo()</code> will return <code>value</code>.</li><li><code>void clear_foo()</code>: Clears the value of the field. After calling this,
 <code>foo()</code> will return 0.</li></ul><p>For other numeric field types (including <code>bool</code>), <code>int32</code> is replaced with the
 corresponding C++ type according to the
-<a href=/programming-guides/proto3#scalar>scalar value types table</a>.</p><h3 id=string>Optional String/Bytes Fields (proto2 and proto3)</h3><p><strong>Note:</strong> As of edition 2023, if
-<a href=/editions/features#string_type><code>features.(pb.cpp).string_type</code></a>
+<a href=./programming-guides/proto3#scalar>scalar value types table</a>.</p><h3 id=string>Optional String/Bytes Fields (proto2 and proto3)</h3><p><strong>Note:</strong> As of edition 2023, if
+<a href=./editions/features#string_type><code>features.(pb.cpp).string_type</code></a>
 is set to <code>VIEW</code>,
-<a href=/reference/cpp/string-view#singular-view>string_view</a>
+<a href=./reference/cpp/string-view#singular-view>string_view</a>
 APIs will be generated instead.</p><p>For any of these field definitions:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>optional</span> <span style=color:#204a87;font-weight:700>string</span> <span style=color:#000>foo</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>1</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#204a87;font-weight:700>required</span> <span style=color:#204a87;font-weight:700>string</span> <span style=color:#000>foo</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>1</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#204a87;font-weight:700>optional</span> <span style=color:#204a87;font-weight:700>bytes</span> <span style=color:#000>foo</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>1</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
@@ -170,9 +170,9 @@ Releases the
 ownership of the field and returns the pointer of the <code>string</code> object. After
 calling this, caller takes the ownership of the allocated <code>string</code> object,
 <code>has_foo()</code> will return <code>false</code>, and <code>foo()</code> will return the default value.</li></ul><p><a id=proto3_string></a></p><h3 id=implicit-string>Implicit Presence String/Bytes Fields (proto3)</h3><p><strong>Note:</strong> As of edition 2023, if
-<a href=/editions/features#string_type><code>features.(pb.cpp).string_type</code></a>
+<a href=./editions/features#string_type><code>features.(pb.cpp).string_type</code></a>
 is set to <code>VIEW</code>,
-<a href=/reference/cpp/string-view#singular-view>string_view</a>
+<a href=./reference/cpp/string-view#singular-view>string_view</a>
 APIs will be generated instead.</p><p>For either of these field definitions:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>string</span> <span style=color:#000>foo</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>1</span><span style=color:#000;font-weight:700>;</span>  <span style=color:#8f5902;font-style:italic>// no field label specified, defaults to implicit presence.
 </span></span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic></span><span style=color:#204a87;font-weight:700>bytes</span> <span style=color:#000>foo</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>1</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span></code></pre></div><p>The compiler will generate the following accessor methods:</p><ul><li><code>const string& foo() const</code>: Returns the current value of the field. If the
@@ -256,28 +256,28 @@ of the allocated <code>Bar</code> object, <code>has_bar()</code> will return <co
 will return the default value.</li></ul><h3 id=repeatednumeric>Repeated Numeric Fields</h3><p>For this field definition:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>repeated</span> <span style=color:#204a87;font-weight:700>int32</span> <span style=color:#000>foo</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>1</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span></code></pre></div><p>The compiler will generate the following accessor methods:</p><ul><li><code>int foo_size() const</code>: Returns the number of elements currently in the
 field. To check for an empty set, consider using the
-<a href=/reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField><code>empty()</code></a>
+<a href=./reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField><code>empty()</code></a>
 method in the underlying <code>RepeatedField</code> instead of this method.</li><li><code>int32 foo(int index) const</code>: Returns the element at the given zero-based
 index. Calling this method with index outside of [0, foo_size()) yields
 undefined behavior.</li><li><code>void set_foo(int index, int32 value)</code>: Sets the value of the element at the
 given zero-based index.</li><li><code>void add_foo(int32 value)</code>: Appends a new element to the end of the field
 with the given value.</li><li><code>void clear_foo()</code>: Removes all elements from the field. After calling this,
 <code>foo_size()</code> will return zero.</li><li><code>const RepeatedField&lt;int32>& foo() const</code>: Returns the underlying
-<a href=/reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedField><code>RepeatedField</code></a>
+<a href=./reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedField><code>RepeatedField</code></a>
 that stores the field&rsquo;s elements. This container class provides STL-like
 iterators and other methods.</li><li><code>RepeatedField&lt;int32>* mutable_foo()</code>: Returns a pointer to the underlying
 mutable <code>RepeatedField</code> that stores the field&rsquo;s elements. This container
 class provides STL-like iterators and other methods.</li></ul><p>For other numeric field types (including <code>bool</code>), <code>int32</code> is replaced with the
 corresponding C++ type according to the
-<a href=/programming-guides/proto2#scalar>scalar value types table</a>.</p><h3 id=repeatedstring>Repeated String Fields</h3><p><strong>Note:</strong> As of edition 2023, if
-<a href=/editions/features#string_type><code>features.(pb.cpp).string_type</code></a>
+<a href=./programming-guides/proto2#scalar>scalar value types table</a>.</p><h3 id=repeatedstring>Repeated String Fields</h3><p><strong>Note:</strong> As of edition 2023, if
+<a href=./editions/features#string_type><code>features.(pb.cpp).string_type</code></a>
 is set to <code>VIEW</code>,
-<a href=/reference/cpp/string-view#singular-view>string_view</a>
+<a href=./reference/cpp/string-view#singular-view>string_view</a>
 APIs will be generated instead.</p><p>For either of these field definitions:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>repeated</span> <span style=color:#204a87;font-weight:700>string</span> <span style=color:#000>foo</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>1</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#204a87;font-weight:700>repeated</span> <span style=color:#204a87;font-weight:700>bytes</span> <span style=color:#000>foo</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>1</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span></code></pre></div><p>The compiler will generate the following accessor methods:</p><ul><li><code>int foo_size() const</code>: Returns the number of elements currently in the
 field. To check for an empty set, consider using the
-<a href=/reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField><code>empty()</code></a>
+<a href=./reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField><code>empty()</code></a>
 method in the underlying <code>RepeatedField</code> instead of this method.</li><li><code>const string& foo(int index) const</code>: Returns the element at the given
 zero-based index. Calling this method with index outside of [0,
 foo_size()-1] yields undefined behavior.</li><li><code>void set_foo(int index, ::absl::string_view value)</code>: Sets the value of the
@@ -299,7 +299,7 @@ end of the field using a string with an explicit size specified, rather than
 determined by looking for a null-terminator byte.</li><li><code>string* add_foo()</code>: Adds a new empty string element to the end of the field
 and returns a pointer to it.</li><li><code>void clear_foo()</code>: Removes all elements from the field. After calling this,
 <code>foo_size()</code> will return zero.</li><li><code>const RepeatedPtrField&lt;string>& foo() const</code>: Returns the underlying
-<a href=/reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField><code>RepeatedPtrField</code></a>
+<a href=./reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField><code>RepeatedPtrField</code></a>
 that stores the field&rsquo;s elements. This container class provides STL-like
 iterators and other methods.</li><li><code>RepeatedPtrField&lt;string>* mutable_foo()</code>: Returns a pointer to the
 underlying mutable <code>RepeatedPtrField</code> that stores the field&rsquo;s elements. This
@@ -311,7 +311,7 @@ container class provides STL-like iterators and other methods.</li></ul><h3 id=r
 </span></span></span></code></pre></div><p>For this field definition:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>repeated</span> <span style=color:#000>Bar</span> <span style=color:#000>bar</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>1</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span></code></pre></div><p>The compiler will generate the following accessor methods:</p><ul><li><code>int bar_size() const</code>: Returns the number of elements currently in the
 field. To check for an empty set, consider using the
-<a href=/reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField><code>empty()</code></a>
+<a href=./reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField><code>empty()</code></a>
 method in the underlying <code>RepeatedField</code> instead of this method.</li><li><code>Bar bar(int index) const</code>: Returns the element at the given zero-based
 index. Calling this method with index outside of [0, bar_size()) yields
 undefined behavior.</li><li><code>void set_bar(int index, Bar value)</code>: Sets the value of the element at the
@@ -322,7 +322,7 @@ with the given value. In debug mode (i.e. NDEBUG is not defined), if <code>value
 does not match any of the values defined for <code>Bar</code>, this method will abort
 the process.</li><li><code>void clear_bar()</code>: Removes all elements from the field. After calling this,
 <code>bar_size()</code> will return zero.</li><li><code>const RepeatedField&lt;int>& bar() const</code>: Returns the underlying
-<a href=/reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedField><code>RepeatedField</code></a>
+<a href=./reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedField><code>RepeatedField</code></a>
 that stores the field&rsquo;s elements. This container class provides STL-like
 iterators and other methods.</li><li><code>RepeatedField&lt;int>* mutable_bar()</code>: Returns a pointer to the underlying
 mutable <code>RepeatedField</code> that stores the field&rsquo;s elements. This container
@@ -330,7 +330,7 @@ class provides STL-like iterators and other methods.</li></ul><h3 id=repeatedmes
 </span></span></span></code></pre></div><p>For this field definitions:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>repeated</span> <span style=color:#000>Bar</span> <span style=color:#000>bar</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>1</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span></code></pre></div><p>The compiler will generate the following accessor methods:</p><ul><li><code>int bar_size() const</code>: Returns the number of elements currently in the
 field. To check for an empty set, consider using the
-<a href=/reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField><code>empty()</code></a>
+<a href=./reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField><code>empty()</code></a>
 method in the underlying <code>RepeatedField</code> instead of this method.</li><li><code>const Bar& bar(int index) const</code>: Returns the element at the given
 zero-based index. Calling this method with index outside of [0, bar_size())
 yields undefined behavior.</li><li><code>Bar* mutable_bar(int index)</code>: Returns a pointer to the mutable <code>Bar</code> object
@@ -339,7 +339,7 @@ this method with index outside of [0, bar_size()) yields undefined behavior.</li
 pointer to it. The returned <code>Bar</code> is mutable and will have none of its
 fields set (i.e. it will be identical to a newly-allocated <code>Bar</code>).</li><li><code>void clear_bar()</code>: Removes all elements from the field. After calling this,
 <code>bar_size()</code> will return zero.</li><li><code>const RepeatedPtrField&lt;Bar>& bar() const</code>: Returns the underlying
-<a href=/reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField><code>RepeatedPtrField</code></a>
+<a href=./reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField><code>RepeatedPtrField</code></a>
 that stores the field&rsquo;s elements. This container class provides STL-like
 iterators and other methods.</li><li><code>RepeatedPtrField&lt;Bar>* mutable_bar()</code>: Returns a pointer to the underlying
 mutable <code>RepeatedPtrField</code> that stores the field&rsquo;s elements. This container
@@ -354,8 +354,8 @@ class provides STL-like iterators and other methods.</li></ul><h3 id=oneof-numer
 <code>has_foo()</code> will return <code>false</code>, <code>foo()</code> will return the default value
 and <code>example_name_case()</code> will return <code>EXAMPLE_NAME_NOT_SET</code>.</li></ul></li></ul><p>For other numeric field types (including <code>bool</code>),<code>int32</code> is replaced with the
 corresponding C++ type according to the
-<a href=/programming-guides/proto3#scalar>scalar value types table</a>.</p><h3 id=oneof-string>Oneof String Fields</h3><p><strong>Note:</strong> As of edition 2023
-<a href=/reference/cpp/string-view#oneof-view>string_view</a> APIs
+<a href=./programming-guides/proto3#scalar>scalar value types table</a>.</p><h3 id=oneof-string>Oneof String Fields</h3><p><strong>Note:</strong> As of edition 2023
+<a href=./reference/cpp/string-view#oneof-view>string_view</a> APIs
 may be generated instead</p><p>For any of these <a href=#oneof>oneof</a> field definitions:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>oneof</span> <span style=color:#000>example_name</span> <span style=color:#000;font-weight:700>{</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span>    <span style=color:#204a87;font-weight:700>string</span> <span style=color:#000>foo</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>1</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span>    <span style=color:#ce5c00;font-weight:700>...</span><span style=color:#a40000>
@@ -431,7 +431,7 @@ value and <code>example_name_case()</code> will return <code>EXAMPLE_NAME_NOT_SE
 </span></span></span></code></pre></div><p>The compiler will generate the following accessor methods:</p><ul><li><code>const google::protobuf::Map&lt;int32, int32>& weight();</code>: Returns an immutable
 <code>Map</code>.</li><li><code>google::protobuf::Map&lt;int32, int32>* mutable_weight();</code>: Returns a mutable
 <code>Map</code>.</li></ul><p>A
-<a href=/reference/cpp/api-docs/google.protobuf.map><code>google::protobuf::Map</code></a>
+<a href=./reference/cpp/api-docs/google.protobuf.map><code>google::protobuf::Map</code></a>
 is a special container type used in protocol buffers to store map fields. As you
 can see from its interface below, it uses a commonly-used subset of <code>std::map</code>
 and <code>std::unordered_map</code> methods.</p><div class="alert alert-note" role=alert><h4 class=alert-heading>Note</h4>These maps
@@ -497,7 +497,7 @@ unknown fields: for example a field of type <code>int64</code> in a map defined 
 be discarded.</p><p>If there is an unknown enum value in the wire format of a map entry message,
 it&rsquo;s handled differently in proto2 and proto3. In proto2, the whole map entry
 message is put into the unknown field set of the containing message. In proto3,
-it is put into a map field as if it is a known enum value.</p><h2 id=any>Any</h2><p>Given an <a href=/programming-guides/proto3#any><code>Any</code></a> field
+it is put into a map field as if it is a known enum value.</p><h2 id=any>Any</h2><p>Given an <a href=./programming-guides/proto3#any><code>Any</code></a> field
 like this:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>import</span> <span style=color:#4e9a06>&#34;google/protobuf/any.proto&#34;</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#204a87;font-weight:700>message</span> <span style=color:#000>ErrorStatus</span> <span style=color:#000;font-weight:700>{</span><span style=color:#a40000>
@@ -539,7 +539,7 @@ which field is set. Returns <code>EXAMPLE_NAME_NOT_SET</code> if none of them is
 pointer (Message or String), and sets the oneof case to
 <code>EXAMPLE_NAME_NOT_SET</code>.</li></ul><h2 id=enum>Enumerations</h2><p><strong>Note:</strong> As of edition 2024, <code>string_view</code> APIs may be generated with certain
 feature settings. See
-<a href=/reference/cpp/string-view#enum-name>Enumeration Name Helper</a>
+<a href=./reference/cpp/string-view#enum-name>Enumeration Name Helper</a>
 for more on this topic.</p><p>Given an enum definition like:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>enum</span> <span style=color:#000>Foo</span> <span style=color:#000;font-weight:700>{</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span>  <span style=color:#000>VALUE_A</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>0</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span>  <span style=color:#000>VALUE_B</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>5</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
@@ -563,7 +563,7 @@ or the results may be undefined. If in doubt, use the generated <code>Foo_IsVali
 function to test if the cast is valid. Setting an enum-typed field of a proto2
 message to an invalid value may cause an assertion failure. If an invalid enum
 value is read when parsing a proto2 message, it will be treated as an
-<a href=/reference/cpp/api-docs/google.protobuf.unknown_field_set>unknown field</a>.
+<a href=./reference/cpp/api-docs/google.protobuf.unknown_field_set>unknown field</a>.
 These semantics have been changed in proto3. It&rsquo;s safe to cast any integer to a
 proto3 enum value as long as it fits into int32. Invalid enum values will also
 be kept when parsing a proto3 message and returned by enum field accessors.</p><p><strong>Be careful when using proto3 enums in switch statements.</strong> Proto3 enums are
@@ -635,7 +635,7 @@ pattern is to do something like this:</p><div class=highlight><pre tabindex=0 st
 and improve performance when working with protocol buffers. Enabling arena
 allocation in your <code>.proto</code> adds additional code for working with arenas to your
 C++ generated code. You can find out more about the arena allocation API in the
-<a href=/reference/cpp/arenas>Arena Allocation Guide</a>.</p><h2 id=service>Services</h2><p>If the <code>.proto</code> file contains the following line:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>option</span> <span style=color:#000>cc_generic_services</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>true</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
+<a href=./reference/cpp/arenas>Arena Allocation Guide</a>.</p><h2 id=service>Services</h2><p>If the <code>.proto</code> file contains the following line:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>option</span> <span style=color:#000>cc_generic_services</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>true</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span></code></pre></div><p>then the protocol buffer compiler will generate code based on the service
 definitions found in the file as described in this section. However, the
 generated code may be undesirable as it is not tied to any particular RPC
@@ -644,7 +644,7 @@ system. If you do NOT want this code to be generated, add this line to the file:
 </span></span></span></code></pre></div><p>If neither of the above lines are given, the option defaults to <code>false</code>, as
 generic services are deprecated. (Note that prior to 2.4.0, the option defaults
 to <code>true</code>)</p><p>RPC systems based on <code>.proto</code>-language service definitions should provide
-<a href=/reference/cpp/api-docs/google.protobuf.compiler.plugin.pb>plugins</a>
+<a href=./reference/cpp/api-docs/google.protobuf.compiler.plugin.pb>plugins</a>
 to generate code appropriate for the system. These plugins are likely to require
 that abstract services are disabled, so that they can generate their own classes
 of the same names.</p><p>The remainder of this section describes what the protocol buffer compiler
@@ -663,7 +663,7 @@ indicating that the method is unimplemented, then invoke the <code>done</code> c
 When implementing your own service, you must subclass this generated service and
 implement its methods as appropriate.</p><p><code>Foo</code> subclasses the <code>Service</code> interface. The protocol buffer compiler
 automatically generates implementations of the methods of <code>Service</code> as follows:</p><ul><li><code>GetDescriptor</code>: Returns the service&rsquo;s
-<a href=/reference/cpp/api-docs/google.protobuf.descriptor#ServiceDescriptor><code>ServiceDescriptor</code></a>.</li><li><code>CallMethod</code>: Determines which method is being called based on the provided
+<a href=./reference/cpp/api-docs/google.protobuf.descriptor#ServiceDescriptor><code>ServiceDescriptor</code></a>.</li><li><code>CallMethod</code>: Determines which method is being called based on the provided
 method descriptor and calls it directly, down-casting the request and
 response messages objects to the correct types.</li><li><code>GetRequestPrototype</code> and <code>GetResponsePrototype</code>: Returns the default
 instance of the request or response of the correct type for the given
@@ -684,12 +684,12 @@ around the channel. Calling one of the methods simply calls
 includes all of the tools you need to hook up a generated service class to any
 arbitrary RPC implementation of your choice. You need only provide
 implementations of
-<a href=/reference/cpp/api-docs/google.protobuf.service#RpcChannel><code>RpcChannel</code></a>
+<a href=./reference/cpp/api-docs/google.protobuf.service#RpcChannel><code>RpcChannel</code></a>
 and
-<a href=/reference/cpp/api-docs/google.protobuf.service#RpcController><code>RpcController</code></a>.
+<a href=./reference/cpp/api-docs/google.protobuf.service#RpcController><code>RpcController</code></a>.
 See the documentation for
-<a href=/reference/cpp/api-docs/google.protobuf.service><code>service.h</code></a>
-for more information.</p><h2 id=plugins>Plugin Insertion Points</h2><p><a href=/reference/cpp/api-docs/google.protobuf.compiler.plugin.pb>Code generator plugins</a>
+<a href=./reference/cpp/api-docs/google.protobuf.service><code>service.h</code></a>
+for more information.</p><h2 id=plugins>Plugin Insertion Points</h2><p><a href=./reference/cpp/api-docs/google.protobuf.compiler.plugin.pb>Code generator plugins</a>
 which want to extend the output of the C++ code generator may insert code of the
 following types using the given insertion point names. Each insertion point
 appears in both the <code>.pb.cc</code> file and the <code>.pb.h</code> file unless otherwise noted.</p><ul><li><code>includes</code>: Include directives.</li><li><code>namespace_scope</code>: Declarations that belong in the file&rsquo;s package/namespace,

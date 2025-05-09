@@ -8,9 +8,9 @@ differences between proto2 and proto3 generated code are highlighted - note that
 these differences are in the generated code as described in this document, not
 the base message classes/interfaces, which are the same in both versions. You
 should read the
-<a href=/programming-guides/proto2>proto2 language guide</a>
+<a href=./programming-guides/proto2>proto2 language guide</a>
 and/or
-<a href=/programming-guides/proto3>proto3 language guide</a>
+<a href=./programming-guides/proto3>proto3 language guide</a>
 before reading this document.</p><p>The Python Protocol Buffers implementation is a little different from C++ and
 Java. In Python, the compiler only outputs code to build descriptors for the
 generated classes, and a
@@ -69,7 +69,7 @@ message.</p><h3 id=nested-types>Nested Types</h3><p>A message can be declared in
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#000;font-weight:700>}</span><span style=color:#a40000>
 </span></span></span></code></pre></div><p>In this case, the <code>Bar</code> class is declared as a static member of <code>Foo</code>, so you
 can refer to it as <code>Foo.Bar</code>.</p><h2 id=wkt>Well Known Types</h2><p>Protocol buffers provides a number of
-<a href=/reference/protobuf/google.protobuf>well-known types</a>
+<a href=./reference/protobuf/google.protobuf>well-known types</a>
 that you can use in your .proto files along with your own message types. Some
 WKT messages have special methods in addition to the usual protocol buffer
 message methods, as they subclass both
@@ -296,7 +296,7 @@ For example:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f
 </span></span></code></pre></div><h3 id=groups-proto2>Groups (proto2)</h3><p><strong>Note that groups are deprecated and should not be used when creating new
 message types &ndash; use nested message types instead.</strong></p><p>A group combines a nested message type and a field into a single declaration,
 and uses a different
-<a href=/programming-guides/encoding>wire format</a> for the
+<a href=./programming-guides/encoding>wire format</a> for the
 message. The generated message has the same name as the group. The generated
 field&rsquo;s name is the <strong>lowercased</strong> name of the group.</p><p>For example, except for wire format, the following two message definitions are
 equivalent:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#ce5c00;font-weight:700>//</span> <span style=color:#000>Version</span> <span style=color:#0000cf;font-weight:700>1</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000>Using</span> <span style=color:#000>groups</span>
@@ -509,7 +509,7 @@ system. If you do NOT want this code to be generated, add this line to the file:
 </span></span></span></code></pre></div><p>If neither of the above lines are given, the option defaults to <code>false</code>, as
 generic services are deprecated. (Note that prior to 2.4.0, the option defaults
 to <code>true</code>)</p><p>RPC systems based on <code>.proto</code>-language service definitions should provide
-<a href=/reference/cpp/api-docs/google.protobuf.compiler.plugin.pb>plugins</a>
+<a href=./reference/cpp/api-docs/google.protobuf.compiler.plugin.pb>plugins</a>
 to generate code appropriate for the system. These plugins are likely to require
 that abstract services are disabled, so that they can generate their own classes
 of the same names. Plugins are new in version 2.3.0 (January 2010).</p><p>The remainder of this section describes what the protocol buffer compiler
@@ -540,7 +540,7 @@ calling the channel&rsquo;s <code>CallMethod()</code> method.</p><p>The Protocol
 includes all of the tools you need to hook up a generated service class to any
 arbitrary RPC implementation of your choice. You need only provide
 implementations of <code>RpcChannel</code> and
-<a href=https://googleapis.dev/python/protobuf/latest/google/protobuf/service.html#google.protobuf.service.RpcController><code>RpcController</code></a>.</p><h2 id=plugins>Plugin Insertion Points</h2><p><a href=/reference/cpp/api-docs/google.protobuf.compiler.plugin>Code generator plugins</a>
+<a href=https://googleapis.dev/python/protobuf/latest/google/protobuf/service.html#google.protobuf.service.RpcController><code>RpcController</code></a>.</p><h2 id=plugins>Plugin Insertion Points</h2><p><a href=./reference/cpp/api-docs/google.protobuf.compiler.plugin>Code generator plugins</a>
 which want to extend the output of the Python code generator may insert code of
 the following types using the given insertion point names.</p><ul><li><code>imports</code>: Import statements.</li><li><code>module_scope</code>: Top-level declarations.</li></ul><div class="alert alert-warning" role=alert><h4 class=alert-heading>Warning</h4>Do not
 generate code which relies on private class members declared by the standard

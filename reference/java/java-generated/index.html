@@ -8,9 +8,9 @@ differences between proto2 and proto3 generated code are highlighted—note
 that these differences are in the generated code as described in this document,
 not the base message classes/interfaces, which are the same in both versions.
 You should read the
-<a href=/programming-guides/proto2>proto2 language guide</a>
+<a href=./programming-guides/proto2>proto2 language guide</a>
 and/or
-<a href=/programming-guides/proto3>proto3 language guide</a>
+<a href=./programming-guides/proto3>proto3 language guide</a>
 before reading this document.</p><p>Note that no Java protocol buffer methods accept or return nulls unless
 otherwise specified.</p><h2 id=invocation>Compiler Invocation</h2><p>The protocol buffer compiler produces Java output when invoked with the
 <code>--java_out=</code> command-line flag. The parameter to the <code>--java_out=</code> option is
@@ -72,7 +72,7 @@ contains a <code>java_package</code> option, like so:</p><div class=highlight><p
 </span></span></span></code></pre></div><p>Then the class is placed in the <code>com.example.foo.bar</code> package instead. The
 <code>java_package</code> option is provided because normal <code>.proto</code> <code>package</code> declarations
 are not expected to start with a backwards domain name.</p><h2 id=message>Messages</h2><p>If you are designing a new protocol buffer schema, see
-<a href=/reference/java/java-proto-names>the recommendations for Java proto names</a>.</p><p>Given a simple message declaration:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>message</span> <span style=color:#000>Foo</span> <span style=color:#000;font-weight:700>{}</span><span style=color:#a40000>
+<a href=./reference/java/java-proto-names>the recommendations for Java proto names</a>.</p><p>Given a simple message declaration:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>message</span> <span style=color:#000>Foo</span> <span style=color:#000;font-weight:700>{}</span><span style=color:#a40000>
 </span></span></span></code></pre></div><p>The protocol buffer compiler generates a class called <code>Foo</code>, which implements
 the <code>Message</code> interface. The class is declared <code>final</code>; no further subclassing
 is allowed. <code>Foo</code> extends <code>GeneratedMessage</code>, but this should be considered an
@@ -159,7 +159,7 @@ within the message in the <code>.proto</code> file. The methods that read the fi
 are defined both in the message class and its corresponding builder; the methods
 that modify the value are defined in the builder only.</p><p>Note that method names always use camel-case naming, even if the field name in
 the <code>.proto</code> file uses lower-case with underscores
-(<a href=/programming-guides/style>as it should</a>). The
+(<a href=./programming-guides/style>as it should</a>). The
 case-conversion works as follows:</p><ul><li>For each underscore in the name, the underscore is removed, and the
 following letter is capitalized.</li><li>If the name will have a prefix attached (e.g. &ldquo;get&rdquo;), the first letter is
 capitalized. Otherwise, it is lower-cased.</li><li>The letter following the last digit in each number in a method name is
@@ -175,7 +175,7 @@ set, returns the default value.</li></ul><p>The compiler will generate the follo
 this, <code>hasFoo()</code> will return <code>true</code> and <code>getFoo()</code> will return <code>value</code>.</li><li><code>Builder clearFoo()</code>: Clears the value of the field. After calling this,
 <code>hasFoo()</code> will return <code>false</code> and <code>getFoo()</code> will return the default value.</li></ul><p>For other simple field types, the corresponding Java type is chosen according to
 the
-<a href=/programming-guides/proto2#scalar>scalar value types table</a>.
+<a href=./programming-guides/proto2#scalar>scalar value types table</a>.
 For message and enum types, the value type is replaced with the message or enum
 class.</p><h4 id=embedded-message-proto2>Embedded Message Fields</h4><p>For message types, <code>setFoo()</code> also accepts an instance of the message&rsquo;s builder
 type as the parameter. This is just a shortcut which is equivalent to calling
@@ -194,7 +194,7 @@ set, returns the default value for the field&rsquo;s type.</li></ul><p>The compi
 this, <code>getFoo()</code> will return <code>value</code>.</li><li><code>Builder clearFoo()</code>: Clears the value of the field. After calling this,
 <code>getFoo()</code> will return the default value for the field&rsquo;s type.</li></ul><p>For other simple field types, the corresponding Java type is chosen according to
 the
-<a href=/programming-guides/proto2#scalar>scalar value types table</a>.
+<a href=./programming-guides/proto2#scalar>scalar value types table</a>.
 For message and enum types, the value type is replaced with the message or enum
 class.</p><h4 id=embedded-message-proto3>Embedded Message Fields</h4><p>For message field types, an additional accessor method is generated in both the
 message class and its builder:</p><ul><li><code>boolean hasFoo()</code>: Returns <code>true</code> if the field has been set.</li></ul><p><code>setFoo()</code> also accepts an instance of the message&rsquo;s builder type as the
@@ -218,7 +218,7 @@ given value.</li><li><code>Builder addAllFoos(Iterable&lt;? extends String> valu
 in the given <code>Iterable</code> to the field.</li><li><code>Builder clearFoos()</code>: Removes all elements from the field. After calling
 this, <code>getFoosCount()</code> will return zero.</li></ul><p>For other simple field types, the corresponding Java type is chosen according to
 the
-<a href=/programming-guides/proto2#scalar>scalar value types table</a>.
+<a href=./programming-guides/proto2#scalar>scalar value types table</a>.
 For message and enum types, the type is the message or enum class.</p><h4 id=repeated-embedded>Repeated Embedded Message Fields</h4><p>For message types, <code>setFoos()</code> and <code>addFoos()</code> also accept an instance of the
 message&rsquo;s builder type as the parameter. This is just a shortcut which is
 equivalent to calling <code>.build()</code> on the builder and passing the result to the
@@ -283,7 +283,7 @@ case to <code>FOO_INT</code>. After calling this, <code>hasFooInt()</code> will 
 return <code>CHOICE_NOT_SET</code>.</li></ul></li><li><code>Builder.clearChoice()</code>: Resets the value for <code>choice</code>, returning the
 builder.</li></ul><p>For other simple field types, the corresponding Java type is chosen according to
 the
-<a href=/programming-guides/proto2#scalar>scalar value types table</a>.
+<a href=./programming-guides/proto2#scalar>scalar value types table</a>.
 For message and enum types, the value type is replaced with the message or enum
 class.</p><h3 id=map-fields>Map Fields</h3><p>For this map field definition:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#000>map</span><span style=color:#000;font-weight:700>&lt;</span><span style=color:#204a87;font-weight:700>int32</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>int32</span><span style=color:#000;font-weight:700>&gt;</span> <span style=color:#000>weight</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>1</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span></code></pre></div><p>The compiler will generate the following accessor methods in both the message
@@ -298,7 +298,7 @@ method calls to the Builder.</li></ul><h4 id=message-value-map-fields>Message Va
 method in the message&rsquo;s builder:</p><ul><li><code>Foo.Builder putFooBuilderIfAbsent(int key);</code>: Ensures that <code>key</code> is present
 in the mapping, and inserts a new <code>Foo.Builder</code> if one does not already
 exist. Changes to the returned <code>Foo.Builder</code> will be reflected in the final
-message.</li></ul><h2 id=any-fields>Any</h2><p>Given an <a href=/programming-guides/proto3#any><code>Any</code></a> field
+message.</li></ul><h2 id=any-fields>Any</h2><p>Given an <a href=./programming-guides/proto3#any><code>Any</code></a> field
 like this:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>import</span> <span style=color:#4e9a06>&#34;google/protobuf/any.proto&#34;</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#204a87;font-weight:700>message</span> <span style=color:#000>ErrorStatus</span> <span style=color:#000;font-weight:700>{</span><span style=color:#a40000>
@@ -407,7 +407,7 @@ addition of a <code>Baz.</code> prefix:</p><div class=highlight><pre tabindex=0 
 </span></span></span><span style=display:flex><span><span style=color:#f8f8f8;text-decoration:underline></span><span style=color:#204a87;font-weight:700>assert</span><span style=color:#f8f8f8;text-decoration:underline> </span><span style=color:#000>foo</span><span style=color:#000;font-weight:700>.</span><span style=color:#c4a000>hasExtension</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>Baz</span><span style=color:#000;font-weight:700>.</span><span style=color:#c4a000>fooExt</span><span style=color:#000;font-weight:700>);</span><span style=color:#f8f8f8;text-decoration:underline>
 </span></span></span><span style=display:flex><span><span style=color:#f8f8f8;text-decoration:underline></span><span style=color:#204a87;font-weight:700>assert</span><span style=color:#f8f8f8;text-decoration:underline> </span><span style=color:#000>foo</span><span style=color:#000;font-weight:700>.</span><span style=color:#c4a000>getExtension</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>Baz</span><span style=color:#000;font-weight:700>.</span><span style=color:#c4a000>fooExt</span><span style=color:#000;font-weight:700>)</span><span style=color:#f8f8f8;text-decoration:underline> </span><span style=color:#ce5c00;font-weight:700>==</span><span style=color:#f8f8f8;text-decoration:underline> </span><span style=color:#000>baz</span><span style=color:#000;font-weight:700>;</span><span style=color:#f8f8f8;text-decoration:underline>
 </span></span></span></code></pre></div><p>When parsing a message that might have extensions, you must provide an
-<a href=/reference/java/api-docs/com/google/protobuf/ExtensionRegistry.html><code>ExtensionRegistry</code></a>
+<a href=./reference/java/api-docs/com/google/protobuf/ExtensionRegistry.html><code>ExtensionRegistry</code></a>
 in which you have registered any extensions that you want to be able to parse.
 Otherwise, those extensions will be treated like unknown fields and the methods
 observing extensions will behave as if they don&rsquo;t exist.</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-java data-lang=java><span style=display:flex><span><span style=color:#000>ExtensionRegistry</span><span style=color:#f8f8f8;text-decoration:underline> </span><span style=color:#000>registry</span><span style=color:#f8f8f8;text-decoration:underline> </span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#f8f8f8;text-decoration:underline> </span><span style=color:#000>ExtensionRegistry</span><span style=color:#000;font-weight:700>.</span><span style=color:#c4a000>newInstance</span><span style=color:#000;font-weight:700>();</span><span style=color:#f8f8f8;text-decoration:underline>
@@ -426,7 +426,7 @@ system. If you do NOT want this code to be generated, add this line to the file:
 </span></span></span></code></pre></div><p>If neither of the above lines are given, the option defaults to <code>false</code>, as
 generic services are deprecated. (Note that prior to 2.4.0, the option defaults
 to <code>true</code>)</p><p>RPC systems based on <code>.proto</code>-language service definitions should provide
-<a href=/reference/cpp/api-docs/google.protobuf.compiler.plugin.pb>plugins</a>
+<a href=./reference/cpp/api-docs/google.protobuf.compiler.plugin.pb>plugins</a>
 to generate code appropriate for the system. These plugins are likely to require
 that abstract services are disabled, so that they can generate their own classes
 of the same names. Plugins are new in version 2.3.0 (January 2010).</p><p>The remainder of this section describes what the protocol buffer compiler
@@ -480,7 +480,7 @@ call a callback. So, for example, <code>bar</code> is defined as:</p><div class=
 <code>Foo.newReflectiveBlockingService(Foo.BlockingInterface)</code> returns a
 <code>BlockingService</code> wrapping some <code>Foo.BlockingInterface</code>. Finally,
 <code>Foo.BlockingStub</code> returns a stub implementation of <code>Foo.BlockingInterface</code> that
-sends requests to a particular <code>BlockingRpcChannel</code>.</p><h2 id=plugins>Plugin Insertion Points</h2><p><a href=/reference/cpp/api-docs/google.protobuf.compiler.plugin.pb>Code generator plugins</a>
+sends requests to a particular <code>BlockingRpcChannel</code>.</p><h2 id=plugins>Plugin Insertion Points</h2><p><a href=./reference/cpp/api-docs/google.protobuf.compiler.plugin.pb>Code generator plugins</a>
 that want to extend the output of the Java code generator may insert code of the
 following types using the given insertion point names.</p><ul><li><code>outer_class_scope</code>: Member declarations that belong in the file&rsquo;s wrapper
 class.</li><li><code>class_scope:TYPENAME</code>: Member declarations that belong in a message class.
@@ -498,8 +498,8 @@ complicated. You should probably look at the <code>protoc</code> source code, pa
 <code>java_headers.cc</code>, to make sure you have covered all cases.</p><p>Do not generate code which relies on private class members declared by the
 standard code generator, as these implementation details may change in future
 versions of Protocol Buffers.</p><h2 id=utility-classes>Utility Classes</h2><p>Protocol buffer provides
-<a href=/reference/java/api-docs/com/google/protobuf/util/package-summary.html>utility classes</a>
+<a href=./reference/java/api-docs/com/google/protobuf/util/package-summary.html>utility classes</a>
 for message comparison, JSON conversion and working with
-<a href=/reference/protobuf/google.protobuf>well-known types (predefined protocol buffer messages for common use-cases).</a></p></div></main></div></div><footer class="bg-dark py-5 row d-print-none"><div class="container-fluid mx-sm-5"><div class=row><div class="col-6 col-sm-4 text-xs-center order-sm-2"><ul class="list-inline mb-0"><li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title="Stack Overflow" aria-label="Stack Overflow"><a class=text-white target=_blank rel=noopener href=https://stackoverflow.com/questions/tagged/protocol-buffers aria-label="Stack Overflow"><i class="fab fa-stack-overflow"></i></a></li></ul><script type=text/javascript id=cookiebanner src=https://cdn.jsdelivr.net/gh/dobarkod/cookie-banner@1.2.2/dist/cookiebanner.min.js data-height=50px data-message="Protobuf.dev uses cookies from Google to deliver and enhance the quality of its services and to analyze traffic." data-bg=#ffb data-fg=#000 data-position=bottom data-padding="10px 16px" data-close-text="OK, got it" data-font-size=18px data-moreinfo=https://policies.google.com/technologies/cookies></script></div><div class="col-6 col-sm-4 text-right text-xs-center order-sm-3"><ul class="list-inline mb-0"><li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title=GitHub aria-label=GitHub><a class=text-white target=_blank rel=noopener href=https://github.com/protocolbuffers/protobuf aria-label=GitHub><i class="fab fa-github"></i></a></li><li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title="Developer mailing list" aria-label="Developer mailing list"><a class=text-white target=_blank rel=noopener href=https://groups.google.com/g/protobuf aria-label="Developer mailing list"><i class="fa fa-envelope"></i></a></li></ul><script type=text/javascript id=cookiebanner src=https://cdn.jsdelivr.net/gh/dobarkod/cookie-banner@1.2.2/dist/cookiebanner.min.js data-height=50px data-message="Protobuf.dev uses cookies from Google to deliver and enhance the quality of its services and to analyze traffic." data-bg=#ffb data-fg=#000 data-position=bottom data-padding="10px 16px" data-close-text="OK, got it" data-font-size=18px data-moreinfo=https://policies.google.com/technologies/cookies></script></div><div class="col-12 col-sm-4 text-center py-2 order-sm-2"><small class=text-white>&copy; 2025 Google LLC All Rights Reserved</small>
+<a href=./reference/protobuf/google.protobuf>well-known types (predefined protocol buffer messages for common use-cases).</a></p></div></main></div></div><footer class="bg-dark py-5 row d-print-none"><div class="container-fluid mx-sm-5"><div class=row><div class="col-6 col-sm-4 text-xs-center order-sm-2"><ul class="list-inline mb-0"><li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title="Stack Overflow" aria-label="Stack Overflow"><a class=text-white target=_blank rel=noopener href=https://stackoverflow.com/questions/tagged/protocol-buffers aria-label="Stack Overflow"><i class="fab fa-stack-overflow"></i></a></li></ul><script type=text/javascript id=cookiebanner src=https://cdn.jsdelivr.net/gh/dobarkod/cookie-banner@1.2.2/dist/cookiebanner.min.js data-height=50px data-message="Protobuf.dev uses cookies from Google to deliver and enhance the quality of its services and to analyze traffic." data-bg=#ffb data-fg=#000 data-position=bottom data-padding="10px 16px" data-close-text="OK, got it" data-font-size=18px data-moreinfo=https://policies.google.com/technologies/cookies></script></div><div class="col-6 col-sm-4 text-right text-xs-center order-sm-3"><ul class="list-inline mb-0"><li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title=GitHub aria-label=GitHub><a class=text-white target=_blank rel=noopener href=https://github.com/protocolbuffers/protobuf aria-label=GitHub><i class="fab fa-github"></i></a></li><li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title="Developer mailing list" aria-label="Developer mailing list"><a class=text-white target=_blank rel=noopener href=https://groups.google.com/g/protobuf aria-label="Developer mailing list"><i class="fa fa-envelope"></i></a></li></ul><script type=text/javascript id=cookiebanner src=https://cdn.jsdelivr.net/gh/dobarkod/cookie-banner@1.2.2/dist/cookiebanner.min.js data-height=50px data-message="Protobuf.dev uses cookies from Google to deliver and enhance the quality of its services and to analyze traffic." data-bg=#ffb data-fg=#000 data-position=bottom data-padding="10px 16px" data-close-text="OK, got it" data-font-size=18px data-moreinfo=https://policies.google.com/technologies/cookies></script></div><div class="col-12 col-sm-4 text-center py-2 order-sm-2"><small class=text-white>&copy; 2025 Google LLC All Rights Reserved</small>
 <small class=ml-1><a href=https://policies.google.com/privacy target=_blank rel=noopener>Privacy Policy</a></small>
 <span class=text-white>Hosted by GitHub Pages.</span> <a href=https://docs.github.com/en/site-policy/privacy-policies/github-privacy-statement target=_blank>GitHub Privacy Statement</a></div></div></div></footer></div><script src=/protocolbuffers.github.io/js/main.min.465e525b7f12005beca2f93e7a2facf1d7da354d8fa99daffa84ddbfba25da98.js integrity="sha256-Rl5SW38SAFvsovk+ei+s8dfaNU2PqZ2v+oTdv7ol2pg=" crossorigin=anonymous></script><script defer src=/protocolbuffers.github.io/js/click-to-copy.min.73478a7d4807698aed7e355eb23f9890ca18fea3158604c8471746d046702bad.js integrity="sha256-c0eKfUgHaYrtfjVesj+YkMoY/qMVhgTIRxdG0EZwK60=" crossorigin=anonymous></script><script src=/protocolbuffers.github.io/js/tabpane-persist.js></script></body></html>

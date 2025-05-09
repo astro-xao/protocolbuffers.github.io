@@ -11,10 +11,10 @@ we have to maintain arena donation states to track whether string payload
 allocation is from arena or heap.</p><p>Long-term, we would like to migrate all of our runtime and generated APIs to
 accept <code>string_view</code> as inputs and return them from accessors. This document
 describes the state of the migration as of our 30.x release.</p><h2 id=string-type>String Field Accessors</h2><p>As part of edition 2023, the
-<a href=/editions/features#string_type><code>string_type</code></a> feature
+<a href=./editions/features#string_type><code>string_type</code></a> feature
 was released with a <code>VIEW</code> option to allow for the incremental migration to
 generated <code>string_view</code> APIs. Using this feature will affect the
-<a href=/reference/cpp/cpp-generated>C++ Generated Code</a> of
+<a href=./reference/cpp/cpp-generated>C++ Generated Code</a> of
 <code>string</code> and <code>bytes</code> fields.</p><h3 id=ctype>Interaction with ctype</h3><p>In edition 2023, you can still specify <code>ctype</code> at the field level, while you can
 specify <code>string_type</code> at either the file or field level. It is not allowed to
 specify both on the same field. If <code>string_type</code> is set at the file-level,
@@ -46,7 +46,7 @@ field with the given value.</li><li><code>void add_foo(string&& value)</code>: A
 field, moving from the passed string.</li><li><code>void add_foo(const char* value)</code>: Appends a new element to the end of the
 field using a C-style null-terminated string.</li><li><code>void clear_foo()</code>: Removes all elements from the field. After calling this,
 <code>foo_size()</code> will return zero.</li><li><code>const RepeatedPtrField&lt;string>& foo() const</code>: Returns the underlying
-<a href=/reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField><code>RepeatedPtrField</code></a>
+<a href=./reference/cpp/api-docs/google.protobuf.repeated_field#RepeatedPtrField><code>RepeatedPtrField</code></a>
 that stores the field&rsquo;s elements. This container class provides STL-like
 iterators and other methods.</li><li><code>RepeatedPtrField&lt;string>* mutable_foo()</code>: Returns a pointer to the
 underlying mutable <code>RepeatedPtrField</code> that stores the field&rsquo;s elements. This
@@ -74,7 +74,7 @@ introduced and defaults to true. Unless disabled, for an enum like:</p><div clas
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#000;font-weight:700>}</span><span style=color:#a40000>
 </span></span></span></code></pre></div><p>The protocol buffer compiler, in addition to the <code>Foo</code> enum, will generate the
 following new function in addition to the standard
-<a href=/reference/cpp/cpp-generated#enum>generated code</a>:</p><ul><li><code>::absl::string_view Foo_Name(int value)</code>: Returns the name for given
+<a href=./reference/cpp/cpp-generated#enum>generated code</a>:</p><ul><li><code>::absl::string_view Foo_Name(int value)</code>: Returns the name for given
 numeric value. Returns an empty string if no such value exists. If multiple
 values have this number, the first one defined is returned. In the above
 example, <code>Foo_Name(5)</code> would return <code>VALUE_B</code>.</li></ul><p>This can be reverted back to the old behavior by adding a feature override like:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>enum</span> <span style=color:#000>Foo</span> <span style=color:#000;font-weight:700>{</span><span style=color:#a40000>

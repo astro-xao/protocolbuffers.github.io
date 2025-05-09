@@ -8,11 +8,11 @@ protocol buffer data, including <code>.proto</code> file syntax and how to gener
 access classes from your <code>.proto</code> files. It covers <strong>edition 2023</strong> of the
 protocol buffers language. For information about how editions differ from proto2
 and proto3 conceptually, see
-<a href=/editions/overview>Protobuf Editions Overview</a>.</p><p>For information on the <strong>proto2</strong> syntax, see the
-<a href=/programming-guides/proto2>Proto2 Language Guide</a>.</p><p>For information on <strong>proto3</strong> syntax, see the
-<a href=/programming-guides/proto3>Proto3 Language Guide</a>.</p><p>This is a reference guide – for a step by step example that uses many of the
+<a href=./editions/overview>Protobuf Editions Overview</a>.</p><p>For information on the <strong>proto2</strong> syntax, see the
+<a href=./programming-guides/proto2>Proto2 Language Guide</a>.</p><p>For information on <strong>proto3</strong> syntax, see the
+<a href=./programming-guides/proto3>Proto3 Language Guide</a>.</p><p>This is a reference guide – for a step by step example that uses many of the
 features described in this document, see the
-<a href=/getting-started>tutorial</a>
+<a href=./getting-started>tutorial</a>
 for your chosen language.</p><h2 id=simple>Defining A Message Type</h2><p>First let&rsquo;s look at a very simple example. Let&rsquo;s say you want to define a search
 request message format, where each search request has a query string, the
 particular page of results you are interested in, and a number of results per
@@ -27,7 +27,7 @@ page. Here&rsquo;s the <code>.proto</code> file you use to define the message ty
 protobuf language spec.</p><ul><li>The <code>edition</code> (or <code>syntax</code> for proto2/proto3) must be the first
 non-empty, non-comment line of the file.</li><li>If no <code>edition</code> or <code>syntax</code> is specified, the protocol buffer compiler
 will assume you are using
-<a href=/programming-guides/proto2>proto2</a>.</li></ul></li><li><p>The <code>SearchRequest</code> message definition specifies three fields (name/value
+<a href=./programming-guides/proto2>proto2</a>.</li></ul></li><li><p>The <code>SearchRequest</code> message definition specifies three fields (name/value
 pairs), one for each piece of data that you want to include in this type of
 message. Each field has a name and a type.</p></li></ul><h3 id=specifying-types>Specifying Field Types</h3><p>In the earlier example, all the fields are <a href=#scalar>scalar types</a>: two integers
 (<code>page_number</code> and <code>results_per_page</code>) and a string (<code>query</code>). You can also
@@ -38,7 +38,7 @@ implementation. The protocol buffer compiler will complain if you use one of
 these reserved field numbers in your message.</li><li>You cannot use any previously <a href=#fieldreserved>reserved</a> field numbers or
 any field numbers that have been allocated to <a href=#extensions>extensions</a>.</li></ul><p>This number <strong>cannot be changed once your message type is in use</strong> because it
 identifies the field in the
-<a href=/programming-guides/encoding>message wire format</a>.
+<a href=./programming-guides/encoding>message wire format</a>.
 &ldquo;Changing&rdquo; a field number is equivalent to deleting that field and creating a
 new field with the same type but a new number. See <a href=#deleting>Deleting Fields</a>
 for how to do this properly.</p><p>Field numbers <strong>should never be reused</strong>. Never take a field number out of the
@@ -48,7 +48,7 @@ fields. Lower field number values take less space in the wire format. For
 example, field numbers in the range 1 through 15 take one byte to encode. Field
 numbers in the range 16 through 2047 take two bytes. You can find out more about
 this in
-<a href=/programming-guides/encoding#structure>Protocol Buffer Encoding</a>.</p><h4 id=consequences>Consequences of Reusing Field Numbers</h4><p>Reusing a field number makes decoding wire-format messages ambiguous.</p><p>The protobuf wire format is lean and doesn&rsquo;t provide a way to detect fields
+<a href=./programming-guides/encoding#structure>Protocol Buffer Encoding</a>.</p><h4 id=consequences>Consequences of Reusing Field Numbers</h4><p>Reusing a field number makes decoding wire-format messages ambiguous.</p><p>The protobuf wire format is lean and doesn&rsquo;t provide a way to detect fields
 encoded using one definition and decoded using another.</p><p>Encoding a field using one definition and then decoding that same field with a
 different definition can lead to:</p><ul><li>Developer time lost to debugging</li><li>A parse/merge error (best case scenario)</li><li>Leaked PII/SPII</li><li>Data corruption</li></ul><p>Common causes of field number reuse:</p><ul><li><p>renumbering fields (sometimes done to achieve a more aesthetically pleasing
 number order for fields). Renumbering effectively deletes and re-adds all
@@ -56,25 +56,25 @@ the fields involved in the renumbering, resulting in incompatible
 wire-format changes.</p></li><li><p>deleting a field and not <a href=#fieldreserved>reserving</a> the number to prevent
 future reuse.</p><ul><li>This has been a very easy mistake to make with
 <a href=#extensions>extension fields</a> for several reasons.
-<a href=/programming-guides/extension_declarations>Extension Declarations</a>
+<a href=./programming-guides/extension_declarations>Extension Declarations</a>
 provide a mechanism for reserving extension fields.</li></ul></li></ul><p>The field number is limited to 29 bits rather than 32 bits because three bits
 are used to specify the field&rsquo;s wire format. For more on this, see the
-<a href=/programming-guides/encoding#structure>Encoding topic</a>.</p><p><a id=specifying-field-rules></a></p><h3 id=field-labels>Specifying Field Cardinality</h3><p>Message fields can be one of the following:</p><ul><li><p><em>Singular</em>:</p><p>A singular field has no explicit cardinality label. It has two possible
+<a href=./programming-guides/encoding#structure>Encoding topic</a>.</p><p><a id=specifying-field-rules></a></p><h3 id=field-labels>Specifying Field Cardinality</h3><p>Message fields can be one of the following:</p><ul><li><p><em>Singular</em>:</p><p>A singular field has no explicit cardinality label. It has two possible
 states:</p><ul><li>the field is set, and contains a value that was explicitly set or parsed
 from the wire. It will be serialized to the wire.</li><li>the field is unset, and will return the default value. It will not be
 serialized to the wire.</li></ul><p>You can check to see if the value was explicitly set.</p><p>Proto3 <em>implicit</em> fields that have been migrated to editions will use the
 <code>field_presence</code> feature set to the <code>IMPLICIT</code> value.</p><p>Proto2 <code>required</code> fields that have been migrated to editions will also use
 the <code>field_presence</code> feature, but set to <code>LEGACY_REQUIRED</code>.</p></li><li><p><code>repeated</code>: this field type can be repeated zero or more times in a
 well-formed message. The order of the repeated values will be preserved.</p></li><li><p><code>map</code>: this is a paired key/value field type. See
-<a href=/programming-guides/encoding#maps>Maps</a> for more on
+<a href=./programming-guides/encoding#maps>Maps</a> for more on
 this field type.</p></li></ul><h4 id=use-packed>Repeated Fields are Packed by Default</h4><p>In proto editions, <code>repeated</code> fields of scalar numeric types use <code>packed</code>
 encoding by default.</p><p>You can find out more about <code>packed</code> encoding in
-<a href=/programming-guides/encoding#packed>Protocol Buffer Encoding</a>.</p><h4 id=well-formed>Well-formed Messages</h4><p>The term &ldquo;well-formed,&rdquo; when applied to protobuf messages, refers to the bytes
+<a href=./programming-guides/encoding#packed>Protocol Buffer Encoding</a>.</p><h4 id=well-formed>Well-formed Messages</h4><p>The term &ldquo;well-formed,&rdquo; when applied to protobuf messages, refers to the bytes
 serialized/deserialized. The protoc parser validates that a given proto
 definition file is parseable.</p><p>Singular fields can appear more than once in wire-format bytes. The parser will
 accept the input, but only the last instance of that field will be accessible
 through the generated bindings. See
-<a href=/programming-guides/encoding#last-one-wins>Last One Wins</a>
+<a href=./programming-guides/encoding#last-one-wins>Last One Wins</a>
 for more on this topic.</p><h3 id=adding-types>Adding More Message Types</h3><p>Multiple message types can be defined in a single <code>.proto</code> file. This is useful
 if you are defining multiple related messages – so, for example, if you wanted
 to define the reply message format that corresponds to your <code>SearchResponse</code>
@@ -153,7 +153,7 @@ file you compile. The metadata file is used to load the valid message types
 into the descriptor pool.</li><li>For <strong>Dart</strong>, the compiler generates a <code>.pb.dart</code> file with a class for each
 message type in your file.</li></ul><p>You can find out more about using the APIs for each language by following the
 tutorial for your chosen language. For even more API
-details, see the relevant <a href=/reference/>API reference</a>.</p><h2 id=scalar>Scalar Value Types</h2><p>A scalar message field can have one of the following types – the table shows the
+details, see the relevant <a href=./reference/>API reference</a>.</p><h2 id=scalar>Scalar Value Types</h2><p>A scalar message field can have one of the following types – the table shows the
 type specified in the <code>.proto</code> file, and the corresponding type in the
 automatically generated class:</p><div><table><tbody><tr><th>Proto Type</th><th>Notes</th></tr><tr><td>double</td><td></td></tr><tr><td>float</td><td></td></tr><tr><td>int32</td><td>Uses variable-length encoding. Inefficient for encoding negative
 numbers – if your field is likely to have negative values, use sint32
@@ -174,11 +174,11 @@ all cases, the value must fit in the type represented when set. See [2].</p><p><
 str if an ASCII string is given (this is subject to change).</p><p><sup>[6]</sup> Integer is used on 64-bit machines and string is used on 32-bit
 machines.</p><p>You can find out more about how these types are encoded when you serialize your
 message in
-<a href=/programming-guides/encoding>Protocol Buffer Encoding</a>.</p><h2 id=default>Default Field Values</h2><p>When a message is parsed, if the encoded message bytes do not contain a
+<a href=./programming-guides/encoding>Protocol Buffer Encoding</a>.</p><h2 id=default>Default Field Values</h2><p>When a message is parsed, if the encoded message bytes do not contain a
 particular field, accessing that field in the parsed object returns the default
 value for that field. The default values are type-specific:</p><ul><li>For strings, the default value is the empty string.</li><li>For bytes, the default value is empty bytes.</li><li>For bools, the default value is false.</li><li>For numeric types, the default value is zero.</li><li>For message fields, the field is not set. Its exact value is
 language-dependent. See the
-<a href=/reference/>generated code guide</a> for details.</li><li>For enums, the default value is the <strong>first defined enum value</strong>, which must
+<a href=./reference/>generated code guide</a> for details.</li><li>For enums, the default value is the <strong>first defined enum value</strong>, which must
 be 0. See <a href=#enum-default>Enum Default Value</a>.</li></ul><p>The default value for repeated fields is empty (generally an empty list in the
 appropriate language).</p><p>The default value for map fields is empty (generally an empty map in the
 appropriate language).</p><h3 id=explicit-default>Overriding Default Scalar Values</h3><p>In protobuf editions, you can specify explicit default values for singular
@@ -187,7 +187,7 @@ of 10 for the <code>SearchRequest.result_per_page</code> field:</p><div class=hi
 </span></span></span></code></pre></div><p>If the sender does not specify <code>result_per_page</code>, the receiver will observe the
 following state:</p><ul><li>The result_per_page field is not present. That is, the
 <code>has_result_per_page()</code> (hazzer method) method would return <code>false</code>.</li><li>The value of <code>result_per_page</code> (returned from the &ldquo;getter&rdquo;) is <code>10</code>.</li></ul><p>If the sender does send a value for <code>result_per_page</code> the default value of 10 is
-ignored and the sender&rsquo;s value is returned from the &ldquo;getter&rdquo;.</p><p>See the <a href=/reference/>generated code guide</a> for your
+ignored and the sender&rsquo;s value is returned from the &ldquo;getter&rdquo;.</p><p>See the <a href=./reference/>generated code guide</a> for your
 chosen language for more details about how defaults work in generated code.</p><p>Explicit default values cannot be specified for fields that have the
 <code>field_presence</code> feature set to <code>IMPLICIT</code>.</p><h2 id=enum>Enumerations</h2><p>When you&rsquo;re defining a message type, you might want one of its fields to only
 have one of a predefined list of values. For example, let&rsquo;s say you want to add
@@ -216,10 +216,10 @@ possible values, and a field of type <code>Corpus</code>:</p><div class=highligh
 because that is the first value defined in the enum.</p><p>In edition 2023, the first value defined in an enum definition <strong>must</strong> have the
 value zero and should have the name <code>ENUM_TYPE_NAME_UNSPECIFIED</code> or
 <code>ENUM_TYPE_NAME_UNKNOWN</code>. This is because:</p><ul><li>The zero value needs to be the first element for compatibility with
-<a href=/programming-guides/proto2#enum-default>proto2</a>
+<a href=./programming-guides/proto2#enum-default>proto2</a>
 semantics, where the first enum value is the default unless a different
 value is explicitly specified.</li><li>There must be a zero value for compatibility with
-<a href=/programming-guides/proto3#enum-default>proto3</a>
+<a href=./programming-guides/proto3#enum-default>proto3</a>
 semantics, where the zero value is used as the default value for all
 implicit-presence fields using this enum type.</li></ul><p>It is also recommended that this first, default value have no semantic meaning
 other than &ldquo;this value was unspecified&rdquo;.</p><p>The default value for an enum field like <code>SearchRequest.corpus</code> field can be
@@ -247,7 +247,7 @@ is used when deserializing.</p><div class=highlight><pre tabindex=0 style=backgr
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#000;font-weight:700>}</span><span style=color:#a40000>
 </span></span></span></code></pre></div><h3 id=enum-constants>Enum Constants</h3><p>Enumerator constants must be in the range of a 32-bit integer. Since <code>enum</code>
 values use
-<a href=/programming-guides/encoding>varint encoding</a> on the
+<a href=./programming-guides/encoding>varint encoding</a> on the
 wire, negative values are inefficient and thus not recommended. You can define
 <code>enum</code>s within a message definition, as in the earlier example, or outside –
 these <code>enum</code>s can be reused in any message definition in your <code>.proto</code> file. You
@@ -269,8 +269,8 @@ accessors. In either case, if the message is serialized the unrecognized value
 will still be serialized with the message.</p><div class="alert alert-warning" role=alert><h4 class=alert-heading>Important</h4>For
 information on how enums should work contrasted with how they currently work in
 different languages, see
-<a href=/programming-guides/enum>Enum Behavior</a>.</div><p>For more information about how to work with message <code>enum</code>s in your
-applications, see the <a href=/reference/>generated code guide</a>
+<a href=./programming-guides/enum>Enum Behavior</a>.</div><p>For more information about how to work with message <code>enum</code>s in your
+applications, see the <a href=./reference/>generated code guide</a>
 for your chosen language.</p><h3 id=reserved>Reserved Values</h3><p>If you <a href=#updating>update</a> an enum type by entirely removing an enum entry, or
 commenting it out, future users can reuse the numeric value when making their
 own updates to the type. This can cause severe issues if they later load old
@@ -323,8 +323,8 @@ specified on the protocol compiler command line using the <code>-I</code>/<code>
 flag. If no flag was given, it looks in the directory in which the compiler was
 invoked. In general you should set the <code>--proto_path</code> flag to the root of your
 project and use fully qualified names for all imports.</p><h3 id=proto2>Using proto2 and proto3 Message Types</h3><p>It&rsquo;s possible to import
-<a href=/programming-guides/proto2>proto2</a> and
-<a href=/programming-guides/proto3>proto3</a> message types and
+<a href=./programming-guides/proto2>proto2</a> and
+<a href=./programming-guides/proto3>proto3</a> message types and
 use them in your editions 2023 messages, and vice versa.</p><h2 id=nested>Nested Types</h2><p>You can define and use message types inside other message types, as in the
 following example – here the <code>Result</code> message is defined inside the
 <code>SearchResponse</code> message:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>message</span> <span style=color:#000>SearchResponse</span> <span style=color:#000;font-weight:700>{</span><span style=color:#a40000>
@@ -361,10 +361,10 @@ code created with the old format, don&rsquo;t worry! It&rsquo;s very simple to u
 message types without breaking any of your existing code when you use the binary
 wire format.</p><div class="alert alert-note" role=alert><h4 class=alert-heading>Note</h4>If
 you use JSON or
-<a href=/reference/protobuf/textformat-spec>proto text format</a>
+<a href=./reference/protobuf/textformat-spec>proto text format</a>
 to store your protocol buffer messages, the changes that you can make in your
 proto definition are different.</div><p>Check
-<a href=/best-practices/dos-donts>Proto Best Practices</a> and the
+<a href=./best-practices/dos-donts>Proto Best Practices</a> and the
 following rules:</p><ul><li>Don&rsquo;t change the field numbers for any existing fields. &ldquo;Changing&rdquo; the field
 number is equivalent to deleting the field and adding a new field with the
 same type. If you want to renumber a field, see the instructions for
@@ -395,7 +395,7 @@ expect this field to be singular will take the last input value if it&rsquo;s a
 primitive type field or merge all input elements if it&rsquo;s a message type
 field. Note that this is <strong>not</strong> generally safe for numeric types, including
 bools and enums. Repeated fields of numeric types are serialized in the
-<a href=/programming-guides/encoding#packed>packed</a> format
+<a href=./programming-guides/encoding#packed>packed</a> format
 by default, which will not be parsed correctly when a singular field is
 expected.</li><li><code>enum</code> is compatible with <code>int32</code>, <code>uint32</code>, <code>int64</code>, and <code>uint64</code> in terms
 of wire format (note that values will be truncated if they don&rsquo;t fit).
@@ -434,7 +434,7 @@ the limited field number space and the
 <a href=#consequences>Consequences of Reusing Field Numbers</a>. If your use case
 requires very low coordination for a large number of extensions, consider
 using the
-<a href=/reference/protobuf/google.protobuf#any><code>Any</code> message type</a>
+<a href=./reference/protobuf/google.protobuf#any><code>Any</code> message type</a>
 instead.</li></ul><h3 id=ext-example>Example Extension</h3><p>Let&rsquo;s look at an example extension:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#8f5902;font-style:italic>// file kittens/video_ext.proto
 </span></span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic></span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#204a87;font-weight:700>import</span> <span style=color:#4e9a06>&#34;kittens/video.proto&#34;</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
@@ -480,7 +480,7 @@ removed.</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;
 extension field with the fully-qualified name <code>.kittens.kitten_videos</code> and the
 fully-qualified type <code>.kittens.Video</code>. To learn more about extension
 declarations see
-<a href=/programming-guides/extension_declarations>Extension Declarations</a>.</p><p>Note that the container message&rsquo;s file (<code>media/user_content.proto</code>) <strong>does not</strong>
+<a href=./programming-guides/extension_declarations>Extension Declarations</a>.</p><p>Note that the container message&rsquo;s file (<code>media/user_content.proto</code>) <strong>does not</strong>
 import the kitten_video extension definition (<code>kittens/video_ext.proto</code>)</p><p>There is no difference in the wire-format encoding of extension fields as
 compared to a standard field with the same field number, type, and cardinality.
 Therefore, it is safe to move a standard field out of its container to be an
@@ -508,7 +508,7 @@ for this new range. This placeholder can be removed once an actual declaration
 is added.</p><p>It is safe to split an existing extension range into separate ranges that cover
 the same total range. This might be necessary for migrating a legacy message
 type to
-<a href=/programming-guides/extension_declarations>Extension Declarations</a>.
+<a href=./programming-guides/extension_declarations>Extension Declarations</a>.
 For example, before migration, the range might be defined as:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>message</span> <span style=color:#000>LegacyMessage</span> <span style=color:#000;font-weight:700>{</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span>  <span style=color:#204a87;font-weight:700>extensions</span> <span style=color:#0000cf;font-weight:700>1000</span> <span style=color:#204a87;font-weight:700>to</span> <span style=color:#204a87;font-weight:700>max</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#000;font-weight:700>}</span><span style=color:#a40000>
@@ -532,7 +532,7 @@ messages. All the same rules for <a href=#assigning>Assigning Field Numbers</a> 
 extension field numbers. The same
 <a href=#consequences>Consequences of Reusing Field Numbers</a> also apply to reusing
 extension field numbers.</p><p>Choosing unique extension field numbers is simple if the container message uses
-<a href=/programming-guides/extension_declarations>extension declarations</a>.
+<a href=./programming-guides/extension_declarations>extension declarations</a>.
 When defining a new extension, choose the lowest field number above all other
 declarations from the highest extension range defined in the container message.
 For example, if a container message is defined like this:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>message</span> <span style=color:#000>Container</span> <span style=color:#000;font-weight:700>{</span><span style=color:#a40000>
@@ -562,7 +562,7 @@ because the <a href=#consequences>Consequences of Reusing Field Numbers</a> fall
 extenders of a message (not just the developer that didn&rsquo;t follow the
 recommendations). If your use case requires very low coordination, consider
 using the
-<a href=/reference/protobuf/google.protobuf#any><code>Any</code> message</a>
+<a href=./reference/protobuf/google.protobuf#any><code>Any</code> message</a>
 instead.</p><p>Unverified extension field number allocation strategies are limited to the range
 1 to 524,999,999. Field numbers 525,000,000 and above can only be used with
 extension declarations.</p><h3 id=specifying-extension-types>Specifying Extension Types</h3><p>Extensions can be of any field type except <code>oneof</code>s and <code>map</code>s.</p><h3 id=nested-exts>Nested Extensions (not recommended)</h3><p>You can declare extensions in the scope of another message:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>import</span> <span style=color:#4e9a06>&#34;common/user_profile.proto&#34;</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
@@ -641,7 +641,7 @@ type will have special <code>pack()</code> and <code>unpack()</code> accessors, 
 </span></span></code></pre></div><p>If you want to limit contained messages to a small number of types and to
 require permission before adding new types to the list, consider using
 <a href=#extensions>extensions</a> with
-<a href=/programming-guides/extension_declarations>extension declarations</a>
+<a href=./programming-guides/extension_declarations>extension declarations</a>
 instead of <code>Any</code> message types.</p><h2 id=oneof>Oneof</h2><p>If you have a message with many singular fields and where at most one field will
 be set at the same time, you can enforce this behavior and save memory by using
 the oneof feature.</p><p>Oneof fields are like singular fields except all the fields in a oneof share
@@ -661,7 +661,7 @@ any type, except <code>map</code> fields and <code>repeated</code> fields. If yo
 repeated field to a oneof, you can use a message containing the repeated field.</p><p>In your generated code, oneof fields have the same getters and setters as
 regular fields. You also get a special method for checking which value (if any)
 in the oneof is set. You can find out more about the oneof API for your chosen
-language in the relevant <a href=/reference/>API reference</a>.</p><h3 id=oneof-features>Oneof Features</h3><ul><li><p>Setting a oneof field will automatically clear all other members of the
+language in the relevant <a href=./reference/>API reference</a>.</p><h3 id=oneof-features>Oneof Features</h3><ul><li><p>Setting a oneof field will automatically clear all other members of the
 oneof. So if you set several oneof fields, only the <em>last</em> field you set
 will still have a value.</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-cpp data-lang=cpp><span style=display:flex><span><span style=color:#000>SampleMessage</span> <span style=color:#000>message</span><span style=color:#000;font-weight:700>;</span>
 </span></span><span style=display:flex><span><span style=color:#000>message</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>set_name</span><span style=color:#000;font-weight:700>(</span><span style=color:#4e9a06>&#34;name&#34;</span><span style=color:#000;font-weight:700>);</span>
@@ -717,7 +717,7 @@ the default value for the type is serialized, while in other languages
 nothing is serialized.</li><li>No symbol <code>FooEntry</code> can exist in the same scope as a map <code>foo</code>, because
 <code>FooEntry</code> is already used by the implementation of the map.</li></ul><p>The generated map API is currently available for all supported languages. You
 can find out more about the map API for your chosen language in the relevant
-<a href=/reference/>API reference</a>.</p><h3 id=backwards>Backwards Compatibility</h3><p>The map syntax is equivalent to the following on the wire, so protocol buffers
+<a href=./reference/>API reference</a>.</p><h3 id=backwards>Backwards Compatibility</h3><p>The map syntax is equivalent to the following on the wire, so protocol buffers
 implementations that do not support maps can still handle your data:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>message</span> <span style=color:#000>MapFieldEntry</span> <span style=color:#000;font-weight:700>{</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span>  <span style=color:#000>key_type</span> <span style=color:#000>key</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>1</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span>  <span style=color:#000>value_type</span> <span style=color:#000>value</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>2</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
@@ -769,14 +769,14 @@ developed at Google. gRPC works particularly well with protocol buffers and lets
 you generate the relevant RPC code directly from your <code>.proto</code> files using a
 special protocol buffer compiler plugin.</p><p>If you don&rsquo;t want to use gRPC, it&rsquo;s also possible to use protocol buffers with
 your own RPC implementation. You can find out more about this in the
-<a href=/programming-guides/proto2#services>Proto2 Language Guide</a>.</p><p>There are also a number of ongoing third-party projects to develop RPC
+<a href=./programming-guides/proto2#services>Proto2 Language Guide</a>.</p><p>There are also a number of ongoing third-party projects to develop RPC
 implementations for Protocol Buffers. For a list of links to projects we know
 about, see the
 <a href=https://github.com/protocolbuffers/protobuf/blob/master/docs/third_party.md>third-party add-ons wiki page</a>.</p><h2 id=json>JSON Mapping</h2><p>The standard protobuf binary wire format is the preferred serialization format
 for communication between two systems that use protobufs. For communicating with
 systems that use JSON rather than protobuf wire format, Protobuf supports a
 canonical encoding in
-<a href=/programming-guides/json>ProtoJSON</a>.</p><h2 id=options>Options</h2><p>Individual declarations in a <code>.proto</code> file can be annotated with a number of
+<a href=./programming-guides/json>ProtoJSON</a>.</p><h2 id=options>Options</h2><p>Individual declarations in a <code>.proto</code> file can be annotated with a number of
 <em>options</em>. Options do not change the overall meaning of a declaration, but may
 affect the way it is handled in a particular context. The complete list of
 available options is defined in <a href=https://github.com/protocolbuffers/protobuf/blob/main/src/google/protobuf/descriptor.proto><code>/google/protobuf/descriptor.proto</code></a>.</p><p>Some options are file-level options, meaning they should be written at the
@@ -838,14 +838,14 @@ buffer compiler should generate abstract service code based on
 For legacy reasons, these default to <code>true</code>. However, as of version 2.3.0
 (January 2010), it is considered preferable for RPC implementations to
 provide
-<a href=/reference/cpp/api-docs/google.protobuf.compiler.plugin.pb>code generator plugins</a>
+<a href=./reference/cpp/api-docs/google.protobuf.compiler.plugin.pb>code generator plugins</a>
 to generate code more specific to each system, rather than rely on the
 &ldquo;abstract&rdquo; services.</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#8f5902;font-style:italic>// This file relies on plugins to generate service code.
 </span></span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic></span><span style=color:#204a87;font-weight:700>option</span> <span style=color:#000>cc_generic_services</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>false</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#204a87;font-weight:700>option</span> <span style=color:#000>java_generic_services</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>false</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#204a87;font-weight:700>option</span> <span style=color:#000>py_generic_services</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#204a87;font-weight:700>false</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span></code></pre></div></li><li><p><code>cc_enable_arenas</code> (file option): Enables
-<a href=/reference/cpp/arenas>arena allocation</a> for C++
+<a href=./reference/cpp/arenas>arena allocation</a> for C++
 generated code.</p></li><li><p><code>objc_class_prefix</code> (file option): Sets the Objective-C class prefix which
 is prepended to all Objective-C generated classes and enums from this
 .proto. There is no default. You should use prefixes that are between 3-5
@@ -886,9 +886,9 @@ options using extensions.</p><p>The following example shows the syntax for addin
 values and to fields.</p><h3 id=customoptions>Custom Options</h3><p>Protocol Buffers also allows you to define and use your own options. Note that
 this is an <strong>advanced feature</strong> which most people don&rsquo;t need. If you do think
 you need to create your own options, see the
-<a href=/programming-guides/proto2#customoptions>Proto2 Language Guide</a>
+<a href=./programming-guides/proto2#customoptions>Proto2 Language Guide</a>
 for details. Note that creating custom options uses
-<a href=/programming-guides/proto2#extensions>extensions</a>.</p><h3 id=option-retention>Option Retention</h3><p>Options have a notion of <em>retention</em>, which controls whether an option is
+<a href=./programming-guides/proto2#extensions>extensions</a>.</p><h3 id=option-retention>Option Retention</h3><p>Options have a notion of <em>retention</em>, which controls whether an option is
 retained in the generated code. Options have <em>runtime retention</em> by default,
 meaning that they are retained in the generated code and are thus visible at
 runtime in the generated descriptor pool. However, you can set <code>retention = RETENTION_SOURCE</code> to specify that an option (or field within an option) must not
@@ -954,7 +954,7 @@ message. For example:</p><div class=highlight><pre tabindex=0 style=background-c
 that you need to work with the message types defined in a <code>.proto</code> file, you
 need to run the protocol buffer compiler <code>protoc</code> on the <code>.proto</code> file. If you
 haven&rsquo;t installed the compiler,
-<a href=/downloads>download the package</a> and follow the
+<a href=./downloads>download the package</a> and follow the
 instructions in the README. For Go, you also need to install a special code
 generator plugin for the compiler; you can find this and installation
 instructions in the <a href=https://github.com/golang/protobuf/>golang/protobuf</a>
@@ -972,23 +972,23 @@ you should include a unique library name in the path that they are expected to
 be used under to avoid file name collisions. If you have multiple directories in
 one project, it is best practice to prefer setting one <code>-I</code> to a top level
 directory of the project.</p><ul><li><p>You can provide one or more <em>output directives</em>:</p><ul><li><code>--cpp_out</code> generates C++ code in <code>DST_DIR</code>. See the
-<a href=/reference/cpp/cpp-generated>C++ generated code reference</a>
+<a href=./reference/cpp/cpp-generated>C++ generated code reference</a>
 for more.</li><li><code>--java_out</code> generates Java code in <code>DST_DIR</code>. See the
-<a href=/reference/java/java-generated>Java generated code reference</a>
+<a href=./reference/java/java-generated>Java generated code reference</a>
 for more.</li><li><code>--kotlin_out</code> generates additional Kotlin code in <code>DST_DIR</code>. See the
-<a href=/reference/kotlin/kotlin-generated>Kotlin generated code reference</a>
+<a href=./reference/kotlin/kotlin-generated>Kotlin generated code reference</a>
 for more.</li><li><code>--python_out</code> generates Python code in <code>DST_DIR</code>. See the
-<a href=/reference/python/python-generated>Python generated code reference</a>
+<a href=./reference/python/python-generated>Python generated code reference</a>
 for more.</li><li><code>--go_out</code> generates Go code in <code>DST_DIR</code>. See the
-<a href=/reference/go/go-generated-opaque>Go generated code reference</a>
+<a href=./reference/go/go-generated-opaque>Go generated code reference</a>
 for more.</li><li><code>--ruby_out</code> generates Ruby code in <code>DST_DIR</code>. See the
-<a href=/reference/ruby/ruby-generated>Ruby generated code reference</a>
+<a href=./reference/ruby/ruby-generated>Ruby generated code reference</a>
 for more.</li><li><code>--objc_out</code> generates Objective-C code in <code>DST_DIR</code>. See the
-<a href=/reference/objective-c/objective-c-generated>Objective-C generated code reference</a>
+<a href=./reference/objective-c/objective-c-generated>Objective-C generated code reference</a>
 for more.</li><li><code>--csharp_out</code> generates C# code in <code>DST_DIR</code>. See the
-<a href=/reference/csharp/csharp-generated>C# generated code reference</a>
+<a href=./reference/csharp/csharp-generated>C# generated code reference</a>
 for more.</li><li><code>--php_out</code> generates PHP code in <code>DST_DIR</code>. See the
-<a href=/reference/php/php-generated>PHP generated code reference</a>
+<a href=./reference/php/php-generated>PHP generated code reference</a>
 for more.</li></ul><p>As an extra convenience, if the <code>DST_DIR</code> ends in <code>.zip</code> or <code>.jar</code>, the
 compiler will write the output to a single ZIP-format archive file with the
 given name. <code>.jar</code> outputs will also be given a manifest file as required by

@@ -7,8 +7,8 @@
 different behaviors as well as the plans to move protobufs to a state where they
 are consistent across all languages. If you&rsquo;re looking for information on how to
 use enums in general, see the corresponding sections in the
-<a href=/programming-guides/proto2#enum>proto2</a> and
-<a href=/programming-guides/proto3#enum>proto3</a> language guide
+<a href=./programming-guides/proto2#enum>proto2</a> and
+<a href=./programming-guides/proto3#enum>proto3</a> language guide
 topics.</p><h2 id=definitions>Definitions</h2><p>Enums have two distinct flavors (<em>open</em> and <em>closed</em>). They behave identically
 except in their handling of unknown values. Practically, this means that simple
 cases work the same, but some corner cases have interesting implications.</p><p>For the purpose of explanation, let us assume we have the following <code>.proto</code>
@@ -30,7 +30,7 @@ unknown field set. Accessors will report the field as being <em>unset</em> and w
 return the enum&rsquo;s default value.</li></ul><h2 id=implications-of-closed-enums>Implications of <em>Closed</em> Enums</h2><p>The behavior of <em>closed</em> enums has unexpected consequences when parsing a
 repeated field. When a <code>repeated Enum</code> field is parsed all unknown values will
 be placed in the
-<a href=/programming-guides/proto3/#unknowns>unknown field</a>
+<a href=./programming-guides/proto3/#unknowns>unknown field</a>
 set. When it is serialized those unknown values will be written again, <em>but not
 in their original place in the list</em>. For example, given the <code>.proto</code> file:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-gdscript3 data-lang=gdscript3><span style=display:flex><span><span style=color:#204a87;font-weight:700>enum</span> <span style=color:#000>Enum</span> <span style=color:#000;font-weight:700>{</span>
 </span></span><span style=display:flex><span>  <span style=color:#000>A</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>0</span><span style=color:#000;font-weight:700>;</span>
@@ -56,7 +56,7 @@ should be treated as <strong>open</strong>.</li><li>When a <code>proto3</code> f
 should be treated as <strong>open</strong>.</li></ul><h2 id=known-issues>Known Issues</h2><h3 id=cpp>C++</h3><p>All known C++ releases are out of conformance. When a <code>proto2</code> file imports an
 enum defined in a <code>proto3</code> file, C++ treats that field as a <strong>closed</strong> enum.
 Under editions, this behavior is represented by the deprecated field feature
-<a href=/editions/features#legacy_closed_enum><code>features.(pb.cpp).legacy_closed_enum</code></a>.
+<a href=./editions/features#legacy_closed_enum><code>features.(pb.cpp).legacy_closed_enum</code></a>.
 There are two options for moving to conformant behavior:</p><ul><li>Remove the field feature. This is the recommended approach, but may cause
 runtime behavior changes. Without the feature, unrecognized integers will
 end up stored in the field cast to the enum type instead of being put into
@@ -64,7 +64,7 @@ the unknown field set.</li><li>Change the enum to closed. This is discouraged, a
 behavior if <em>anybody else</em> is using the enum. Unrecognized integers will end
 up in the unknown field set instead of those fields.</li></ul><h3 id=csharp>C#</h3><p>All known C# releases are out of conformance. C# treats all enums as <strong>open</strong>.</p><h3 id=java>Java</h3><p>All known Java releases are out of conformance. When a <code>proto2</code> file imports an
 enum defined in a <code>proto3</code> file, Java treats that field as a <strong>closed</strong> enum.</p><p>Under editions, this behavior is represented by the deprecated field feature
-<a href=/editions/features#legacy_closed_enum><code>features.(pb.java).legacy_closed_enum</code></a>).
+<a href=./editions/features#legacy_closed_enum><code>features.(pb.java).legacy_closed_enum</code></a>).
 There are two options for moving to conformant behavior:</p><ul><li>Remove the field feature. This may cause runtime behavior changes. Without
 the feature, unrecognized integers will end up stored in the field and the
 <code>UNRECOGNIZED</code> value will be returned by the enum getter. Before, these

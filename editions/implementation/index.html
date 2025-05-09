@@ -6,7 +6,7 @@
 <a href=https://github.com/protocolbuffers/protobuf/issues/new class=td-page-meta--project-issue target=_blank rel=noopener><i class="fa-solid fa-list-check fa-fw"></i> Create project issue</a></div><div class=td-toc><nav id=TableOfContents><ul><li><a href=#overview>Overview</a><ul><li><a href=#edition-2023>Edition 2023</a></li><li><a href=#feature-definition>Feature Definition</a></li><li><a href=#generators>Generators</a></li><li><a href=#runtimes>Runtimes</a></li><li><a href=#feature-resolution>Feature Resolution</a></li><li><a href=#examples>Examples</a></li></ul></li></ul></nav></div></aside><main class="col-12 col-md-9 col-xl-8 ps-md-5" role=main><nav aria-label=breadcrumb class=td-breadcrumbs><ol class=breadcrumb><li class=breadcrumb-item><a href=/protocolbuffers.github.io/editions/>Protobuf Editions</a></li><li class="breadcrumb-item active" aria-current=page>Implementing Editions Support</li></ol></nav><div class=td-content><h1>Implementing Editions Support</h1><div class=lead>Instructions for implementing Editions support in runtimes and plugins.</div><header class=article-meta></header><p>This topic explains how to implement editions in new runtimes and generators.</p><h2 id=overview>Overview</h2><h3 id=edition-2023>Edition 2023</h3><p>The first edition released is Edition 2023, which is designed to unify proto2
 and proto3 syntax. The features we’ve added to cover the difference in behaviors
 are detailed in
-<a href=/editions/features>Feature Settings for Editions</a>.</p><h3 id=feature-definition>Feature Definition</h3><p>In addition to <em>supporting</em> editions and the global features we&rsquo;ve defined, you
+<a href=./editions/features>Feature Settings for Editions</a>.</p><h3 id=feature-definition>Feature Definition</h3><p>In addition to <em>supporting</em> editions and the global features we&rsquo;ve defined, you
 may want to define your own features to leverage the infrastructure. This will
 allow you to define arbitrary features that can be used by your generators and
 runtimes to gate new behaviors. The first step is to claim an extension number
@@ -69,7 +69,7 @@ overriding it anymore (but the default value would still apply). Until support
 for that last edition is dropped in a breaking release, the feature will remain
 usable for protos stuck on older editions, giving them time to migrate.</p><p>Flags that control optional behaviors you have no intention of removing are
 better implemented as
-<a href=/programming-guides/proto2/#customoptions>custom options</a>.
+<a href=./programming-guides/proto2/#customoptions>custom options</a>.
 This is related to the reason we’ve restricted features to be either boolean or
 enum types. Any behavior controlled by a (relatively) unbounded number of values
 probably isn’t a good fit for the editions framework, since it’s not realistic

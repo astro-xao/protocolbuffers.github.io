@@ -5,7 +5,7 @@
 <a href="https://github.com/astro-xao/protocolbuffers.github.io//issues/new?title=Migration%20Guide" class=td-page-meta--issue target=_blank rel=noopener><i class="fa-solid fa-list-check fa-fw"></i> Create documentation issue</a>
 <a href=https://github.com/protocolbuffers/protobuf/issues/new class=td-page-meta--project-issue target=_blank rel=noopener><i class="fa-solid fa-list-check fa-fw"></i> Create project issue</a></div><div class=td-toc><nav id=TableOfContents><ul><li><a href=#v30>Changes in v30.0</a><ul><li><a href=#replaced-cmake-submodules-with-fetched-deps>Replaced CMake Submodules with Fetched Deps</a></li><li><a href=#string_view-return-type>string_view return type</a></li><li><a href=#poison-msvc--bazel>Poison MSVC + Bazel</a></li><li><a href=#ctype-removed>ctype Removed from FieldDescriptor Options</a></li><li><a href=#debug-redaction>Modified Debug APIs to Redact Sensitive Fields</a></li><li><a href=#remove-deprecated>Removed Deprecated APIs</a></li><li><a href=#drop-cpp-14>Dropped C++14 Support</a></li><li><a href=#introduced-asan-poisoning-after-clearing-oneof-messages-on-arena>Introduced ASAN Poisoning After Clearing Oneof Messages on Arena</a></li><li><a href=#dropped-our-c-cocoapods-release>Dropped our C++ CocoaPods release</a></li><li><a href=#python>Changes in Python</a></li><li><a href=#objc>Changes in Objective-C</a></li><li><a href=#poison>Poison Pill Warnings</a></li><li><a href=#utf-8-enforcement>Changes to UTF-8 Enforcement in C# and Ruby</a></li><li><a href=#ruby-and-php-errors-in-json-parsing>Ruby and PHP Errors in JSON Parsing</a></li></ul></li><li><a href=#compiler-22>Compiler Changes in v22.0</a><ul><li><a href=#json-field-names>JSON Field Name Conflicts</a></li></ul></li><li><a href=#cpp-22>C++ API Changes in v22.0</a><ul><li><a href=#autotools>Autotools Turndown</a></li><li><a href=#abseil>Abseil Dependency</a></li><li><a href=#getcurrenttime>Changes in GetCurrentTime Method</a></li></ul></li><li><a href=#cpp20>C++20 Support</a><ul><li><a href=#final-classes>Final Classes</a></li><li><a href=#container-static-assertions>Container Static Assertions</a></li><li><a href=#cleared-elements>Cleared Element Deprecation</a></li><li><a href=#unsafe-arena>UnsafeArena Deprecation</a></li><li><a href=#map-pairs>Map Pair Upgrades</a></li><li><a href=#json-parser>New JSON Parser</a></li><li><a href=#arena-init><code>Arena::Init</code></a></li><li><a href=#error-collector>ErrorCollector Migration</a></li></ul></li></ul></nav></div></aside><main class="col-12 col-md-9 col-xl-8 ps-md-5" role=main><nav aria-label=breadcrumb class=td-breadcrumbs><ol class=breadcrumb><li class=breadcrumb-item><a href=/protocolbuffers.github.io/support/>Support</a></li><li class="breadcrumb-item active" aria-current=page>Migration Guide</li></ol></nav><div class=td-content><h1>Migration Guide</h1><div class=lead>A list of the breaking changes made to versions of the libraries, and how to update your code to accommodate the changes.</div><header class=article-meta></header><h2 id=v30>Changes in v30.0</h2><p>The following is a list of the breaking changes made to versions of the
 libraries, and how to update your code to accommodate the changes.</p><p>This covers breaking changes announced in
-<a href=/news/v30>News Announcements for v30.x</a> and
+<a href=./news/v30>News Announcements for v30.x</a> and
 <a href=https://github.com/protocolbuffers/protobuf/releases/tag/v30.0>Release Notes for v30.0</a>.</p><h3 id=replaced-cmake-submodules-with-fetched-deps>Replaced CMake Submodules with Fetched Deps</h3><p>Previously, our default CMake behavior was to use Git submodules to grab pinned
 dependencies. Specifying <code>-Dprotobuf_ABSL_PROVIDER=package</code> would flip our CMake
 configs to look for local installations of Abseil (with similar options for
@@ -76,7 +76,7 @@ cases requiring a human-readable output (such as logging), or consider switching
 to binary format for serialization and deserialization. Users who need the old
 deserializable format can use <code>TextFormat.printer().printToString(proto)</code>, but
 this does not redact sensitive fields and so should be used with caution.</p><p>Read more about this in the
-<a href=/news/2024-12-04.md>news article released December 4, 2024</a>.</p><h3 id=remove-deprecated>Removed Deprecated APIs</h3><p>We removed the following public runtime APIs, which have been marked deprecated
+<a href=./news/2024-12-04.md>news article released December 4, 2024</a>.</p><h3 id=remove-deprecated>Removed Deprecated APIs</h3><p>We removed the following public runtime APIs, which have been marked deprecated
 (such as <code>ABSL_DEPRECATED</code>) for at least one minor or major release and that are
 obsolete or replaced.</p><p><strong>API:</strong>
 <a href=https://github.com/protocolbuffers/protobuf/blob/f4b57b98b08aec8bc52e6a7b762edb7a1b9e8883/src/google/protobuf/arena.h#L179><code>Arena::CreateMessage</code></a></p><p><strong>Replacement:</strong>
@@ -177,7 +177,7 @@ behavior. If renaming the conflicting fields isn&rsquo;t an option you can take
 immediately, set the <code>deprecated_legacy_json_field_conflicts</code> option on the
 specific message/enum. This option will be removed in a future release, but
 gives you more time to migrate.</p><h2 id=cpp-22>C++ API Changes in v22.0</h2><p>4.22.0 has breaking changes for C++ runtime and protoc, as
-<a href=/news/2022-08-03#cpp-changes>announced in August</a>.</p><h3 id=autotools>Autotools Turndown</h3><p>Source of changes:
+<a href=./news/2022-08-03#cpp-changes>announced in August</a>.</p><h3 id=autotools>Autotools Turndown</h3><p>Source of changes:
 <a href=https://github.com/protocolbuffers/protobuf/pull/10132>PR #10132</a></p><p>In v22.0, we removed all Autotools support from the protobuf compiler and the
 C++ runtime. If you&rsquo;re using Autotools to build either of these, you must
 migrate to <a href=http://cmake.org>CMake</a> or <a href=http://bazel.build>Bazel</a>. We have
@@ -226,7 +226,7 @@ Prior to v22.x, Protobuf incorrectly removed the macro definition for
 including <code>&lt;protobuf/util/time_util.h></code>. Starting with v22.x, Protobuf preserves
 the macro definition. This may break customer code relying on the previous
 behavior, such as if they use the expression
-<a href=/reference/cpp/api-docs/google.protobuf.util.time_util#TimeUtil><code>google::protobuf::util::TimeUtil::GetCurrentTime()</code></a>.</p><p>To migrate your app to the new behavior, change your code to do one of the
+<a href=./reference/cpp/api-docs/google.protobuf.util.time_util#TimeUtil><code>google::protobuf::util::TimeUtil::GetCurrentTime()</code></a>.</p><p>To migrate your app to the new behavior, change your code to do one of the
 following:</p><ul><li>if the <code>GetCurrent</code> macro is defined, explicitly undefine the
 <code>GetCurrentTime</code> macro</li><li>prevent the macro expansion by using
 <code>(google::protobuf::util::TimeUtil::GetCurrentTime)()</code> or a similar

@@ -7,13 +7,13 @@
 protocol buffers. By walking through creating a simple example application, it
 shows you how to</p><ul><li>Define message formats in a <code>.proto</code> file.</li><li>Use the protocol buffer compiler.</li><li>Use the Python protocol buffer API to write and read messages.</li></ul><p>This isn&rsquo;t a comprehensive guide to using protocol buffers in Python. For more
 detailed reference information, see the
-<a href=/programming-guides/proto2>Protocol Buffer Language Guide (proto2)</a>,
+<a href=./programming-guides/proto2>Protocol Buffer Language Guide (proto2)</a>,
 the
-<a href=/programming-guides/proto3>Protocol Buffer Language Guide (proto3)</a>,
+<a href=./programming-guides/proto3>Protocol Buffer Language Guide (proto3)</a>,
 the <a href=https://googleapis.dev/python/protobuf/latest/>Python API Reference</a>, the
-<a href=/reference/python/python-generated>Python Generated Code Guide</a>,
+<a href=./reference/python/python-generated>Python Generated Code Guide</a>,
 and the
-<a href=/programming-guides/encoding>Encoding Reference</a>.</p><h2 id=problem-domain>The Problem Domain</h2><p>The example we&rsquo;re going to use is a very simple &ldquo;address book&rdquo; application that
+<a href=./programming-guides/encoding>Encoding Reference</a>.</p><h2 id=problem-domain>The Problem Domain</h2><p>The example we&rsquo;re going to use is a very simple &ldquo;address book&rdquo; application that
 can read and write people&rsquo;s contact details to and from a file. Each person in
 the address book has a name, an ID, an email address, and a contact phone
 number.</p><p>How do you serialize and retrieve structured data like this? There are a few
@@ -40,7 +40,7 @@ the fields that make up a protocol buffer and takes care of the details of
 reading and writing the protocol buffer as a unit. Importantly, the protocol
 buffer format supports the idea of extending the format over time in such a way
 that the code can still read data encoded with the old format.</p><h2 id=example-code>Where to Find the Example Code</h2><p>The example code is included in the source code package, under the &ldquo;examples&rdquo;
-directory. <a href=/downloads>Download it here.</a></p><h2 id=protocol-format>Defining Your Protocol Format</h2><p>To create your address book application, you&rsquo;ll need to start with a <code>.proto</code>
+directory. <a href=./downloads>Download it here.</a></p><h2 id=protocol-format>Defining Your Protocol Format</h2><p>To create your address book application, you&rsquo;ll need to start with a <code>.proto</code>
 file. The definitions in a <code>.proto</code> file are simple: you add a <em>message</em> for
 each data structure you want to serialize, then specify a name and a type for
 each field in the message. Here is the <code>.proto</code> file that defines your messages,
@@ -95,13 +95,13 @@ less-commonly used optional elements. Each element in a repeated field requires
 re-encoding the tag number, so repeated fields are particularly good candidates
 for this optimization.</p><p>You&rsquo;ll find a complete guide to writing <code>.proto</code> files &ndash; including all the
 possible field types &ndash; in the
-<a href=/programming-guides/editions>Protocol Buffer Language Guide</a>.
+<a href=./programming-guides/editions>Protocol Buffer Language Guide</a>.
 Don&rsquo;t go looking for facilities similar to class inheritance, though &ndash; protocol
 buffers don&rsquo;t do that.</p><h2 id=compiling-protocol-buffers>Compiling Your Protocol Buffers</h2><p>Now that you have a <code>.proto</code>, the next thing you need to do is generate the
 classes you&rsquo;ll need to read and write <code>AddressBook</code> (and hence <code>Person</code> and
 <code>PhoneNumber</code>) messages. To do this, you need to run the protocol buffer
 compiler <code>protoc</code> on your <code>.proto</code>:</p><ol><li><p>If you haven&rsquo;t installed the compiler,
-<a href=/downloads>download the package</a> and follow the
+<a href=./downloads>download the package</a> and follow the
 instructions in the README.</p></li><li><p>Now run the compiler, specifying the source directory (where your
 application&rsquo;s source code lives &ndash; the current directory is used if you
 don&rsquo;t provide a value), the destination directory (where you want the
@@ -171,7 +171,7 @@ value of a field before it has been set returns the default value.</p><div class
 </span></span><span style=display:flex><span><span style=color:#000>person</span><span style=color:#ce5c00;font-weight:700>.</span><span style=color:#000>id</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#34;1234&#34;</span>        <span style=color:#8f5902;font-style:italic># raises TypeError</span>
 </span></span></code></pre></div><p>For more information on exactly what members the protocol compiler generates for
 any particular field definition, see the
-<a href=/reference/python/python-generated>Python generated code reference</a>.</p><h3 id=enums>Enums</h3><p>Enums are expanded by the metaclass into a set of symbolic constants with
+<a href=./reference/python/python-generated>Python generated code reference</a>.</p><h3 id=enums>Enums</h3><p>Enums are expanded by the metaclass into a set of symbolic constants with
 integer values. So, for example, the constant
 <code>addressbook_pb2.Person.PhoneType.PHONE_TYPE_WORK</code> has the value 2.</p><h3 id=standard-message-methods>Standard Message Methods</h3><p>Each message class also contains a number of other methods that let you check or
 manipulate the entire message, including:</p><ul><li><code>IsInitialized()</code>: checks if all the required fields have been set.</li><li><code>__str__()</code>: returns a human-readable representation of the message,
@@ -180,7 +180,7 @@ particularly useful for debugging. (Usually invoked as <code>str(message)</code>
 values.</li><li><code>Clear()</code>: clears all the elements back to the empty state.</li></ul><p>These methods implement the <code>Message</code> interface. For more information, see the
 <a href=https://googleapis.dev/python/protobuf/latest/google/protobuf/message.html#google.protobuf.message.Message>complete API documentation for <code>Message</code></a>.</p><h3 id=parsing-serialization>Parsing and Serialization</h3><p>Finally, each protocol buffer class has methods for writing and reading messages
 of your chosen type using the protocol buffer
-<a href=/programming-guides/encoding>binary format</a>. These
+<a href=./programming-guides/encoding>binary format</a>. These
 include:</p><ul><li><code>SerializeToString()</code>: serializes the message and returns it as a string.
 Note that the bytes are binary, not text; we only use the <code>str</code> type as a
 convenient container.</li><li><code>ParseFromString(data)</code>: parses a message from the given string.</li></ul><p>These are just a couple of the options provided for parsing and serialization.
@@ -302,7 +302,7 @@ forward-compatible &ndash; and you almost certainly do want this &ndash; then th
 some rules you need to follow. In the new version of the protocol buffer:</p><ul><li>you <em>must not</em> change the tag numbers of any existing fields.</li><li>you <em>must not</em> add or delete any required fields.</li><li>you <em>may</em> delete optional or repeated fields.</li><li>you <em>may</em> add new optional or repeated fields but you must use fresh tag
 numbers (that is, tag numbers that were never used in this protocol buffer,
 not even by deleted fields).</li></ul><p>(There are
-<a href=/programming-guides/proto2#updating>some exceptions</a> to
+<a href=./programming-guides/proto2#updating>some exceptions</a> to
 these rules, but they are rarely used.)</p><p>If you follow these rules, old code will happily read new messages and simply
 ignore any new fields. To the old code, optional fields that were deleted will
 simply have their default value, and deleted repeated fields will be empty. New

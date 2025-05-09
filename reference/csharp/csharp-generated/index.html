@@ -5,10 +5,10 @@
 <a href="https://github.com/astro-xao/protocolbuffers.github.io//issues/new?title=C#%20Generated%20Code%20Guide" class=td-page-meta--issue target=_blank rel=noopener><i class="fa-solid fa-list-check fa-fw"></i> Create documentation issue</a>
 <a href=https://github.com/protocolbuffers/protobuf/issues/new class=td-page-meta--project-issue target=_blank rel=noopener><i class="fa-solid fa-list-check fa-fw"></i> Create project issue</a></div><div class=td-toc><nav id=TableOfContents><ul><li><a href=#invocation>Compiler Invocation</a><ul><li><a href=#compiler_options>C#-specific Options</a></li></ul></li><li><a href=#structure>File structure</a></li><li><a href=#message>Messages</a><ul><li><a href=#nested-types>Nested Types</a></li></ul></li><li><a href=#fields>Fields</a><ul><li><a href=#singular>Singular Fields</a></li><li><a href=#repeated>Repeated Fields</a></li><li><a href=#map>Map Fields</a></li><li><a href=#oneof>Oneof Fields</a></li><li><a href=#wrapper_types>Wrapper Type Fields</a></li></ul></li><li><a href=#enum>Enumerations</a></li><li><a href=#service>Services</a></li></ul></nav></div></aside><main class="col-12 col-md-9 col-xl-8 ps-md-5" role=main><nav aria-label=breadcrumb class=td-breadcrumbs><ol class=breadcrumb><li class=breadcrumb-item><a href=/protocolbuffers.github.io/reference/>Reference Guides</a></li><li class=breadcrumb-item><a href=/protocolbuffers.github.io/reference/csharp/>C#</a></li><li class="breadcrumb-item active" aria-current=page>Generated Code Guide</li></ol></nav><div class=td-content><h1>C# Generated Code Guide</h1><div class=lead>Describes exactly what C# code the protocol buffer compiler generates for protocol definitions using proto3 syntax.</div><header class=article-meta></header><p>You should
 read the
-<a href=/programming-guides/proto3>proto3 language guide</a>
+<a href=./programming-guides/proto3>proto3 language guide</a>
 before reading this document.</p><div class="alert alert-note" role=alert><h4 class=alert-heading>Note</h4>The protobuf compiler can generate C# interfaces for definitions using <code>proto2</code>
 syntax starting from release 3.10. Refer to the
-<a href=/programming-guides/proto2>proto2 language guide</a> for
+<a href=./programming-guides/proto2>proto2 language guide</a> for
 details of the semantics of <code>proto2</code> definitions, and see
 <code>docs/csharp/proto2.md</code>
 (<a href=https://github.com/protocolbuffers/protobuf/blob/master/docs/csharp/proto2.md>view on GitHub</a>)
@@ -59,7 +59,7 @@ conversion rules as the file name. For example, a proto package of
 <code>example.high_score</code> would result in a namespace of <code>Example.HighScore</code>. You can
 override the default generated namespace for a particular .proto using the
 <code>csharp_namespace</code>
-<a href=/programming-guides/proto3#options>file option</a>.</p><p>Each top-level enum and message results in an enum or class being declared as
+<a href=./programming-guides/proto3#options>file option</a>.</p><p>Each top-level enum and message results in an enum or class being declared as
 members of the namespace. Additionally, a single static partial class is always
 generated for the file descriptor. This is used for reflection-based operations.
 The descriptor class is given the same name as the file, without the extension.

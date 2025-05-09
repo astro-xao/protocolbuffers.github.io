@@ -6,9 +6,9 @@
 <a href=https://github.com/protocolbuffers/protobuf/issues/new class=td-page-meta--project-issue target=_blank rel=noopener><i class="fa-solid fa-list-check fa-fw"></i> Create project issue</a></div><div class=td-toc><nav id=TableOfContents><ul><li><a href=#invocation>Compiler invocation</a></li><li><a href=#package>Packages</a></li><li><a href=#prefix>Class prefix</a></li><li><a href=#case>Camel case conversion</a></li><li><a href=#message>Messages</a><ul><li><a href=#gpbmessage-interface><code>GPBMessage</code> interface</a></li><li><a href=#unknown-fields-proto2-only>Unknown fields (proto2 only)</a></li></ul></li><li><a href=#fields>Fields</a><ul><li><a href=#singular3>Singular fields (proto3)</a></li><li><a href=#singular2>Singular fields (proto2)</a></li><li><a href=#repeated>Repeated fields</a></li><li><a href=#oneof>Oneof fields</a></li><li><a href=#map-fields>Map Fields</a></li></ul></li><li><a href=#enum>Enumerations</a><ul><li><a href=#swift-enumeration-support>Swift Enumeration Support</a></li></ul></li><li><a href=#wellknown>Well-known types (proto3 only)</a><ul><li><a href=#time-stamps>Time Stamps</a></li><li><a href=#duration>Duration</a></li></ul></li><li><a href=#extensions>Extensions (proto2 only)</a></li></ul></nav></div></aside><main class="col-12 col-md-9 col-xl-8 ps-md-5" role=main><nav aria-label=breadcrumb class=td-breadcrumbs><ol class=breadcrumb><li class=breadcrumb-item><a href=/protocolbuffers.github.io/reference/>Reference Guides</a></li><li class=breadcrumb-item><a href=/protocolbuffers.github.io/reference/objective-c/>Objective-C</a></li><li class="breadcrumb-item active" aria-current=page>Generated Code Guide</li></ol></nav><div class=td-content><h1>Objective-C Generated Code Guide</h1><div class=lead>Describes exactly what Objective-C code the protocol buffer compiler generates for any given protocol definition.</div><header class=article-meta></header><p>Any
 differences between proto2 and proto3 generated code are highlighted. You should
 read the
-<a href=/programming-guides/proto2>proto2 language guide</a>
+<a href=./programming-guides/proto2>proto2 language guide</a>
 and/or
-<a href=/programming-guides/proto3>proto3 language guide</a>
+<a href=./programming-guides/proto3>proto3 language guide</a>
 before reading this document.</p><h2 id=invocation>Compiler invocation</h2><p>The protocol buffer compiler produces Objective-C output when invoked with the
 <code>--objc_out=</code> command-line flag. The parameter to the <code>--objc_out=</code> option is
 the directory where you want the compiler to write your Objective-C output. The
@@ -27,7 +27,7 @@ will <em>not</em> create <code>build</code> or <code>build/gen</code>; they must
 unaffected by the package name defined in the <code>.proto</code> file, as Objective-C has
 no language-enforced namespacing. Instead, Objective-C class names are
 distinguished using prefixes, which you can find out about in the next section.</p><h2 id=prefix>Class prefix</h2><p>Given the following
-<a href=/programming-guides/proto3#options>file option</a>:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>option</span> <span style=color:#000>objc_class_prefix</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#34;CGOOP&#34;</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
+<a href=./programming-guides/proto3#options>file option</a>:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>option</span> <span style=color:#000>objc_class_prefix</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#34;CGOOP&#34;</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span></code></pre></div><p>The specified string - in this case, <code>CGOOP</code> - is prefixed in front of all
 Objective-C classes generated for this <code>.proto</code> file. Use prefixes that are 3 or
 more characters as recommended by Apple. Note that all 2 letter prefixes are
@@ -69,7 +69,7 @@ to support a superset of the following interface:</p><div class=highlight><pre t
 </span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic>// Will perform a deep equality comparison.
 </span></span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic></span><span style=color:#000;font-weight:700>-</span> <span style=color:#000;font-weight:700>(</span><span style=color:#204a87;font-weight:700>BOOL</span><span style=color:#000;font-weight:700>)</span><span style=color:#000>isEqual:</span><span style=color:#000;font-weight:700>(</span><span style=color:#204a87;font-weight:700>id</span><span style=color:#000;font-weight:700>)</span><span style=color:#000>value</span><span style=color:#000;font-weight:700>;</span>
 </span></span></code></pre></div><h3 id=unknown-fields-proto2-only>Unknown fields (proto2 only)</h3><p>If a message created with an
-<a href=/programming-guides/proto2#updating>older version</a> of
+<a href=./programming-guides/proto2#updating>older version</a> of
 your .proto definition is parsed with code generated from a newer version (or
 vice versa), the message may contain optional or repeated fields that the
 "new" code does not recognize. In proto2 generated code, these fields are not
@@ -148,7 +148,7 @@ unique, and stands for "property").</p><div class=highlight><pre tabindex=0 styl
 </span></span><span style=display:flex><span><span style=color:#204a87;font-weight:700>@property</span><span style=color:#000;font-weight:700>(</span><span style=color:#204a87;font-weight:700>nonatomic</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>readwrite</span><span style=color:#000;font-weight:700>)</span> <span style=color:#000>int32_t</span> <span style=color:#000>barOneOfCase_p</span><span style=color:#000;font-weight:700>;</span>
 </span></span><span style=display:flex><span><span style=color:#204a87;font-weight:700>@property</span><span style=color:#000;font-weight:700>(</span><span style=color:#204a87;font-weight:700>nonatomic</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>readwrite</span><span style=color:#000;font-weight:700>)</span> <span style=color:#000>int32_t</span> <span style=color:#000>id_p</span><span style=color:#000;font-weight:700>;</span>
 </span></span><span style=display:flex><span><span style=color:#204a87;font-weight:700>@end</span>
-</span></span></code></pre></div><h4 id=default>Default values</h4><p>The <a href=/programming-guides/proto3#default>default value</a>
+</span></span></code></pre></div><h4 id=default>Default values</h4><p>The <a href=./programming-guides/proto3#default>default value</a>
 for numeric types is <code>0</code>.</p><p>The default value for strings is <code>@""</code>, and the default value for bytes is
 <code>[NSData data]</code>.</p><p>Assigning <code>nil</code> to a string field will assert in debug, and set the field to
 <code>@""</code> in release. Assigning <code>nil</code> to a bytes field will assert in debug and set
@@ -256,7 +256,7 @@ unique, and stands for "property").</p><div class=highlight><pre tabindex=0 styl
 </span></span><span style=display:flex><span><span style=color:#204a87;font-weight:700>@property</span><span style=color:#000;font-weight:700>(</span><span style=color:#204a87;font-weight:700>nonatomic</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>readwrite</span><span style=color:#000;font-weight:700>)</span> <span style=color:#000>int32_t</span> <span style=color:#000>barOneOfCase_p</span><span style=color:#000;font-weight:700>;</span>
 </span></span><span style=display:flex><span><span style=color:#204a87;font-weight:700>@property</span><span style=color:#000;font-weight:700>(</span><span style=color:#204a87;font-weight:700>nonatomic</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>readwrite</span><span style=color:#000;font-weight:700>)</span> <span style=color:#000>int32_t</span> <span style=color:#000>id_p</span><span style=color:#000;font-weight:700>;</span>
 </span></span><span style=display:flex><span><span style=color:#204a87;font-weight:700>@end</span>
-</span></span></code></pre></div><h4 id=default>Default values (optional fields only)</h4><p>The <a href=/programming-guides/proto2#optional>default value</a>
+</span></span></code></pre></div><h4 id=default>Default values (optional fields only)</h4><p>The <a href=./programming-guides/proto2#optional>default value</a>
 for numeric types, if no explicit default was specified by the user, is <code>0</code>.</p><p>The default value for strings is <code>@""</code>, and the default value for bytes is
 <code>[NSData data]</code>.</p><p>Assigning <code>nil</code> to a string field will assert in debug, and set the field to
 <code>@""</code> in release. Assigning <code>nil</code> to a bytes field will assert in debug and set
@@ -319,7 +319,7 @@ to support in the compiler.</p><div class=highlight><pre tabindex=0 style=backgr
 </span></span><span style=display:flex><span><span style=color:#204a87;font-weight:700>@property</span><span style=color:#000;font-weight:700>(</span><span style=color:#204a87;font-weight:700>nonatomic</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>readonly</span><span style=color:#000;font-weight:700>)</span> <span style=color:#000>NSUInteger</span> <span style=color:#000>enumValueArray_Count</span><span style=color:#000;font-weight:700>;</span>
 </span></span><span style=display:flex><span><span style=color:#204a87;font-weight:700>@end</span>
 </span></span></code></pre></div><p>For string, bytes and message fields, elements of the array are <code>NSString*</code>,
-<code>NSData*</code> and pointers to subclasses of <code>GPBMessage</code> respectively.</p><h4 id=repeateddefault>Default values</h4><p>The <a href=/programming-guides/proto3#default>default value</a>
+<code>NSData*</code> and pointers to subclasses of <code>GPBMessage</code> respectively.</p><h4 id=repeateddefault>Default values</h4><p>The <a href=./programming-guides/proto3#default>default value</a>
 for a repeated field is to be empty. In Objective-C generated code, this is an
 empty <code>GPB&lt;VALUE>Array</code>. If you access an empty repeated field, you&rsquo;ll get back
 an empty array that you can update like any other repeated field array.</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-objc data-lang=objc><span style=display:flex><span><span style=color:#000>Foo</span> <span style=color:#ce5c00;font-weight:700>*</span><span style=color:#000>myFoo</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#000;font-weight:700>[[</span><span style=color:#000>Foo</span> <span style=color:#000>alloc</span><span style=color:#000;font-weight:700>]</span> <span style=color:#000>init</span><span style=color:#000;font-weight:700>];</span>
@@ -431,7 +431,7 @@ function and to access raw values.</p><div class=highlight><pre tabindex=0 style
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span><span style=color:#204a87;font-weight:700>@end</span>
 </span></span></code></pre></div><h3 id=oneof>Oneof fields</h3><p>Given a message with
-<a href=/programming-guides/proto3#oneof>oneof</a> field
+<a href=./programming-guides/proto3#oneof>oneof</a> field
 definitions:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>message</span> <span style=color:#000>Order</span> <span style=color:#000;font-weight:700>{</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span>  <span style=color:#204a87;font-weight:700>oneof</span> <span style=color:#000>OrderID</span> <span style=color:#000;font-weight:700>{</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span>    <span style=color:#204a87;font-weight:700>string</span> <span style=color:#000>name</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>1</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
@@ -483,7 +483,7 @@ handled by <code>NSMutableDictionary</code>.</p><p>Other cases are:</p><div clas
 </span></span></code></pre></div><p>where:</p><ul><li><code>&lt;KEY></code> is Uint32, Int32, UInt64, Int64, Bool or String.</li><li><code>&lt;VALUE></code> is UInt32, Int32, UInt64, Int64, Bool, Float, Double, Enum, or
 Object. <code>Object</code> is used for values of type <code>string</code> <code>bytes</code> or <code>message</code> to
 cut down on the number of classes and is in line with how Objective-C works
-with <code>NSMutableDictionary</code>.</li></ul><h4 id=repeateddefault>Default values</h4><p>The <a href=/programming-guides/proto3#default>default value</a>
+with <code>NSMutableDictionary</code>.</li></ul><h4 id=repeateddefault>Default values</h4><p>The <a href=./programming-guides/proto3#default>default value</a>
 for a map field is empty. In Objective-C generated code, this is an empty
 <code>GBP&lt;KEY>&lt;VALUE>Dictionary</code>. If you access an empty map field, you&rsquo;ll get back
 an empty dictionary that you can update like any other map field.</p><p>You can also use the provided <code>&lt;mapField>_Count</code> property to check if a
@@ -719,7 +719,7 @@ Protocol buffer-generated enumerations support Objective-C to Swift conversions.
 just use their proto definitions in generated Objective-C code, though we supply
 some basic conversion methods in categories to make using them simpler. Note
 that we do not have special APIs for all well-known types yet, including
-<a href=/programming-guides/proto3#any><code>Any</code></a> (there is
+<a href=./programming-guides/proto3#any><code>Any</code></a> (there is
 currently no helper method to convert an <code>Any</code>&rsquo;s message value into a message of
 the appropriate type).</p><h3 id=time-stamps>Time Stamps</h3><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-objc data-lang=objc><span style=display:flex><span><span style=color:#204a87;font-weight:700>@interface</span> <span style=color:#000>GPBTimeStamp</span> <span style=color:#f57900>(GPBWellKnownTypes)</span>
 </span></span><span style=display:flex><span><span style=color:#204a87;font-weight:700>@property</span> <span style=color:#000;font-weight:700>(</span><span style=color:#204a87;font-weight:700>nonatomic</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>readwrite</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>strong</span><span style=color:#000;font-weight:700>)</span> <span style=color:#000>NSDate</span> <span style=color:#ce5c00;font-weight:700>*</span><span style=color:#000>date</span><span style=color:#000;font-weight:700>;</span>
@@ -734,7 +734,7 @@ the appropriate type).</p><h3 id=time-stamps>Time Stamps</h3><div class=highligh
 </span></span><span style=display:flex><span>    <span style=color:#000;font-weight:700>(</span><span style=color:#000>NSTimeInterval</span><span style=color:#000;font-weight:700>)</span><span style=color:#000>timeIntervalSince1970</span><span style=color:#000;font-weight:700>;</span>
 </span></span><span style=display:flex><span><span style=color:#204a87;font-weight:700>@end</span>
 </span></span></code></pre></div><h2 id=extensions>Extensions (proto2 only)</h2><p>Given a message with an
-<a href=/programming-guides/proto2#extensions>extension range</a>:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>message</span> <span style=color:#000>Foo</span> <span style=color:#000;font-weight:700>{</span><span style=color:#a40000>
+<a href=./programming-guides/proto2#extensions>extension range</a>:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>message</span> <span style=color:#000>Foo</span> <span style=color:#000;font-weight:700>{</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span>  <span style=color:#204a87;font-weight:700>extensions</span> <span style=color:#0000cf;font-weight:700>100</span> <span style=color:#204a87;font-weight:700>to</span> <span style=color:#0000cf;font-weight:700>199</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#000;font-weight:700>}</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000>

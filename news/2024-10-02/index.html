@@ -27,7 +27,7 @@ and that are obsolete or replaced.</p><h4 id=arenacreatemessage>Arena::CreateMes
 <a href=https://github.com/google/oss-policies-info/blob/main/foundational-cxx-support-matrix.md>Foundational C++ Support matrix</a>.</p><p>Per <a href=https://protobuf.dev/support/version-support/>our policies</a>, we do not
 consider this to be a breaking change.</p><h2 id=jruby>Changes in JRuby</h2><p>v30 will flip the default implementation for JRuby to FFI, which may be breaking
 for some JRuby users.</p><p>Note that this change doesn&rsquo;t create a Ruby major version bump because JRuby is
-<a href=/support/version-support/#ruby>not officially supported</a>.</p><h2 id=python>Changes in Python</h2><p>Python will bump its major version from 5.29.x to 6.30.x.</p><h3 id=dropping-python-38-support>Dropping Python 3.8 Support</h3><p>As per our official Python support policy, we will be dropping support for
+<a href=./support/version-support/#ruby>not officially supported</a>.</p><h2 id=python>Changes in Python</h2><p>Python will bump its major version from 5.29.x to 6.30.x.</p><h3 id=dropping-python-38-support>Dropping Python 3.8 Support</h3><p>As per our official Python support policy, we will be dropping support for
 Python 3.8 and lower. This means the minimum supported Python version is 3.9.</p><h3 id=python-remove-alias>Remove bazel/system_python.bzl Alias</h3><p>v30 will remove the legacy <code>bazel/system_python.bzl</code> alias.</p><p>Remove direct references to <code>system_python.bzl</code> in favor of using
 <code>protobuf_deps.bzl</code> instead. Use <code>python/dist/system_python.bzl</code> where it was
 moved

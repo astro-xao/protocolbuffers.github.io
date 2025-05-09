@@ -45,7 +45,7 @@ specifying an explicit version: <code>go install google.golang.org/protobuf/cmd/
 </span></span></code></pre></div><h3 id=namespace-conflict>What is a protocol buffer namespace conflict?</h3><p>All protocol buffers declarations linked into a Go binary are inserted into a
 global registry.</p><p>Every protobuf declaration (for example, enums, enum values, or messages) has an
 absolute name, which is the concatenation of the
-<a href=/programming-guides/proto2#packages>package name</a> with
+<a href=./programming-guides/proto2#packages>package name</a> with
 the relative name of the declaration in the <code>.proto</code> source file (for example,
 <code>my.proto.package.MyMessage.NestedMessage</code>). The protobuf language assumes that
 all declarations are universally unique.</p><p>If two protobuf declarations linked into a Go binary have the same name, then
@@ -108,7 +108,7 @@ errors produced by this module is deliberately unstable.</p><p>If you need to id
 guarantee that all errors will match
 <a href="https://pkg.go.dev/google.golang.org/protobuf/proto?tab=doc#Error"><code>proto.Error</code></a>
 according to <a href="https://pkg.go.dev/errors?tab=doc#Is"><code>errors.Is</code></a>.</p><h3 id=unstable-json>Why does the output of <a href=https://pkg.go.dev/google.golang.org/protobuf/encoding/protojson><code>protojson</code></a> keep changing?</h3><p>We make no promises about the long-term stability of Go&rsquo;s implementation of the
-<a href=/programming-guides/proto3#json>JSON format for protocol buffers</a>.
+<a href=./programming-guides/proto3#json>JSON format for protocol buffers</a>.
 The specification only specifies what is valid JSON, but provides no
 specification for a <em>canonical</em> format for how a marshaler ought to <em>exactly</em>
 format a given message. To avoid giving the illusion that the output is stable,

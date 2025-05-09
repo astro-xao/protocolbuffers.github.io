@@ -5,11 +5,11 @@
 <a href="https://github.com/astro-xao/protocolbuffers.github.io//issues/new?title=C++%20Arena%20Allocation%20Guide" class=td-page-meta--issue target=_blank rel=noopener><i class="fa-solid fa-list-check fa-fw"></i> Create documentation issue</a>
 <a href=https://github.com/protocolbuffers/protobuf/issues/new class=td-page-meta--project-issue target=_blank rel=noopener><i class="fa-solid fa-list-check fa-fw"></i> Create project issue</a></div><div class=td-toc><nav id=TableOfContents><ul><li><a href=#why>Why Use Arena Allocation?</a></li><li><a href=#gettingstarted>Getting Started</a></li><li><a href=#arenaclass>Arena Class API</a><ul><li><a href=#constructors>Constructors</a></li><li><a href=#allocation>Allocation Methods</a></li><li><a href=#owned-list>&ldquo;Owned list&rdquo; Methods</a></li><li><a href=#other-methods>Other Methods</a></li><li><a href=#thread-safety>Thread Safety</a></li></ul></li><li><a href=#messageclass>Generated Message Class</a><ul><li><a href=#message-class-methods>Message Class Methods</a></li><li><a href=#arenaembeddedmessage>Embedded Message Fields</a></li><li><a href=#arenastring>String Fields</a></li><li><a href=#arenarepeated>Repeated Fields</a></li></ul></li><li><a href=#usage>Usage Patterns and Best Practices</a><ul><li><a href=#unintended>Unintended Copies</a></li><li><a href=#granularity>Granularity</a></li></ul></li><li><a href=#example>Example</a></li></ul></nav></div></aside><main class="col-12 col-md-9 col-xl-8 ps-md-5" role=main><nav aria-label=breadcrumb class=td-breadcrumbs><ol class=breadcrumb><li class=breadcrumb-item><a href=/protocolbuffers.github.io/reference/>Reference Guides</a></li><li class=breadcrumb-item><a href=/protocolbuffers.github.io/reference/cpp/>C++</a></li><li class="breadcrumb-item active" aria-current=page>Arena Allocation Guide</li></ol></nav><div class=td-content><h1>C++ Arena Allocation Guide</h1><div class=lead>Arena allocation is a C++-only feature that helps you optimize your memory usage and improve performance when working with protocol buffers.</div><header class=article-meta></header><p>This page describes exactly what C++ code the protocol
 buffer compiler generates in addition to the code described in the
-<a href=/reference/cpp/cpp-generated>C++ Generated Code Guide</a>
+<a href=./reference/cpp/cpp-generated>C++ Generated Code Guide</a>
 when arena allocation is enabled. It assumes that you are familiar with the
 material in the
-<a href=/programming-guides/proto2>language guide</a> and the
-<a href=/reference/cpp/cpp-generated>C++ Generated Code Guide</a>.</p><h2 id=why>Why Use Arena Allocation?</h2><p>Memory allocation and deallocation constitutes a significant fraction of CPU
+<a href=./programming-guides/proto2>language guide</a> and the
+<a href=./reference/cpp/cpp-generated>C++ Generated Code Guide</a>.</p><h2 id=why>Why Use Arena Allocation?</h2><p>Memory allocation and deallocation constitutes a significant fraction of CPU
 time spent in protocol buffers code. By default, protocol buffers performs heap
 allocations for each message object, each of its subobjects, and several field
 types, such as strings. These allocations occur in bulk when parsing a message
@@ -41,7 +41,7 @@ example, submessages in a repeated field within <code>MyMessage</code>) are allo
 the arena as well.</p><p>For the most part, the rest of your code will be the same as if you weren&rsquo;t
 using arena allocation.</p><p>We&rsquo;ll look at the arena API in more detail in the following sections, and you
 can see a more extensive <a href=#example>example</a> at the end of the document.</p><h2 id=arenaclass>Arena Class API</h2><p>You create message objects on the arena using the
-<a href=/reference/cpp/api-docs/google.protobuf.arena.md><code>google::protobuf::Arena</code></a>
+<a href=./reference/cpp/api-docs/google.protobuf.arena.md><code>google::protobuf::Arena</code></a>
 class. This class implements the following public methods.</p><h3 id=constructors>Constructors</h3><ul><li><code>Arena()</code>: Creates a new arena with default parameters, tuned for average
 use cases.</li><li><code>Arena(const ArenaOptions& options)</code>: Creates a new arena that uses the
 specified allocation options. The options available in <code>ArenaOptions</code>
@@ -114,7 +114,7 @@ or the messages are on different arenas, it performs a <em>deep copy</em> of the
 underlying data. In both cases the source message is left in a valid but
 unspecified state.</li><li><code>void Swap(Message* other)</code>: If both messages to be swapped are not on
 arenas or are on the <em>same</em> arena,
-<a href=/reference/cpp/cpp-generated#message><code>Swap()</code></a>
+<a href=./reference/cpp/cpp-generated#message><code>Swap()</code></a>
 behaves as it does without having arena allocation enabled: it efficiently
 swaps the message objects&rsquo; contents, almost exclusively through cheap
 pointer swaps, avoiding copies. However, if only one message is on an arena,
@@ -145,7 +145,7 @@ along with the objects on the arena itself.</li></ul><p>For either of these fiel
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#204a87;font-weight:700>required</span> <span style=color:#000>Bar</span> <span style=color:#000>foo</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>1</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span></code></pre></div><p>The following methods are added or have some special behavior when arena
 allocation is enabled. Otherwise, accessor methods just use the
-<a href=/reference/cpp/cpp-generated#embeddedmessage>default behavior</a>.</p><ul><li><code>Bar* mutable_foo()</code>: Returns a mutable pointer to the submessage instance.
+<a href=./reference/cpp/cpp-generated#embeddedmessage>default behavior</a>.</p><ul><li><code>Bar* mutable_foo()</code>: Returns a mutable pointer to the submessage instance.
 If the parent object is on an arena then the returned object will be as
 well.</li><li><code>void set_allocated_foo(Bar* bar)</code>: Takes a new object and adopts it as the
 new value for the field. Arena support adds additional copying semantics to
@@ -167,7 +167,7 @@ doesn&rsquo;t need to check whether the messages are on a particular arena or th
 heap. See <a href=#set-allocated>allocated/release patterns</a> for details on safe
 ways to use this.</li><li><code>Bar* unsafe_arena_release_foo()</code>: Similar to <code>release_foo()</code>, but skips all
 ownership checking. See <a href=#set-allocated>allocated/release patterns</a> for
-details on safe ways to use this.</li></ul><h3 id=arenastring>String Fields</h3><p>String fields store their data on the heap even when their parent message is on the arena. Because of this, string accessor methods use the <a href=/reference/cpp/cpp-generated#string>default behavior</a> even when arena allocation is enabled.</p><h3 id=arenarepeated>Repeated Fields</h3><p>Repeated fields allocate their internal array storage on the arena when the
+details on safe ways to use this.</li></ul><h3 id=arenastring>String Fields</h3><p>String fields store their data on the heap even when their parent message is on the arena. Because of this, string accessor methods use the <a href=./reference/cpp/cpp-generated#string>default behavior</a> even when arena allocation is enabled.</p><h3 id=arenarepeated>Repeated Fields</h3><p>Repeated fields allocate their internal array storage on the arena when the
 containing message is arena-allocated, and also allocate their elements on the
 arena when these elements are separate objects retained by pointer (messages or
 strings). At the message-class level, generated methods for repeated fields do

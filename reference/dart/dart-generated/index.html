@@ -7,9 +7,9 @@
 proto2 and proto3 generated code are highlighted - note that these differences
 are in the generated code as described in this document, not the base API, which
 are the same in both versions. You should read the
-<a href=/programming-guides/proto2>proto2 language guide</a>
+<a href=./programming-guides/proto2>proto2 language guide</a>
 and/or the
-<a href=/programming-guides/proto3>proto3 language guide</a>
+<a href=./programming-guides/proto3>proto3 language guide</a>
 before reading this document.</p><h2 id=invocation>Compiler Invocation</h2><p>The protocol buffer compiler requires a
 <a href=https://github.com/dart-lang/dart-protoc-plugin>plugin to generate Dart</a> code.
 Installing it following the
@@ -44,7 +44,7 @@ unset and all repeated fields are empty).</li></ul><h3 id=nested-types>Nested Ty
 buffer compiler generates accessor methods for each field defined within the
 message in the <code>.proto</code> file.</p><p>Note that the generated names always use camel-case naming, even if the field
 name in the <code>.proto</code> file uses lower-case with underscores
-(<a href=/programming-guides/style>as it should</a>). The
+(<a href=./programming-guides/style>as it should</a>). The
 case-conversion works as follows:</p><ol><li>For each underscore in the name, the underscore is removed, and the
 following letter is capitalized.</li><li>If the name will have a prefix attached (e.g. "has"), the first letter is
 capitalized. Otherwise, it is lower-cased.</li></ol><p>Thus, for the field <code>foo_bar_baz</code>, the getter becomes <code>get fooBarBaz</code> and a
@@ -55,14 +55,14 @@ set, returns the default value.</li><li><code>bool hasFoo()</code>: Returns <cod
 <code>hasFoo()</code> will return <code>true</code> and <code>get foo</code> will return <code>value</code>.</li><li><code>void clearFoo()</code>: Clears the value of the field. After calling this,
 <code>hasFoo()</code> will return <code>false</code> and <code>get foo</code> will return the default value.</li></ul><p>For other simple field types, the corresponding Dart type is chosen according to
 the
-<a href=/programming-guides/proto2#scalar>scalar value types table</a>.
+<a href=./programming-guides/proto2#scalar>scalar value types table</a>.
 For message and enum types, the value type is replaced with the message or enum
 class.</p><h3 id=singular-primitive-fields-proto3>Singular Primitive Fields (proto3)</h3><p>For this field definition:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>int32</span> <span style=color:#000>foo</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>1</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span></code></pre></div><p>The compiler will generate the following accessor methods in the message class:</p><ul><li><p><code>int get foo</code>: Returns the current value of the field. If the field is not
 set, returns the default value.</p></li><li><p><code>set foo(int value)</code>: Sets the value of the field. After calling this, <code>get foo</code> will return <code>value</code>.</p></li><li><p><code>void clearFoo()</code>: Clears the value of the field. After calling this,<code>get foo</code> will return the default value.</p><div class="alert alert-note" role=alert><h4 class=alert-heading>Note</h4>Due to a
 quirk in the Dart proto3 implementation, the following methods are generated
 even if the <code>optional</code> modifier, used to request
-<a href=/programming-guides/field_presence#presence-in-proto3-apis>presence semantics</a>,
+<a href=./programming-guides/field_presence#presence-in-proto3-apis>presence semantics</a>,
 isn&rsquo;t in the proto
 definition.</div></li><li><p><code>bool hasFoo()</code>: Returns <code>true</code> if the field is set.</p><div class="alert alert-note" role=alert><h4 class=alert-heading>Note</h4>This
 value cannot really be trusted if the proto was serialized in another
@@ -96,11 +96,11 @@ field.</li></ul><h3 id=int64-fields>Int64 Fields</h3><p>For this field definitio
 </span></span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic></span><span style=color:#204a87;font-weight:700>int64</span> <span style=color:#000>bar</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>1</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span></code></pre></div><p>The compiler will generate:</p><ul><li><code>Int64 get bar</code>: Returns an <code>Int64</code> object containing the field value.</li></ul><p>Note that <code>Int64</code> is not built into the Dart core libraries. To work with these
 objects, you may need to import the Dart <code>fixnum</code> library:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-dart data-lang=dart><span style=display:flex><span><span style=color:#204a87;font-weight:700>import</span> <span style=color:#4e9a06>&#39;package:fixnum/fixnum.dart&#39;</span><span style=color:#000;font-weight:700>;</span>
-</span></span></code></pre></div><h3 id=map-fields>Map Fields</h3><p>Given a <a href=/programming-guides/proto3#maps><code>map</code></a> field
+</span></span></code></pre></div><h3 id=map-fields>Map Fields</h3><p>Given a <a href=./programming-guides/proto3#maps><code>map</code></a> field
 definition like this:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#000>map</span><span style=color:#000;font-weight:700>&lt;</span><span style=color:#204a87;font-weight:700>int32</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>int32</span><span style=color:#000;font-weight:700>&gt;</span> <span style=color:#000>map_field</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>1</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span></code></pre></div><p>The compiler will generate the following getter:</p><ul><li><code>Map&lt;int, int> get mapField</code>: Returns the Dart map backing the field. If the
 field is not set, returns an empty map. Modifications to the map are
-reflected in the field.</li></ul><h2 id=any>Any</h2><p>Given an <a href=/programming-guides/proto3#any><code>Any</code></a> field
+reflected in the field.</li></ul><h2 id=any>Any</h2><p>Given an <a href=./programming-guides/proto3#any><code>Any</code></a> field
 like this:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>import</span> <span style=color:#4e9a06>&#34;google/protobuf/any.proto&#34;</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#204a87;font-weight:700>message</span> <span style=color:#000>ErrorStatus</span> <span style=color:#000;font-weight:700>{</span><span style=color:#a40000>
@@ -132,7 +132,7 @@ and unpack the <code>Any</code>&rsquo;s values:</p><div class=highlight><pre tab
 </span></span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#8f5902;font-style:italic>/// the fully qualified name of the type of [message].
 </span></span></span><span style=display:flex><span><span style=color:#8f5902;font-style:italic></span>    <span style=color:#204a87;font-weight:700>static</span> <span style=color:#000>Any</span> <span style=color:#000>pack</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>GeneratedMessage</span> <span style=color:#000>message</span><span style=color:#000;font-weight:700>,</span>
 </span></span><span style=display:flex><span>        <span style=color:#000;font-weight:700>{</span><span style=color:#204a87;font-weight:700>String</span> <span style=color:#000>typeUrlPrefix</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#39;type.googleapis.com&#39;</span><span style=color:#000;font-weight:700>});</span>
-</span></span></code></pre></div><h2 id=oneof>Oneof</h2><p>Given a <a href=/programming-guides/proto3#oneof><code>oneof</code></a>
+</span></span></code></pre></div><h2 id=oneof>Oneof</h2><p>Given a <a href=./programming-guides/proto3#oneof><code>oneof</code></a>
 definition like this:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>message</span> <span style=color:#000>Foo</span> <span style=color:#000;font-weight:700>{</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span>  <span style=color:#204a87;font-weight:700>oneof</span> <span style=color:#000>test</span> <span style=color:#000;font-weight:700>{</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span>    <span style=color:#204a87;font-weight:700>string</span> <span style=color:#000>name</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>1</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
@@ -183,7 +183,7 @@ definition like:</p><div class=highlight><pre tabindex=0 style=background-color:
 </span></span></span></code></pre></div><p>The protocol buffer compiler will generate a class called <code>Bar</code>, which extends
 <code>GeneratedMessage</code>, and a class called <code>Bar_Color</code>, which extends
 <code>ProtobufEnum</code>.</p><h2 id=extension>Extensions (proto2 only)</h2><p>Given a file <code>foo_test.proto</code> including a message with an
-<a href=/programming-guides/proto2#extensions>extension range</a>
+<a href=./programming-guides/proto2#extensions>extension range</a>
 and a top-level extension definition:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>message</span> <span style=color:#000>Foo</span> <span style=color:#000;font-weight:700>{</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span>  <span style=color:#204a87;font-weight:700>extensions</span> <span style=color:#0000cf;font-weight:700>100</span> <span style=color:#204a87;font-weight:700>to</span> <span style=color:#0000cf;font-weight:700>199</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#000;font-weight:700>}</span><span style=color:#a40000>
@@ -226,7 +226,7 @@ extensions when doing <code>GeneratedMessage.fromBuffer</code>.</p><h2 id=servic
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#000;font-weight:700>}</span><span style=color:#a40000>
 </span></span></span></code></pre></div><p>The protocol buffer compiler can be invoked with the `grpc` option (e.g.
 <code>--dart_out=grpc:output_folder</code>), in which case it will generate code to support
-<a href=//www.grpc.io/>gRPC</a>. See the
+<a href=.//www.grpc.io/>gRPC</a>. See the
 <a href=https://grpc.io/docs/quickstart/dart.html>gRPC Dart Quickstart guide</a>
 for more details.</p></div></main></div></div><footer class="bg-dark py-5 row d-print-none"><div class="container-fluid mx-sm-5"><div class=row><div class="col-6 col-sm-4 text-xs-center order-sm-2"><ul class="list-inline mb-0"><li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title="Stack Overflow" aria-label="Stack Overflow"><a class=text-white target=_blank rel=noopener href=https://stackoverflow.com/questions/tagged/protocol-buffers aria-label="Stack Overflow"><i class="fab fa-stack-overflow"></i></a></li></ul><script type=text/javascript id=cookiebanner src=https://cdn.jsdelivr.net/gh/dobarkod/cookie-banner@1.2.2/dist/cookiebanner.min.js data-height=50px data-message="Protobuf.dev uses cookies from Google to deliver and enhance the quality of its services and to analyze traffic." data-bg=#ffb data-fg=#000 data-position=bottom data-padding="10px 16px" data-close-text="OK, got it" data-font-size=18px data-moreinfo=https://policies.google.com/technologies/cookies></script></div><div class="col-6 col-sm-4 text-right text-xs-center order-sm-3"><ul class="list-inline mb-0"><li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title=GitHub aria-label=GitHub><a class=text-white target=_blank rel=noopener href=https://github.com/protocolbuffers/protobuf aria-label=GitHub><i class="fab fa-github"></i></a></li><li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title="Developer mailing list" aria-label="Developer mailing list"><a class=text-white target=_blank rel=noopener href=https://groups.google.com/g/protobuf aria-label="Developer mailing list"><i class="fa fa-envelope"></i></a></li></ul><script type=text/javascript id=cookiebanner src=https://cdn.jsdelivr.net/gh/dobarkod/cookie-banner@1.2.2/dist/cookiebanner.min.js data-height=50px data-message="Protobuf.dev uses cookies from Google to deliver and enhance the quality of its services and to analyze traffic." data-bg=#ffb data-fg=#000 data-position=bottom data-padding="10px 16px" data-close-text="OK, got it" data-font-size=18px data-moreinfo=https://policies.google.com/technologies/cookies></script></div><div class="col-12 col-sm-4 text-center py-2 order-sm-2"><small class=text-white>&copy; 2025 Google LLC All Rights Reserved</small>
 <small class=ml-1><a href=https://policies.google.com/privacy target=_blank rel=noopener>Privacy Policy</a></small>

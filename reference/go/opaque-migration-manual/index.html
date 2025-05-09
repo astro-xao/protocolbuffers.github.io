@@ -10,9 +10,9 @@ blog post for an introduction.</p><p>This is a user guide for migrating Go Proto
 API to the new Opaque API.</p><div class="alert alert-warning" role=alert><h4 class=alert-heading>Warning</h4>You
 are looking at the manual migration guide. Typically you’re better off using the
 <code>open2opaque</code> tool to automate the migration. See
-<a href=/reference/go/opaque-migration>Opaque API Migration</a>
+<a href=./reference/go/opaque-migration>Opaque API Migration</a>
 instead.</div><p>The
-<a href=/reference/go/go-generated-opaque>Generated Code Guide</a>
+<a href=./reference/go/go-generated-opaque>Generated Code Guide</a>
 provides more detail. This guide compares the old and new API side-by-side.</p><h3 id=message-construction>Message Construction</h3><p>Suppose there is a protobuf message defined like this:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>message</span> <span style=color:#000>Foo</span> <span style=color:#000;font-weight:700>{</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span>  <span style=color:#204a87;font-weight:700>uint32</span> <span style=color:#204a87;font-weight:700>uint32</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>1</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span>  <span style=color:#204a87;font-weight:700>bytes</span> <span style=color:#204a87;font-weight:700>bytes</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>2</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
@@ -35,7 +35,7 @@ provides more detail. This guide compares the old and new API side-by-side.</p><
 Open Struct API (old) and Opaque API (new).</p><p>Generally, prefer using builders for readability. Only in rare cases, like
 creating Protobuf messages in a hot inner loop, might it be preferable to use
 setters instead of builders. See
-<a href=/reference/go/opaque-faq#builders-vs-setters>the Opaque API FAQ: Should I use builders or setters?</a>
+<a href=./reference/go/opaque-faq#builders-vs-setters>the Opaque API FAQ: Should I use builders or setters?</a>
 for more detail.</p><p>An exception to the above example is when working with <a href=#oneofs>oneofs</a>: The
 Open Struct API (old) uses a wrapper struct type for each oneof case, whereas
 the Opaque API (new) treats oneof fields like regular message fields:</p><table width=100%><tr><td width=50%>Open Struct API (old)</td><td width=50%>Opaque API (new)</td></tr><tr><td><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#000>m</span> <span style=color:#ce5c00;font-weight:700>:=</span> <span style=color:#ce5c00;font-weight:700>&amp;</span><span style=color:#000>pb</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>Foo</span><span style=color:#000;font-weight:700>{</span>
@@ -56,7 +56,7 @@ field declaration order in your .proto file) wins.</p><h3 id=scalar-fields>Scala
 </span></span></span></code></pre></div><p>Protobuf message fields for which Go uses scalar types (bool, int32, int64,
 uint32, uint64, float32, float64, string, []byte, and enum) will have <code>Get</code> and
 <code>Set</code> accessor methods. Fields with
-<a href=/programming-guides/field_presence/>explicit presence</a>
+<a href=./programming-guides/field_presence/>explicit presence</a>
 will also have <code>Has</code> and <code>Clear</code> methods.</p><p>For a field of type <code>int32</code> named <code>birth_year</code>, the following accessor methods
 will be generated for it:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#204a87;font-weight:700>func</span> <span style=color:#000;font-weight:700>(</span><span style=color:#000>m</span> <span style=color:#ce5c00;font-weight:700>*</span><span style=color:#000>Artist</span><span style=color:#000;font-weight:700>)</span> <span style=color:#000>GetBirthYear</span><span style=color:#000;font-weight:700>()</span> <span style=color:#204a87;font-weight:700>int32</span>
 </span></span><span style=display:flex><span><span style=color:#204a87;font-weight:700>func</span> <span style=color:#000;font-weight:700>(</span><span style=color:#000>m</span> <span style=color:#ce5c00;font-weight:700>*</span><span style=color:#000>Artist</span><span style=color:#000;font-weight:700>)</span> <span style=color:#000>SetBirthYear</span><span style=color:#000;font-weight:700>(</span><span style=color:#000>v</span> <span style=color:#204a87;font-weight:700>int32</span><span style=color:#000;font-weight:700>)</span>

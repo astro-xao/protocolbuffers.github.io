@@ -8,7 +8,7 @@ the Go programming language. The old version is now called Open Struct API. See
 the <a href=https://go.dev/blog/protobuf-opaque>Go Protobuf: The new Opaque API</a> blog
 post for an introduction.</p><p>This FAQ answers common questions about the new API and the migration process.</p><h2 id=which>Which API Should I Use When Creating a New .proto File?</h2><p>We recommend you select the Opaque API for new development. Protobuf Edition
 2024 (see
-<a href=/editions/overview/>Protobuf Editions Overview</a>) will
+<a href=./editions/overview/>Protobuf Editions Overview</a>) will
 make the Opaque API the default.</p><h2 id=enable>How Do I Enable the New Opaque API for My Messages?</h2><p>With Protobuf Edition 2023 (current at the time of writing), you can select the
 Opaque API by setting the <code>api_level</code> editions feature to <code>API_OPAQUE</code> in your
 <code>.proto</code> file. This can be set per file or per message:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#000>edition</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#4e9a06>&#34;2023&#34;</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
@@ -29,7 +29,7 @@ extra imports or options anymore:</p><div class=highlight><pre tabindex=0 style=
 <code>protoc</code> command-line flag:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>protoc […] --go_opt=default_api_level=API_HYBRID
 </span></span></code></pre></div><p>To override the default API level for a specific file (instead of all files),
 use the <code>apilevelM</code> mapping flag (similar to
-<a href=/reference/go/go-generated/#package>the <code>M</code> flag for import paths</a>):</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>protoc […] --go_opt=apilevelMhello.proto=API_HYBRID
+<a href=./reference/go/go-generated/#package>the <code>M</code> flag for import paths</a>):</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>protoc […] --go_opt=apilevelMhello.proto=API_HYBRID
 </span></span></code></pre></div><p>The command-line flags also work for <code>.proto</code> files still using proto2 or proto3
 syntax, but if you want to select the API level from within the <code>.proto</code> file,
 you need to migrate said file to editions first.</p><h2 id=lazydecoding>How Do I Enable Lazy Decoding?</h2><ol><li>Migrate your code to use the opaque implementation.</li><li>Set the <code>[lazy = true]</code> option on the proto submessage fields that should be
@@ -147,7 +147,7 @@ through the input as-is), or logs analysis pipelines with high selectivity
 presence? The Opaque API uses a more efficient memory representation for
 elementary fields like integers, booleans, enums and floats, but not
 strings, repeated fields or submessages.</li></ul><h2 id=proto23editions>How Does Proto2, Proto3, and Editions Relate to the Opaque API?</h2><p>The terms proto2 and proto3 refer to different syntax versions in your <code>.proto</code>
-files. <a href=/editions/overview>Protobuf Editions</a> is the
+files. <a href=./editions/overview>Protobuf Editions</a> is the
 successor to both proto2 and proto3.</p><p>The Opaque API affects only the generated code in <code>.pb.go</code> files, not what you
 write in your <code>.proto</code> files.</p><p>The Opaque API works the same, independent of which syntax or edition your
 <code>.proto</code> files use. However, if you want to select the Opaque API on a per-file

@@ -7,13 +7,13 @@
 proto2 and proto3 generated code are highlighted - note that these differences
 are in the generated code as described in this document, not the base API, which
 are the same in both versions. You should read the
-<a href=/programming-guides/proto2>proto2 language guide</a>
+<a href=./programming-guides/proto2>proto2 language guide</a>
 and/or the
-<a href=/programming-guides/proto3>proto3 language guide</a>
+<a href=./programming-guides/proto3>proto3 language guide</a>
 before reading this document.</p><div class="alert alert-warning" role=alert><h4 class=alert-heading>Note</h4>You are
 looking at documentation for the old generated code API (Open Struct API).
 See
-<a href=/reference/go/go-generated-opaque>Go Generated Code (Opaque)</a>
+<a href=./reference/go/go-generated-opaque>Go Generated Code (Opaque)</a>
 for the corresponding documentation of the (new) Opaque API. See
 <a href=https://go.dev/blog/protobuf-opaque>Go Protobuf: The new Opaque API</a> for the
 introduction of the Opaque API.</div><h2 id=invocation>Compiler Invocation</h2><p>The protocol buffer compiler requires a plugin to generate Go code. Install it
@@ -75,7 +75,7 @@ imports <code>b.proto</code>, then the generated <code>a.pb.go</code> file needs
 package which contains the generated <code>b.pb.go</code> file (unless both files are in
 the same package). The import path is also used to construct output filenames.
 See the "Compiler Invocation" section above for details.</p><p>There is no correlation between the Go import path and the
-<a href=/programming-guides/proto3#packages><code>package</code> specifier</a>
+<a href=./programming-guides/proto3#packages><code>package</code> specifier</a>
 in the <code>.proto</code> file. The latter is only relevant to the protobuf namespace,
 while the former is only relevant to the Go namespace. Also, there is no
 correlation between the Go import path and the <code>.proto</code> import path.</p><h2 id=apilevel>API level</h2><p>The generated code either uses the Open Struct API or the Opaque API. See the
@@ -92,7 +92,7 @@ blog post for an introduction.</p><p>Depending on the syntax your <code>.proto</
 </span></span></span></code></pre></div><p>For your convenience, you can also override the default API level with a
 <code>protoc</code> command-line flag:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>protoc […] --go_opt=default_api_level=API_HYBRID
 </span></span></code></pre></div><p>To override the default API level for a specific file (instead of all files),
-use the <code>apilevelM</code> mapping flag (similar to <a href=/reference/go/go-generated/#package>the <code>M</code> flag for import
+use the <code>apilevelM</code> mapping flag (similar to <a href=./reference/go/go-generated/#package>the <code>M</code> flag for import
 paths</a>):</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-fallback data-lang=fallback><span style=display:flex><span>protoc […] --go_opt=apilevelMhello.proto=API_HYBRID
 </span></span></code></pre></div><p>The command-line flags also work for <code>.proto</code> files still using proto2 or proto3
 syntax, but if you want to select the API level from within the <code>.proto</code> file,
@@ -121,7 +121,7 @@ is not safe.</li></ul><h3 id=nested-types>Nested Types</h3><p>A message can be d
 within a message. The exact nature of this field depends on its type and whether
 it is a singular, repeated, map, or oneof field.</p><p>Note that the generated Go field names always use camel-case naming, even if the
 field name in the <code>.proto</code> file uses lower-case with underscores
-(<a href=/programming-guides/style#message-field-names>as it should</a>).
+(<a href=./programming-guides/style#message-field-names>as it should</a>).
 The case-conversion works as follows:</p><ol><li>The first letter is capitalized for export. If the first character is an
 underscore, it is removed and a capital X is prepended.</li><li>If an interior underscore is followed by a lower-case letter, the underscore
 is removed, and the following letter is capitalized.</li></ol><p>Thus, the proto field <code>birth_year</code> becomes <code>BirthYear</code> in Go, and
@@ -133,7 +133,7 @@ the default value if the field is unset. If the default is not explicitly set,
 the <a href=https://golang.org/ref/spec#The_zero_value>zero value</a> of that
 type is used instead (<code>0</code> for numbers, the empty string for strings).</p><p>For other scalar field types (including <code>bool</code>, <code>bytes</code>, and <code>string</code>), <code>*int32</code>
 is replaced with the corresponding Go type according to the
-<a href=/programming-guides/proto2#scalar>scalar value types table</a>.</p><h3 id=singular-scalar-proto3>Singular Scalar Fields (proto3)</h3><p>For this field definition:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>int32</span> <span style=color:#000>birth_year</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>1</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
+<a href=./programming-guides/proto2#scalar>scalar value types table</a>.</p><h3 id=singular-scalar-proto3>Singular Scalar Fields (proto3)</h3><p>For this field definition:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>int32</span> <span style=color:#000>birth_year</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>1</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#204a87;font-weight:700>optional</span> <span style=color:#204a87;font-weight:700>int32</span> <span style=color:#000>first_active_year</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>2</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>
 </span></span></span></code></pre></div><p>The compiler will generate a struct with an <code>int32</code> field named <code>BirthYear</code> and
 an accessor method <code>GetBirthYear()</code> which returns the <code>int32</code> value in
@@ -142,7 +142,7 @@ an accessor method <code>GetBirthYear()</code> which returns the <code>int32</co
 if the field is unset (<code>0</code> for numbers, the empty string for strings).</p><p>The <code>FirstActiveYear</code> struct field will be of type <code>*int32</code>, because it is
 marked <code>optional</code>.</p><p>For other scalar field types (including <code>bool</code>, <code>bytes</code>, and <code>string</code>), <code>int32</code>
 is replaced with the corresponding Go type according to the
-<a href=/programming-guides/proto3#scalar>scalar value types table</a>.
+<a href=./programming-guides/proto3#scalar>scalar value types table</a>.
 Unset values in the proto will be represented as the
 <a href=https://golang.org/ref/spec#The_zero_value>zero value</a> of that type
 (<code>0</code> for numbers, the empty string for strings).</p><h3 id=singular-message>Singular Message Fields</h3><p>Given the message type:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>message</span> <span style=color:#000>Band</span> <span style=color:#000;font-weight:700>{}</span><span style=color:#a40000>
@@ -326,7 +326,7 @@ functions to access an extension in a message. The <code>GetExtension</code> fun
 <code>SetExtension</code> functions respectively return and accept an <code>interface{}</code> value
 containing the extension value type.</p><p>For singular scalar extension fields, the extension value type is the
 corresponding Go type from the
-<a href=/programming-guides/proto3#scalar>scalar value types table</a>.</p><p>For singular embedded message extension fields, the extension value type is
+<a href=./programming-guides/proto3#scalar>scalar value types table</a>.</p><p>For singular embedded message extension fields, the extension value type is
 <code>*M</code>, where <code>M</code> is the field message type.</p><p>For repeated extension fields, the extension value type is a slice of the
 singular type.</p><p>For example, given the following definition:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-proto data-lang=proto><span style=display:flex><span><span style=color:#204a87;font-weight:700>extend</span> <span style=color:#000>Concert</span> <span style=color:#000;font-weight:700>{</span><span style=color:#a40000>
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span>  <span style=color:#204a87;font-weight:700>optional</span> <span style=color:#204a87;font-weight:700>int32</span> <span style=color:#000>singular_int32</span> <span style=color:#ce5c00;font-weight:700>=</span> <span style=color:#0000cf;font-weight:700>1</span><span style=color:#000;font-weight:700>;</span><span style=color:#a40000>

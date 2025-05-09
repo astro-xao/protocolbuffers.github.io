@@ -124,8 +124,8 @@ and a length of 3, exactly the same way as strings are encoded.</p><p>In Protosc
 as <code>3: {1: 150}</code>.</p><h2 id=optional>Missing Elements</h2><p>Missing fields are easy to encode: we just leave out the record if
 it&rsquo;s not present. This means that &ldquo;huge&rdquo; protos with only a few fields set are
 quite sparse.</p><p><span id=packed></span></p><h2 id=repeated>Repeated Elements</h2><p>Starting in Edition 2023, <code>repeated</code> fields of a primitive type
-(any <a href=/programming-guides/proto2#scalar>scalar type</a>
-that is not <code>string</code> or <code>bytes</code>) are <a href=/editions/features#repeated_field_encoding>&ldquo;packed&rdquo;</a> by default.</p><p>Packed <code>repeated</code> fields, instead of being encoded as one
+(any <a href=./programming-guides/proto2#scalar>scalar type</a>
+that is not <code>string</code> or <code>bytes</code>) are <a href=./editions/features#repeated_field_encoding>&ldquo;packed&rdquo;</a> by default.</p><p>Packed <code>repeated</code> fields, instead of being encoded as one
 record per entry, are encoded as a single <code>LEN</code> record that contains each
 element concatenated. To decode, elements are decoded from the <code>LEN</code> record one
 by one until the payload is exhausted. The start of the next element is
@@ -156,7 +156,7 @@ the same message above that parsers must accept:</p><div class=highlight><pre ta
 </span></span></span><span style=display:flex><span><span style=color:#a40000></span><span style=color:#0000cf;font-weight:700>6</span><span style=color:#ce5c00;font-weight:700>:</span> <span style=color:#000;font-weight:700>{</span><span style=color:#0000cf;font-weight:700>86942</span><span style=color:#000;font-weight:700>}</span><span style=color:#a40000>
 </span></span></span></code></pre></div><p>Protocol buffer parsers must be able to parse repeated fields that were compiled
 as <code>packed</code> as if they were not packed, and vice versa. This permits adding
-<code>[packed=true]</code> to existing fields in a forward- and backward-compatible way.</p><h3 id=oneofs>Oneofs</h3><p><a href=/programming-guides/proto2#oneof><code>Oneof</code> fields</a> are
+<code>[packed=true]</code> to existing fields in a forward- and backward-compatible way.</p><h3 id=oneofs>Oneofs</h3><p><a href=./programming-guides/proto2#oneof><code>Oneof</code> fields</a> are
 encoded the same as if the fields were not in a <code>oneof</code>. The rules that apply to
 <code>oneofs</code> are independent of how they are represented on the wire.</p><h3 id=last-one-wins>Last One Wins</h3><p>Normally, an encoded message would never have more than one instance of a
 non-<code>repeated</code> field. However, parsers are expected to handle the case in which
@@ -205,7 +205,7 @@ Group field numbers need to match up. If we encounter <code>7:EGROUP</code> wher
 </span></span></span></code></pre></div><p>This will generate the appropriate start and end group markers. The <code>!{}</code> syntax
 can only occur immediately after an un-typed tag expression, like <code>8:</code>.</p><h2 id=order>Field Order</h2><p>Field numbers may be declared in any order in a <code>.proto</code> file. The order chosen
 has no effect on how the messages are serialized.</p><p>When a message is serialized, there is no guaranteed order for how its known or
-<a href=/programming-guides/proto2#updating>unknown fields</a>
+<a href=./programming-guides/proto2#updating>unknown fields</a>
 will be written. Serialization order is an implementation detail, and the
 details of any particular implementation may change in the future. Therefore,
 protocol buffer parsers must be able to parse fields in any order.</p><h3 id=implications>Implications</h3><ul><li>Do not assume the byte output of a serialized message is stable. This is

@@ -5,19 +5,19 @@
 <a href="https://github.com/astro-xao/protocolbuffers.github.io//issues/new?title=Protocol%20Buffer%20Basics:%20Go" class=td-page-meta--issue target=_blank rel=noopener><i class="fa-solid fa-list-check fa-fw"></i> Create documentation issue</a>
 <a href=https://github.com/protocolbuffers/protobuf/issues/new class=td-page-meta--project-issue target=_blank rel=noopener><i class="fa-solid fa-list-check fa-fw"></i> Create project issue</a></div><div class=td-toc><nav id=TableOfContents><ul><li><a href=#problem-domain>The Problem Domain</a></li><li><a href=#example-code>Where to Find the Example Code</a></li><li><a href=#protocol-format>Defining Your Protocol Format</a></li><li><a href=#compiling-protocol-buffers>Compiling Your Protocol Buffers</a></li><li><a href=#protobuf-api>The Protocol Buffer API</a></li><li><a href=#writing-a-message>Writing a Message</a></li><li><a href=#reading-a-message>Reading a Message</a></li><li><a href=#extending-a-protobuf>Extending a Protocol Buffer</a></li></ul></nav></div></aside><main class="col-12 col-md-9 col-xl-8 ps-md-5" role=main><nav aria-label=breadcrumb class=td-breadcrumbs><ol class=breadcrumb><li class=breadcrumb-item><a href=/protocolbuffers.github.io/getting-started/>Tutorials</a></li><li class="breadcrumb-item active" aria-current=page>Go</li></ol></nav><div class=td-content><h1>Protocol Buffer Basics: Go</h1><div class=lead>A basic Go programmers introduction to working with protocol buffers.</div><header class=article-meta></header><p>This tutorial provides a basic Go programmer&rsquo;s introduction to working with
 protocol buffers, using the
-<a href=/programming-guides/proto3>proto3</a> version of the
+<a href=./programming-guides/proto3>proto3</a> version of the
 protocol buffers language. By walking through creating a simple example
 application, it shows you how to</p><ul><li>Define message formats in a <code>.proto</code> file.</li><li>Use the protocol buffer compiler.</li><li>Use the Go protocol buffer API to write and read messages.</li></ul><p>This isn&rsquo;t a comprehensive guide to using protocol buffers in Go. For more
 detailed reference information, see the
-<a href=/programming-guides/proto3>Protocol Buffer Language Guide</a>,
+<a href=./programming-guides/proto3>Protocol Buffer Language Guide</a>,
 the <a href=https://pkg.go.dev/google.golang.org/protobuf/proto>Go API Reference</a>, the
-<a href=/reference/go/go-generated>Go Generated Code Guide</a>,
+<a href=./reference/go/go-generated>Go Generated Code Guide</a>,
 and the
-<a href=/programming-guides/encoding>Encoding Reference</a>.</p><h2 id=problem-domain>The Problem Domain</h2><p>The example we&rsquo;re going to use is a very simple &ldquo;address book&rdquo; application that
+<a href=./programming-guides/encoding>Encoding Reference</a>.</p><h2 id=problem-domain>The Problem Domain</h2><p>The example we&rsquo;re going to use is a very simple &ldquo;address book&rdquo; application that
 can read and write people&rsquo;s contact details to and from a file. Each person in
 the address book has a name, an ID, an email address, and a contact phone
 number.</p><p>How do you serialize and retrieve structured data like this? There are a few
-ways to solve this problem:</p><ul><li>Use <a href=//golang.org/pkg/encoding/gob/>gobs</a> to serialize Go data structures.
+ways to solve this problem:</p><ul><li>Use <a href=.//golang.org/pkg/encoding/gob/>gobs</a> to serialize Go data structures.
 This is a good solution in a Go-specific environment, but it doesn&rsquo;t work
 well if you need to share data with applications written for other
 platforms.</li><li>You can invent an ad-hoc way to encode the data items into a single
@@ -101,7 +101,7 @@ the commonly used or repeated elements, leaving tags 16 and higher for
 less-commonly used optional elements. Each element in a repeated field requires
 re-encoding the tag number, so repeated fields are particularly good candidates
 for this optimization.</p><p>If a field value isn&rsquo;t set, a
-<a href=/programming-guides/proto3#default>default value</a> is
+<a href=./programming-guides/proto3#default>default value</a> is
 used: zero for numeric types, the empty string for strings, false for bools. For
 embedded messages, the default value is always the &ldquo;default instance&rdquo; or
 &ldquo;prototype&rdquo; of the message, which has none of its fields set. Calling the
@@ -110,13 +110,13 @@ returns that field&rsquo;s default value.</p><p>If a field is <code>repeated</co
 (including zero). The order of the repeated values will be preserved in the
 protocol buffer. Think of repeated fields as dynamically sized arrays.</p><p>You&rsquo;ll find a complete guide to writing <code>.proto</code> files &ndash; including all the
 possible field types &ndash; in the
-<a href=/programming-guides/proto3>Protocol Buffer Language Guide</a>.
+<a href=./programming-guides/proto3>Protocol Buffer Language Guide</a>.
 Don&rsquo;t go looking for facilities similar to class inheritance, though &ndash; protocol
 buffers don&rsquo;t do that.</p><h2 id=compiling-protocol-buffers>Compiling Your Protocol Buffers</h2><p>Now that you have a <code>.proto</code>, the next thing you need to do is generate the
 classes you&rsquo;ll need to read and write <code>AddressBook</code> (and hence <code>Person</code> and
 <code>PhoneNumber</code>) messages. To do this, you need to run the protocol buffer
 compiler <code>protoc</code> on your <code>.proto</code>:</p><ol><li><p>If you haven&rsquo;t installed the compiler,
-<a href=/downloads>download the package</a> and follow the
+<a href=./downloads>download the package</a> and follow the
 instructions in the README.</p></li><li><p>Run the following command to install the Go protocol buffers plugin:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 </span></span></code></pre></div><p>The compiler plugin <code>protoc-gen-go</code> will be installed in <code>$GOBIN</code>,
 defaulting to <code>$GOPATH/bin</code>. It must be in your <code>$PATH</code> for the protocol
@@ -130,7 +130,7 @@ are provided for other supported languages.</p></li></ol><p>This generates
 <code>github.com/protocolbuffers/protobuf/examples/go/tutorialpb/addressbook.pb.go</code>
 in your specified destination directory.</p><h2 id=protobuf-api>The Protocol Buffer API</h2><p>Generating <code>addressbook.pb.go</code> gives you the following useful types:</p><ul><li>An <code>AddressBook</code> structure with a <code>People</code> field.</li><li>A <code>Person</code> structure with fields for <code>Name</code>, <code>Id</code>, <code>Email</code> and <code>Phones</code>.</li><li>A <code>Person_PhoneNumber</code> structure, with fields for <code>Number</code> and <code>Type</code>.</li><li>The type <code>Person_PhoneType</code> and a value defined for each value in the
 <code>Person.PhoneType</code> enum.</li></ul><p>You can read more about the details of exactly what&rsquo;s generated in the
-<a href=/reference/go/go-generated>Go Generated Code guide</a>,
+<a href=./reference/go/go-generated>Go Generated Code guide</a>,
 but for the most part you can treat these as perfectly ordinary Go types.</p><p>Here&rsquo;s an example from the
 <a href=https://github.com/protocolbuffers/protobuf/blob/master/examples/go/cmd/list_people/list_people_test.go><code>list_people</code> command&rsquo;s unit tests</a>
 of how you might create an instance of Person:</p><div class=highlight><pre tabindex=0 style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#000>p</span> <span style=color:#ce5c00;font-weight:700>:=</span> <span style=color:#000>pb</span><span style=color:#000;font-weight:700>.</span><span style=color:#000>Person</span><span style=color:#000;font-weight:700>{</span>
@@ -180,13 +180,13 @@ forward-compatible &ndash; and you almost certainly do want this &ndash; then th
 some rules you need to follow. In the new version of the protocol buffer:</p><ul><li>you <em>must not</em> change the tag numbers of any existing fields.</li><li>you <em>may</em> delete fields.</li><li>you <em>may</em> add new fields but you must use fresh tag numbers (i.e. tag
 numbers that were never used in this protocol buffer, not even by deleted
 fields).</li></ul><p>(There are
-<a href=/programming-guides/proto3#updating>some exceptions</a> to
+<a href=./programming-guides/proto3#updating>some exceptions</a> to
 these rules, but they are rarely used.)</p><p>If you follow these rules, old code will happily read new messages and simply
 ignore any new fields. To the old code, singular fields that were deleted will
 simply have their default value, and deleted repeated fields will be empty. New
 code will also transparently read old messages.</p><p>However, keep in mind that new fields will not be present in old messages, so
 you will need to do something reasonable with the default value. A type-specific
-<a href=/programming-guides/proto3#default>default value</a> is
+<a href=./programming-guides/proto3#default>default value</a> is
 used: for strings, the default value is the empty string. For booleans, the
 default value is false. For numeric types, the default value is zero.</p></div></main></div></div><footer class="bg-dark py-5 row d-print-none"><div class="container-fluid mx-sm-5"><div class=row><div class="col-6 col-sm-4 text-xs-center order-sm-2"><ul class="list-inline mb-0"><li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title="Stack Overflow" aria-label="Stack Overflow"><a class=text-white target=_blank rel=noopener href=https://stackoverflow.com/questions/tagged/protocol-buffers aria-label="Stack Overflow"><i class="fab fa-stack-overflow"></i></a></li></ul><script type=text/javascript id=cookiebanner src=https://cdn.jsdelivr.net/gh/dobarkod/cookie-banner@1.2.2/dist/cookiebanner.min.js data-height=50px data-message="Protobuf.dev uses cookies from Google to deliver and enhance the quality of its services and to analyze traffic." data-bg=#ffb data-fg=#000 data-position=bottom data-padding="10px 16px" data-close-text="OK, got it" data-font-size=18px data-moreinfo=https://policies.google.com/technologies/cookies></script></div><div class="col-6 col-sm-4 text-right text-xs-center order-sm-3"><ul class="list-inline mb-0"><li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title=GitHub aria-label=GitHub><a class=text-white target=_blank rel=noopener href=https://github.com/protocolbuffers/protobuf aria-label=GitHub><i class="fab fa-github"></i></a></li><li class="list-inline-item mx-2 h3" data-toggle=tooltip data-placement=top title="Developer mailing list" aria-label="Developer mailing list"><a class=text-white target=_blank rel=noopener href=https://groups.google.com/g/protobuf aria-label="Developer mailing list"><i class="fa fa-envelope"></i></a></li></ul><script type=text/javascript id=cookiebanner src=https://cdn.jsdelivr.net/gh/dobarkod/cookie-banner@1.2.2/dist/cookiebanner.min.js data-height=50px data-message="Protobuf.dev uses cookies from Google to deliver and enhance the quality of its services and to analyze traffic." data-bg=#ffb data-fg=#000 data-position=bottom data-padding="10px 16px" data-close-text="OK, got it" data-font-size=18px data-moreinfo=https://policies.google.com/technologies/cookies></script></div><div class="col-12 col-sm-4 text-center py-2 order-sm-2"><small class=text-white>&copy; 2025 Google LLC All Rights Reserved</small>
 <small class=ml-1><a href=https://policies.google.com/privacy target=_blank rel=noopener>Privacy Policy</a></small>

@@ -31,7 +31,7 @@ binary wire format will be parseable by older binaries. This is a fundamental
 design principle of Protocol Buffers. Note that JSON and textproto formats <em>do
 not</em> offer the same stability guarantees.</p><p><strong>The descriptor.proto schema can change.</strong> In minor or patch releases, we may
 add new message, fields, enums, enum values, editions, editions
-<a href=/editions/features>features</a> etc. We may also mark
+<a href=./editions/features>features</a> etc. We may also mark
 existing elements as deprecated. In a major release, we may remove deprecated
 options, enums, enum values, messages, fields, etc.</p><p><strong>The .proto language grammar can change.</strong> In minor or patch releases, we may
 add new language constructs and alternative syntax for existing features. We may
@@ -70,7 +70,7 @@ Example: Protobuf Java version 3.25.x uses protoc version 25.x.</p><p>Future pla
 months rather than the typical 12 months for the final release in a major
 version line. Future major version updates (5.x, planned for Q1 2027) will adopt
 an improved
-<a href=/support/cross-version-runtime-guarantee/#major>&ldquo;rolling compatibility window&rdquo;</a>
+<a href=./support/cross-version-runtime-guarantee/#major>&ldquo;rolling compatibility window&rdquo;</a>
 that should allow a return to 12-month support windows. There will be no major
 version bumps in Q1 2025 and Q1 2026.</div><p><strong>Release support chart</strong></p><table class=version-chart><tr><th>Protobuf Java</th><th>protoc</th><th class=y23q1><span>23Q1</span></th><th class=y23q2><span>23Q2</span></th><th class=y23q3><span>23Q3</span></th><th class=y23q4><span>23Q4</span></th><th class=y24q1><span>24Q1</span></th><th class=y24q2><span>24Q2</span></th><th class=y24q3><span>24Q3</span></th><th class=y24q4><span>24Q4</span></th><th class=y25q1><span>25Q1</span></th><th class=y25q2><span>25Q2</span></th><th class=y25q3><span>25Q3</span></th><th class=y25q4><span>25Q4</span></th></tr><tr class=maintenance><th>3.x</th><td>22.x-25.x</td><td class="y23q1 active">3.22</td><td class="y23q2 active">3.23</td><td class="y23q3 active">3.24</td><td class="y23q4 active">3.25</td><td class="y24q1 maintenance">3.25</td><td class="y24q2 maintenance">3.25</td><td class="y24q3 maintenance">3.25</td><td class="y24q4 maintenance">3.25</td><td class="y25q1 maintenance">3.25</td><td class="y25q2 maintenance">3.25</td><td class="y25q3 maintenance">3.25</td><td class="y25q4 maintenance">3.25</td></tr><tr class=active><th>4.x</th><td>26.x-33.x</td><td class=y23q1></td><td class=y23q2></td><td class=y23q3></td><td class=y23q4></td><td class="y24q1 active">4.26</td><td class="y24q2 active">4.27</td><td class="y24q3 active">4.28</td><td class="y24q4 active">4.29</td><td class="y25q1 active">4.30</td><td class="y25q2 active">4.31</td><td class="y25q3 active">4.32</td><td class="y25q4 active">4.33</td></tr></table><p><strong>Legend</strong></p><table class=legend><tr class=active><th>Active</th><td>Minor and patch releases with new features, compatible changes and bug fixes.</td></tr><tr class=maintenance><th>Maintenance</th><td>Patch releases with critical bug fixes.</td></tr><tr class=end-of-life><th>End of life</th><td>Release is unsupported. Users should upgrade to a supported release.</td></tr><tr class=future><th>Future</th><td>Projected release. Shown for planning purposes.</td></tr></table><h3 id=java-support>Java Platform and Library Support</h3><p>Protobuf is committed to following the platform and library support policy
 described in
