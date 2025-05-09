@@ -1,6 +1,6 @@
 baseURL = 'https://astro-xao.github.io/protocolbuffers.github.io'
 languageCode = 'en-us'
-title = 'Protocol Buffers 文档'
+title = 'Protocol Buffers 文档 (由 GPT-4.1 翻译)'
 
 # Theme
 [module]
@@ -65,7 +65,7 @@ id = "G-5L8P8GRN4Y"
 
 [languages]
 [languages.en]
-title = "Protocol Buffers 文档"
+title = "Protocol Buffers 文档 (由 GPT-4.1 翻译)"
 languageName ="English"
 # Weight used for sorting.
 weight = 1
