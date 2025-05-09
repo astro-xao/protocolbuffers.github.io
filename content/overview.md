@@ -1,96 +1,60 @@
 +++
-title = "Overview"
+title = "概述"
 weight = 10
-description = "Protocol Buffers are a language-neutral, platform-neutral extensible mechanism for serializing structured data."
+description = "Protocol Buffers 是一种与语言和平台无关的可扩展机制，用于序列化结构化数据。"
 type = "docs"
 +++
 
-It’s like JSON, except it's
-smaller and faster, and it generates native language bindings. You define how
-you want your data to be structured once, then you can use special generated
-source code to easily write and read your structured data to and from a variety
-of data streams and using a variety of languages.
+它类似于 JSON，但更小、更快，并且可以生成原生语言绑定。你只需定义一次数据结构，然后就可以使用专门生成的源代码，轻松地将结构化数据读写到各种数据流中，并支持多种编程语言。
 
-Protocol buffers are a combination of the definition language (created in
-`.proto` files), the code that the proto compiler generates to interface with
-data, language-specific runtime libraries, the serialization format for data
-that is written to a file (or sent across a network connection), and the
-serialized data.
+Protocol Buffers 包含定义语言（在 `.proto` 文件中创建）、proto 编译器生成的用于与数据交互的代码、语言特定的运行时库、用于写入文件（或通过网络连接发送）的序列化格式，以及序列化后的数据。
 
-## What Problems do Protocol Buffers Solve? {#solve}
+## Protocol Buffers 解决了哪些问题？ {#solve}
 
-Protocol buffers provide a serialization format for packets of typed, structured
-data that are up to a few megabytes in size. The format is suitable for both
-ephemeral network traffic and long-term data storage. Protocol buffers can be
-extended with new information without invalidating existing data or requiring
-code to be updated.
+Protocol Buffers 提供了一种用于类型化、结构化数据包的序列化格式，适用于几兆字节以内的数据。该格式既适用于临时网络通信，也适用于长期数据存储。Protocol Buffers 可以通过添加新信息进行扩展，而不会使现有数据失效或需要更新代码。
 
-Protocol buffers are the most commonly-used data format at Google. They are used
-extensively in inter-server communications as well as for archival storage of
-data on disk. Protocol buffer *messages* and *services* are described by
-engineer-authored `.proto` files. The following shows an example `message`:
+Protocol Buffers 是 Google 内部最常用的数据格式，广泛用于服务器间通信以及磁盘上的数据归档存储。Protocol Buffer 的 *消息* 和 *服务* 由工程师编写的 `.proto` 文件描述。以下是一个 `message` 示例：
 
 ```proto
 edition = "2023";
 
 message Person {
-  string name = 1;
-  int32 id = 2;
-  string email = 3;
+    string name = 1;
+    int32 id = 2;
+    string email = 3;
 }
 ```
 
-The proto compiler is invoked at build time on `.proto` files to generate code
-in various programming languages (covered in
-[Cross-language Compatibility](#cross-lang) later in this topic) to manipulate
-the corresponding protocol buffer. Each generated class contains simple
-accessors for each field and methods to serialize and parse the whole structure
-to and from raw bytes. The following shows you an example that uses those
-generated methods:
+在构建时，proto 编译器会对 `.proto` 文件进行处理，生成用于操作对应 Protocol Buffer 的多种编程语言代码（详见后文 [跨语言兼容性](#cross-lang)）。每个生成的类都包含对每个字段的简单访问器，以及用于将整个结构序列化和解析为原始字节的方法。以下是使用这些生成方法的示例：
 
 ```java
 Person john = Person.newBuilder()
-    .setId(1234)
-    .setName("John Doe")
-    .setEmail("jdoe@example.com")
-    .build();
+        .setId(1234)
+        .setName("John Doe")
+        .setEmail("jdoe@example.com")
+        .build();
 output = new FileOutputStream(args[0]);
 john.writeTo(output);
 ```
 
-Because protocol buffers are used extensively across all manner of services at
-Google and data within them may persist for some time, maintaining backwards
-compatibility is crucial. Protocol buffers allow for the seamless support of
-changes, including the addition of new fields and the deletion of existing
-fields, to any protocol buffer without breaking existing services. For more on
-this topic, see
-[Updating Proto Definitions Without Updating Code](#updating-defs), later in
-this topic.
+由于 Protocol Buffers 被广泛用于 Google 的各种服务，并且其中的数据可能会长期存在，因此保持向后兼容性至关重要。Protocol Buffers 支持无缝更改，包括添加新字段和删除现有字段，而不会破坏现有服务。更多内容请参见后文 [无需更新代码即可更新 Proto 定义](#updating-defs)。
 
-## What are the Benefits of Using Protocol Buffers? {#benefits}
+## 使用 Protocol Buffers 有哪些好处？ {#benefits}
 
-Protocol buffers are ideal for any situation in which you need to serialize
-structured, record-like, typed data in a language-neutral, platform-neutral,
-extensible manner. They are most often used for defining communications
-protocols (together with gRPC) and for data storage.
+Protocol Buffers 非常适合需要以与语言和平台无关、可扩展的方式序列化结构化、记录型、类型化数据的场景。它们最常用于定义通信协议（通常与 gRPC 一起使用）和数据存储。
 
-Some of the advantages of using protocol buffers include:
+使用 Protocol Buffers 的优势包括：
 
-*   Compact data storage
-*   Fast parsing
-*   Availability in many programming languages
-*   Optimized functionality through automatically-generated classes
+*   数据存储紧凑
+*   解析速度快
+*   支持多种编程语言
+*   通过自动生成的类实现优化功能
 
-### Cross-language Compatibility {#cross-lang}
+### 跨语言兼容性 {#cross-lang}
 
-The same messages can be read by code written in any supported programming
-language. You can have a Java program on one platform capture data from one
-software system, serialize it based on a `.proto` definition, and then extract
-specific values from that serialized data in a separate Python application
-running on another platform.
+同一消息可以被任何受支持编程语言编写的代码读取。你可以在一个平台上用 Java 程序采集数据，根据 `.proto` 定义进行序列化，然后在另一个平台上用 Python 应用程序提取序列化数据中的特定值。
 
-The following languages are supported directly in the protocol buffers compiler,
-protoc:
+Protocol Buffers 编译器 protoc 直接支持以下语言：
 
 *   [C++](./reference/cpp/cpp-generated#invocation)
 *   [C#](./reference/csharp/csharp-generated#invocation)
@@ -101,121 +65,82 @@ protoc:
 *   [Python](./reference/python/python-generated#invocation)
 *   [Ruby](./reference/ruby/ruby-generated#invocation)
 
-The following languages are supported by Google, but the projects' source code
-resides in GitHub repositories. The protoc compiler uses plugins for these
-languages:
+以下语言由 Google 支持，但项目源码托管在 GitHub 上，protoc 编译器通过插件支持：
 
 *   [Dart](https://github.com/google/protobuf.dart)
 *   [Go](https://github.com/protocolbuffers/protobuf-go)
 
-Additional languages are not directly supported by Google, but rather by other
-GitHub projects. These languages are covered in
-[Third-Party Add-ons for Protocol Buffers](https://github.com/protocolbuffers/protobuf/blob/master/docs/third_party.md).
+还有其他语言由第三方 GitHub 项目支持，详见
+[Protocol Buffers 第三方插件](https://github.com/protocolbuffers/protobuf/blob/master/docs/third_party.md)。
 
-### Cross-project Support {#cross-proj}
+### 跨项目支持 {#cross-proj}
 
-You can use protocol buffers across projects by defining `message` types in
-`.proto` files that reside outside of a specific project’s code base. If you're
-defining `message` types or enums that you anticipate will be widely used
-outside of your immediate team, you can put them in their own file with no
-dependencies.
+你可以通过将 `message` 类型定义在项目代码库之外的 `.proto` 文件中，实现跨项目使用 Protocol Buffers。如果你预计某些 `message` 类型或枚举会被广泛使用，可以将它们单独放在没有依赖的文件中。
 
-A couple of examples of proto definitions widely-used within Google are
+Google 内部广泛使用的 proto 定义示例有
 [`timestamp.proto`](https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/timestamp.proto)
-and
-[`status.proto`](https://github.com/googleapis/googleapis/blob/master/google/rpc/status.proto).
+和
+[`status.proto`](https://github.com/googleapis/googleapis/blob/master/google/rpc/status.proto)。
 
-### Updating Proto Definitions Without Updating Code {#updating-defs}
+### 无需更新代码即可更新 Proto 定义 {#updating-defs}
 
-It's standard for software products to be backward compatible, but it is less
-common for them to be forward compatible. As long as you follow some
-[simple practices](./programming-guides/proto3#updating)
-when updating `.proto` definitions, old code will read new messages without
-issues, ignoring any newly added fields. To the old code, fields that were
-deleted will have their default value, and deleted repeated fields will be
-empty. For information on what “repeated” fields are, see
-[Protocol Buffers Definition Syntax](#syntax) later in this topic.
+软件产品通常要求向后兼容，但很少要求向前兼容。只要在更新 `.proto` 定义时遵循一些
+[简单实践](./programming-guides/proto3#updating)，旧代码就能读取新消息，只是会忽略新增字段。对于旧代码，已删除字段会有默认值，已删除的 repeated 字段会为空。有关 “repeated” 字段的说明，请参见后文 [Protocol Buffers 定义语法](#syntax)。
 
-New code will also transparently read old messages. New fields will not be
-present in old messages; in these cases protocol buffers provide a reasonable
-default value.
+新代码也能透明地读取旧消息。新字段在旧消息中不会出现，此时 Protocol Buffers 会提供合理的默认值。
 
-### When are Protocol Buffers not a Good Fit? {#not-good-fit}
+### Protocol Buffers 不适用的场景 {#not-good-fit}
 
-Protocol buffers do not fit all data. In particular:
+Protocol Buffers 并不适用于所有数据场景，尤其是：
 
-*   Protocol buffers tend to assume that entire messages can be loaded into
-    memory at once and are not larger than an object graph. For data that
-    exceeds a few megabytes, consider a different solution; when working with
-    larger data, you may effectively end up with several copies of the data due
-    to serialized copies, which can cause surprising spikes in memory usage.
-*   When protocol buffers are serialized, the same data can have many different
-    binary serializations. You cannot compare two messages for equality without
-    fully parsing them.
-*   Messages are not compressed. While messages can be zipped or gzipped like
-    any other file, special-purpose compression algorithms like the ones used by
-    JPEG and PNG will produce much smaller files for data of the appropriate
-    type.
-*   Protocol buffer messages are less than maximally efficient in both size and
-    speed for many scientific and engineering uses that involve large,
-    multi-dimensional arrays of floating point numbers. For these applications,
-    [FITS](https://en.wikipedia.org/wiki/FITS) and similar formats have less
-    overhead.
-*   Protocol buffers are not well supported in non-object-oriented languages
-    popular in scientific computing, such as Fortran and IDL.
-*   Protocol buffer messages don't inherently self-describe their data, but they
-    have a fully reflective schema that you can use to implement
-    self-description. That is, you cannot fully interpret one without access to
-    its corresponding `.proto` file.
-*   Protocol buffers are not a formal standard of any organization. This makes
-    them unsuitable for use in environments with legal or other requirements to
-    build on top of standards.
+*   Protocol Buffers 假设整个消息可以一次性加载到内存中，且不大于对象图。对于超过几兆字节的数据，建议使用其他方案；处理大数据时，可能会因多次序列化导致内存使用激增。
+*   Protocol Buffers 序列化后，同一数据可能有多种二进制表示。无法在不完全解析的情况下比较两个消息是否相等。
+*   消息本身不压缩。虽然可以像其他文件一样用 zip 或 gzip 压缩，但针对特定类型数据的专用压缩算法（如 JPEG、PNG）会更高效。
+*   对于涉及大量多维浮点数组的科学和工程应用，Protocol Buffers 在大小和速度上都不是最优选择。此类应用建议使用 [FITS](https://en.wikipedia.org/wiki/FITS) 等格式。
+*   Protocol Buffers 在 Fortran、IDL 等科学计算常用的非面向对象语言中支持较差。
+*   Protocol Buffers 消息本身不自描述，但有完整的反射式 schema 可用于实现自描述。即，必须有对应的 `.proto` 文件才能完全解析。
+*   Protocol Buffers 不是任何组织的正式标准，因此不适用于有法律或标准化要求的场景。
 
-## Who Uses Protocol Buffers? {#who-uses}
+## 谁在使用 Protocol Buffers？ {#who-uses}
 
-Many projects use protocol buffers, including the following:
+许多项目都在使用 Protocol Buffers，包括：
 
 +   [gRPC](https://grpc.io)
 +   [Google Cloud](https://cloud.google.com)
 +   [Envoy Proxy](https://www.envoyproxy.io)
 
-## How do Protocol Buffers Work? {#work}
+## Protocol Buffers 如何工作？ {#work}
 
-The following diagram shows how you use protocol buffers to work with your data.
+下图展示了使用 Protocol Buffers 处理数据的流程。
 
-![Compilation workflow showing the creation of a proto file, generated code, and compiled classes](./images/protocol-buffers-concepts.png) \
-**Figure 1. Protocol buffers workflow**
+![编译流程，展示 proto 文件、生成代码和编译类的创建](./images/protocol-buffers-concepts.png) \
+**图 1. Protocol Buffers 工作流程**
 
-The code generated by protocol buffers provides utility methods to retrieve data
-from files and streams, extract individual values from the data, check if data
-exists, serialize data back to a file or stream, and other useful functions.
+Protocol Buffers 生成的代码提供了从文件和流中检索数据、提取单个值、检查数据是否存在、将数据序列化回文件或流等实用方法。
 
-The following code samples show you an example of this flow in Java. As shown
-earlier, this is a `.proto` definition:
+以下代码示例展示了 Java 中的这一流程。如前所示，这是一个 `.proto` 定义：
 
 ```proto
 message Person {
-  string name = 1;
-  int32 id = 2;
-  string email = 3;
+    string name = 1;
+    int32 id = 2;
+    string email = 3;
 }
 ```
 
-Compiling this `.proto` file creates a `Builder` class that you can use to
-create new instances, as in the following Java code:
+编译该 `.proto` 文件会生成一个 `Builder` 类，可用于创建新实例，如下所示：
 
 ```java
 Person john = Person.newBuilder()
-    .setId(1234)
-    .setName("John Doe")
-    .setEmail("jdoe@example.com")
-    .build();
+        .setId(1234)
+        .setName("John Doe")
+        .setEmail("jdoe@example.com")
+        .build();
 output = new FileOutputStream(args[0]);
 john.writeTo(output);
 ```
 
-You can then deserialize data using the methods protocol buffers creates in
-other languages, like C++:
+你还可以用 Protocol Buffers 在其他语言（如 C++）中反序列化数据：
 
 ```cpp
 Person john;
@@ -226,80 +151,56 @@ std::string name = john.name();
 std::string email = john.email();
 ```
 
-## Protocol Buffers Definition Syntax {#syntax}
+## Protocol Buffers 定义语法 {#syntax}
 
-When defining `.proto` files, you can specify cardinality (singular or
-repeated). In proto2 and proto3, you can also specify if the field is optional.
-In proto3, setting a field to optional
-[changes it from implicit presence to explicit presence](./programming-guides/field_presence).
+定义 `.proto` 文件时，可以指定字段的基数（单个或 repeated）。在 proto2 和 proto3 中，还可以指定字段是否为 optional。在 proto3 中，将字段设为 optional
+[会将其从隐式 presence 改为显式 presence](./programming-guides/field_presence)。
 
-After setting the cardinality of a field, you specify the data type. Protocol
-buffers support the usual primitive data types, such as integers, booleans, and
-floats. For the full list, see
-[Scalar Value Types](./programming-guides/proto3#scalar).
+设置字段基数后，指定数据类型。Protocol Buffers 支持常见的原始数据类型，如整数、布尔值和浮点数。完整列表见
+[标量值类型](./programming-guides/proto3#scalar)。
 
-A field can also be of:
+字段还可以是：
 
-*   A `message` type, so that you can nest parts of the definition, such as for
-    repeating sets of data.
-*   An `enum` type, so you can specify a set of values to choose from.
-*   A `oneof` type, which you can use when a message has many optional fields
-    and at most one field will be set at the same time.
-*   A `map` type, to add key-value pairs to your definition.
+*   `message` 类型，可用于嵌套定义（如重复数据集）。
+*   `enum` 类型，可指定一组选项。
+*   `oneof` 类型，适用于有多个可选字段且同一时间最多只设置一个字段的消息。
+*   `map` 类型，可为定义添加键值对。
 
-Messages can allow **extensions** to define fields outside of the message,
-itself. For example, the protobuf library's internal message schema allows
-extensions for custom, usage-specific options.
+消息可以通过 **扩展** 机制定义消息外的字段。例如，protobuf 库的内部消息 schema 允许为自定义选项扩展。
 
-For more information about the options available, see the language guide for
-[proto2](./programming-guides/proto2),
-[proto3](./programming-guides/proto3), or
-[edition 2023](./programming-guides/editions).
+更多选项请参见
+[proto2](./programming-guides/proto2)、
+[proto3](./programming-guides/proto3) 或
+[2023 版](./programming-guides/editions) 的语言指南。
 
-After setting cardinality and data type, you choose a name for the field. There
-are some things to keep in mind when setting field names:
+设置基数和数据类型后，需要为字段命名。命名时需注意：
 
-*   It can sometimes be difficult, or even impossible, to change field names
-    after they've been used in production.
-*   Field names cannot contain dashes. For more on field name syntax, see
-    [Message and Field Names](./programming-guides/style#message-field-names).
-*   Use pluralized names for repeated fields.
+*   字段名一旦投入生产后更改可能很困难甚至不可能。
+*   字段名不能包含短横线。更多语法见
+        [消息和字段命名](./programming-guides/style#message-field-names)。
+*   对于 repeated 字段，使用复数命名。
 
-After assigning a name to the field, you assign a field number. Field
-numbers cannot be repurposed or reused. If you delete a field, you should
-reserve its field number to prevent someone from accidentally reusing the
-number.
+命名后，需要分配字段编号。字段编号不能被重复使用。如果删除字段，应保留其编号，防止被误用。
 
-## Additional Data Type Support {#data-types}
+## 其他数据类型支持 {#data-types}
 
-Protocol buffers support many scalar value types, including integers that use
-both variable-length encoding and fixed sizes. You can also create your own
-composite data types by defining messages that are, themselves, data types that
-you can assign to a field. In addition to the simple and composite value types,
-several [common types](./best-practices/dos-donts#common)
-are published.
+Protocol Buffers 支持多种标量值类型，包括变长编码和定长整数。你还可以通过定义消息类型创建自定义复合数据类型。除了简单和复合类型外，还发布了若干[常用类型](./best-practices/dos-donts#common)。
 
-## History {#history}
+## 历史 {#history}
 
-To read about the history of the protocol buffers project, see
-[History of Protocol Buffers](./history).
+关于 Protocol Buffers 项目的历史，请参见
+[Protocol Buffers 的历史](./history)。
 
-## Protocol Buffers Open Source Philosophy {#philosophy}
+## Protocol Buffers 开源理念 {#philosophy}
 
-Protocol buffers were open sourced in 2008 as a way to provide developers
-outside of Google with the same benefits that we derive from them internally. We
-support the open source community through regular updates to the language as we
-make those changes to support our internal requirements. While we accept select
-pull requests from external developers, we cannot always prioritize feature
-requests and bug fixes that don’t conform to Google’s specific needs.
+Protocol Buffers 于 2008 年开源，旨在让 Google 以外的开发者也能享受其内部带来的好处。我们通过定期更新语言来支持开源社区，同时满足内部需求。虽然我们会接受部分外部开发者的 pull request，但无法始终优先处理不符合 Google 需求的功能请求和 bug 修复。
 
-## Developer Community {#community}
+## 开发者社区 {#community}
 
-To be alerted to upcoming changes in Protocol Buffers and to connect with
-protobuf developers and users,
-[join the Google Group](https://groups.google.com/g/protobuf).
+想要获取 Protocol Buffers 的最新动态，或与 protobuf 开发者和用户交流，
+[加入 Google Group](https://groups.google.com/g/protobuf)。
 
-## Additional Resources {#additional-resources}
+## 其他资源 {#additional-resources}
 
 *   [Protocol Buffers GitHub](https://github.com/protocolbuffers/protobuf/)
-    * [Tutorials](https://protobuf.dev/getting-started/)
+        * [教程](https://protobuf.dev/getting-started/)

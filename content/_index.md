@@ -1,27 +1,21 @@
 +++
-title = "Protocol Buffers"
+title = "协议缓冲区"
 weight = 5
 toc_hide = "true"
-description = "Protocol Buffers are language-neutral, platform-neutral extensible mechanisms for serializing structured data."
+description = "协议缓冲区是一种与语言和平台无关的可扩展机制，用于序列化结构化数据。"
 type = "docs"
 no_list = "true"
 +++
 
-## What Are Protocol Buffers?
+## 什么是协议缓冲区？
 
-Protocol buffers are Google's language-neutral, platform-neutral, extensible
-mechanism for serializing structured data – think XML, but smaller, faster, and
-simpler. You define how you want your data to be structured once, then you can
-use special generated source code to easily write and read your structured data
-to and from a variety of data streams and using a variety of languages.
+协议缓冲区（Protocol Buffers）是 Google 提供的一种与语言和平台无关、可扩展的结构化数据序列化机制——可以把它想象成更小、更快、更简单的 XML。你只需定义一次数据结构，然后就可以使用自动生成的源代码，轻松地在多种数据流和多种语言之间读写你的结构化数据。
 
-## Pick Your Favorite Language
+## 选择你喜欢的语言
 
-Protocol buffers support generated code in C++, C#, Dart, Go, Java,
-Kotlin,
-Objective-C, Python, and Ruby. With proto3, you can also work with PHP.
+协议缓冲区支持在 C++、C#、Dart、Go、Java、Kotlin、Objective-C、Python 和 Ruby 中生成代码。使用 proto3，还可以支持 PHP。
 
-## Example Implementation
+## 示例实现
 
 ```proto
 edition = "2023";
@@ -33,10 +27,10 @@ message Person {
 }
 ```
 
-**Figure 1.** A proto definition.
+**图 1.** 一个 proto 定义。
 
 ```java
-// Java code
+// Java 代码
 Person john = Person.newBuilder()
     .setId(1234)
     .setName("John Doe")
@@ -46,10 +40,10 @@ output = new FileOutputStream(args[0]);
 john.writeTo(output);
 ```
 
-**Figure 2.** Using a generated class to persist data.
+**图 2.** 使用生成的类持久化数据。
 
 ```cpp
-// C++ code
+// C++ 代码
 Person john;
 fstream input(argv[1],
     ios::in | ios::binary);
@@ -59,23 +53,20 @@ name = john.name();
 email = john.email();
 ```
 
-**Figure 3.** Using a generated class to parse persisted data.
+**图 3.** 使用生成的类解析持久化数据。
 
-## How Do I Start?
+## 如何开始？
 
 <ol>
 
   <li>
-    <a href="https://github.com/protocolbuffers/protobuf#protobuf-compiler-installation">Download
-    and install</a> the protocol buffer compiler.
+    <a href="https://github.com/protocolbuffers/protobuf#protobuf-compiler-installation">下载并安装</a> 协议缓冲区编译器。
   </li>
 
   <li>
-    Read the
-    <a href="/overview">overview</a>.
+    阅读 <a href="/overview">概述</a>。
   </li>
   <li>
-    Try the <a href="/getting-started">tutorial</a> for your
-    chosen language.
+    按照你选择的语言，尝试 <a href="/getting-started">入门教程</a>。
   </li>
 </ol>
