@@ -1,7 +1,7 @@
 +++
-title = "Language Guide (proto 2)"
+title = "语言指南 (proto 2)"
 weight = 40
-description = "Covers how to use the proto2 revision of Protocol Buffers language in your project."
+description = "介绍如何在项目中使用 Protocol Buffers 语言的 proto2 版本。"
 aliases = "/programming-guides/proto/"
 type = "docs"
 +++

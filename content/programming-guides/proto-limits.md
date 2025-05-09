@@ -1,56 +1,45 @@
 +++
-title = "Proto Limits"
+title = "Proto 限制"
 weight = 45
-description = "Covers the limits to number of supported elements in proto schemas."
+description = "介绍 proto schema 支持元素数量的限制。"
 type = "docs"
 +++
 
-This topic documents the limits to the number of supported elements (fields,
-enum values, and so on) in proto schemas.
+本文档记录了 proto schema 中支持的元素数量（字段、枚举值等）的限制。
 
-This information is a collection of discovered limitations by many engineers,
-but is not exhaustive and may be incorrect/outdated in some areas. As you
-discover limitations in your work, contribute those to this document to help
-others.
+这些信息由许多工程师收集整理，但并不详尽，部分内容可能已过时或不准确。欢迎在工作中发现新的限制后，补充到本文档，帮助他人。
 
-## Number of Fields {#fields}
+## 字段数量限制 {#fields}
 
-Message with only singular proto fields (such as Boolean):
+仅包含单一 proto 字段（如 Boolean）的消息：
 
-*   ~2100 fields (proto2)
-*   ~3100 (proto3 without using optional fields)
+*   ~2100 个字段（proto2）
+*   ~3100 个字段（proto3，未使用 optional 字段）
 
-Empty message extended by singular fields (such as Boolean):
+通过单一字段（如 Boolean）扩展的空消息：
 
-*   ~4100 fields (proto2)
+*   ~4100 个字段（proto2）
 
-Extensions are not supported in proto3.
+proto3 不支持扩展。
 
-To test this limitation, create a proto message with more than the upper bound
-number of fields and compile using a Java proto rule. The limit comes from JVM
-specs.
+要测试此限制，可创建一个超过上述上限字段数量的 proto 消息，并使用 Java proto 规则进行编译。该限制来源于 JVM 规范。
 
-## Number of Values in an Enum {#enum}
+## 枚举值数量限制 {#enum}
 
-The lowest limit is ~1700 values, in Java
-. Other languages have different
-limits.
+最低限制约为 1700 个值（Java）。其他语言有不同的限制。
 
-## Total Size of the Message {#total}
+## 消息总大小限制 {#total}
 
-Any proto in serialized form must be <2GiB, as that is the maximum size
-supported by all implementations. It's recommended to bound request and response
-sizes.
+任何序列化形式的 proto 消息必须小于 2GiB，这是所有实现支持的最大大小。建议限制请求和响应的大小。
 
-## Depth Limit for Proto Unmarshaling {#depth}
+## Proto 反序列化深度限制 {#depth}
 
-*   Java:
+*   Java：
     100
-*   C++:
+*   C++：
     100
-*   Go:
+*   Go：
     10000
-    (there is a plan to reduce this to 100)
+    （计划将其减少到 100）
 
-If you try to unmarshal a message that is nested deeper than the depth limit,
-the unmarshaling will fail.
+如果尝试反序列化嵌套深度超过限制的消息，反序列化将失败。

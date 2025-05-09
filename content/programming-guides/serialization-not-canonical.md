@@ -1,68 +1,43 @@
 +++
-title = "Proto Serialization Is Not Canonical"
+title = "Proto 序列化不是规范化的"
 weight = 88
-description = "Explains how serialization works and why it is not canonical."
+description = "解释序列化的工作原理以及为什么它不是规范化的。"
 type = "docs"
 +++
 
-Many people want a serialized proto to canonically represent the contents of
-that proto. Use cases include:
+许多人希望序列化后的 proto 能规范地代表其内容。常见用例包括：
 
-*   using a serialized proto as a key in a hash table
-*   taking a fingerprint or checksum of a serialized proto
-*   comparing serialized payloads as a way of checking message equality
+*   将序列化的 proto 用作哈希表的键
+*   对序列化的 proto 取指纹或校验和
+*   通过比较序列化后的数据判断消息是否相等
 
-Unfortunately, *protobuf serialization is not (and cannot be) canonical*. There
-are a few notable exceptions, such as MapReduce, but in general you should
-generally think of proto serialization as unstable. This page explains why.
+不幸的是，*protobuf 的序列化不是（也无法做到）规范化*。虽然有一些特殊情况（如 MapReduce），但通常你应该认为 proto 的序列化结果是不稳定的。本文将解释原因。
 
-## Deterministic is not Canonical
+## 确定性并不等于规范化
 
-Deterministic serialization is not canonical. The serializer can generate
-different output for many reasons, including but not limited to the following
-variations:
+确定性序列化并不等于规范化。序列化器可能因多种原因生成不同的输出，包括但不限于以下变化：
 
-1.  The protobuf schema changes in any way.
-1.  The application being built changes in any way.
-1.  The binary is built with different flags (eg. opt vs. debug).
-1.  The protobuf library is updated.
+1.  protobuf 的 schema 发生任何变化。
+1.  构建的应用发生任何变化。
+1.  二进制文件使用不同的编译参数（如 opt 与 debug）。
+1.  protobuf 库被更新。
 
-This means that hashes of serialized protos are fragile and not stable across
-time or space.
+这意味着序列化 proto 的哈希值是脆弱的，无法在不同时间或空间保持稳定。
 
-There are many reasons why the serialized output can change. The above list is
-not exhaustive. Some of them are inherent difficulties in the problem space that
-would make it inefficient or impossible to guarantee canonical serialization
-even if we wanted to. Others are things we intentionally leave undefined to
-allow for optimization opportunities.
+导致序列化输出变化的原因有很多，上述列表并不详尽。其中有些是该问题领域内固有的困难，即使我们想要，也难以保证规范化序列化。还有一些是我们有意未定义的，以便为优化留出空间。
 
-## Inherent Barriers to Stable Serialization
+## 稳定序列化的固有障碍
 
-Protobuf objects preserve unknown fields to provide forward and backward
-compatibility. Unknown fields cannot be canonically serialized:
+Protobuf 对象会保留未知字段，以实现前向和后向兼容性。未知字段无法规范化序列化：
 
-1.  Unknown fields can't distinguish between bytes and sub-messages, as both
-    have the same wire type. This makes it impossible to canonicalize messages
-    stored in the unknown field set. If we were going to canonicalize, we would
-    need to recurse into unknown submessages to sort their fields by field
-    number, but we don't have enough information to do this.
-1.  Unknown fields are always serialized after known fields, for efficiency. But
-    canonical serialization would require interleaving unknown fields with known
-    fields by field number. This would cause efficiency and code size overheads
-    for everybody, even people who do not use the feature.
+1.  未知字段无法区分字节和子消息，因为它们的 wire type 相同。这导致无法对存储在未知字段集中的消息进行规范化。如果要规范化，我们需要递归进入未知子消息并按字段号排序，但我们没有足够的信息来做到这一点。
+1.  未知字段总是在已知字段之后序列化，以提高效率。但规范化序列化要求按字段号将未知字段与已知字段交错序列化。这会给所有人带来效率和代码体积的开销，即使他们并未使用该特性。
 
-## Things Intentionally Left Undefined
+## 有意未定义的内容
 
-Even if canonical serialization was feasible (that is, if we could solve the
-unknown field problem), we intentionally leave serialization order undefined to
-allow for more optimization opportunities:
+即使规范化序列化是可行的（即我们能解决未知字段问题），我们也会有意将序列化顺序未定义，以便获得更多优化空间：
 
-1.  If we can prove a field is never used in a binary, we can remove it from the
-    schema completely and process it as an unknown field. This saves substantial
-    code size and CPU cycles.
-2.  There may be opportunities to optimize by serializing vectors of the same
-    field together, even though this would break field number order.
+1.  如果我们能证明某个字段在二进制中从未被使用，可以将其从 schema 中完全移除，并作为未知字段处理。这能显著节省代码体积和 CPU 周期。
+2.  有时可以通过将同一字段的向量一起序列化来优化，尽管这会打破字段号顺序。
 
-To leave room for optimizations like this, we want to intentionally scramble
-field order in some configurations, so that applications do not inappropriately
-depend on field order.
+为了给这些优化留出空间，我们希望在某些配置下有意打乱字段顺序，防止应用错误地依赖字段顺序。

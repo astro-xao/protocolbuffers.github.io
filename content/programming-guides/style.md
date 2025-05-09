@@ -1,120 +1,97 @@
 +++
-title = "Style Guide"
+title = "风格指南"
 weight = 50
-description = "Provides direction for how best to structure your proto definitions."
+description = "为如何最佳组织您的 proto 定义提供指导。"
 type = "docs"
 +++
 
-This document provides a style guide for `.proto` files. By following these
-conventions, you'll make your protocol buffer message definitions and their
-corresponding classes consistent and easy to read.
+本文档为 `.proto` 文件提供了风格指南。遵循这些约定，可以让您的协议缓冲区消息定义及其对应的类保持一致且易于阅读。
 
-## Standard File Formatting {#standard-file-formatting}
+## 标准文件格式 {#standard-file-formatting}
 
-*   Keep the line length to 80 characters.
-*   Use an indent of 2 spaces.
-*   Prefer the use of double quotes for strings.
+*   保持每行长度不超过 80 个字符。
+*   使用 2 个空格缩进。
+*   字符串建议使用双引号。
 
-## File Structure {#file-structure}
+## 文件结构 {#file-structure}
 
-Files should be named `lower_snake_case.proto`.
+文件应命名为 `lower_snake_case.proto`。
 
-All files should be ordered in the following manner:
+所有文件应按以下顺序排列：
 
-1.  License header (if applicable)
-1.  File overview
-1.  Syntax
-1.  Package
-1.  Imports (sorted)
-1.  File options
-1.  Everything else
+1.  许可证头（如适用）
+1.  文件概述
+1.  语法声明
+1.  包声明
+1.  导入（排序）
+1.  文件选项
+1.  其他内容
 
-## Identifier naming styles {#identifier}
+## 标识符命名风格 {#identifier}
 
-Protobuf identifiers use one of the following naming styles:
+Protobuf 标识符使用以下命名风格之一：
 
 1.  TitleCase
-    *   Contains uppercase letters, lowercase letters, and numbers
-    *   The initial character is an uppercase letter
-    *   The initial letter of each word is capitalized
+  *   包含大写字母、小写字母和数字
+  *   首字母为大写字母
+  *   每个单词的首字母大写
 1.  lower_snake_case
-    *   Contains lowercase letters, underscores, and numbers
-    *   Words are separated by a single underscore
+  *   包含小写字母、下划线和数字
+  *   单词之间用单个下划线分隔
 1.  UPPER_SNAKE_CASE
-    *   Contains uppercase letters, underscores, and numbers
-    *   Words are separated by a single underscore
+  *   包含大写字母、下划线和数字
+  *   单词之间用单个下划线分隔
 1.  camelCase
-    *   Contains uppercase letters, lowercase letters, and numbers
-    *   The initial character is an lowercase letter
-    *   The initial letter of each subsequent word is capitalized
-    *   **Note:** The style guide below does not use camelCase for any
-        identifier in .proto files; the terminology is only clarified here since
-        some language's generated code may transform identifiers into this
-        style.
+  *   包含大写字母、小写字母和数字
+  *   首字母为小写字母
+  *   每个后续单词的首字母大写
+  *   **注意：** 下述风格指南不建议在 .proto 文件中使用 camelCase，仅为说明某些语言生成的代码可能会将标识符转换为此风格。
 
-In all cases, treat abbreviations as though they are single words: use
-`GetDnsRequest` rather than `GetDNSRequest`, `dns_request` rather than
-`d_n_s_request`.
+所有情况下，缩写应视为单个单词：使用 `GetDnsRequest` 而不是 `GetDNSRequest`，使用 `dns_request` 而不是 `d_n_s_request`。
 
-#### Underscores in Identifiers {#underscores}
+#### 标识符中的下划线 {#underscores}
 
-Don't use underscores as the initial or final character of a name. Any
-underscore should always be followed by a letter (not a number or a second
-underscore).
+不要在名称的开头或结尾使用下划线。任何下划线后面都应跟字母（而不是数字或第二个下划线）。
 
-The motivation for this rule is that each protobuf language implementation may
-convert identifiers into the local language style: a name of `song_id` in a
-.proto file may end up having accessors for the field which are capitalized as
-as `SongId`, `songId` or `song_id` depending on the language.
+此规则的动机在于，每种 protobuf 语言实现可能会将标识符转换为本地语言风格：.proto 文件中的 `song_id` 字段在不同语言中可能分别变为 `SongId`、`songId` 或 `song_id`。
 
-By using underscores only before letters, it avoids situations where names may
-be distinct in one style, but would collide after they are transformed into one
-of the other styles.
+仅在字母前使用下划线，可以避免名称在一种风格下不同，但转换为另一种风格后发生冲突的情况。
 
-For example, both `DNS2` and `DNS_2` would both transform into TitleCase as
-`Dns2`. Allowing either of those names can be lead to painful situations when a
-message is used only in some languages where the generated code keeps the
-original UPPER_SNAKE_CASE style, becomes widely established, and then is only
-later used in a language where names are transformed to TitleCase where they
-collide.
+例如，`DNS2` 和 `DNS_2` 转换为 TitleCase 都会变为 `Dns2`。允许这两种命名会导致在某些语言中生成的代码保持原有 UPPER_SNAKE_CASE 风格并广泛使用，后来在另一种语言中转换为 TitleCase 时发生冲突。
 
-When applied, this style rule means that you should use `XYZ2` or `XYZ_V2`
-rather than `XYZ_2` or `XYZ_2V`.
+因此，应使用 `XYZ2` 或 `XYZ_V2`，而不是 `XYZ_2` 或 `XYZ_2V`。
 
-## Packages {#packages}
+## 包 {#packages}
 
-Use dot-delimited lower_snake_case names as package names.
+包名应使用点分隔的 lower_snake_case。
 
-Multi-word package names may be lower_snake_case or dot.delimited (dot-delimited
-package names are emitted as nested packages/namespaces in most languages).
+多单词包名可以使用 lower_snake_case 或点分隔（大多数语言中点分隔包名会作为嵌套包/命名空间）。
 
-Package names should attempt to be a short but unique name based on the project
-name. Package names should not be Java packages (`com.x.y`); instead use `x.y`
-as the package and use the `java_package` option as needed.
+包名应尽量简短且唯一，基于项目名称。包名不应为 Java 包（如 `com.x.y`）；应使用 `x.y` 作为包名，并根据需要使用 `java_package` 选项。
 
-## Message Names {#message-names}
+## 消息名 {#message-names}
 
-Use TitleCase for message names.
+消息名应使用 TitleCase。
 
 ```proto
 message SongRequest {
 }
 ```
 
-## Field Names {#field-names}
+## 字段名 {#field-names}
 
-Use snake_case for field names, including extensions.
+字段名（包括扩展）应使用 snake_case。
 
-Use pluralized names for repeated fields.
+重复字段应使用复数命名。
 
 ```proto
 string song_name = 1;
 repeated Song songs = 2;
 ```
 
-## Oneof Names {#oneof-names}
+## oneof 名称 {#oneof-names}
 
-Use lower_snake_case for oneof names.
+oneof 名称应使用 lower_snake_case。
 
 ```proto
 oneof song_id {
@@ -123,11 +100,11 @@ oneof song_id {
 }
 ```
 
-## Enums {#enums}
+## 枚举 {#enums}
 
-Use TitleCase for enum type names.
+枚举类型名应使用 TitleCase。
 
-Use UPPER_SNAKE_CASE for enum value names.
+枚举值名应使用 UPPER_SNAKE_CASE。
 
 ```proto
 enum FooBar {
@@ -137,18 +114,11 @@ enum FooBar {
 }
 ```
 
-The first listed value should be a zero value enum and have the suffix of either
-`_UNSPECIFIED` or `_UNKNOWN`. This value may be used as an unknown/default value
-and should be distinct from any of the semantic values you expect to be
-explicitly set. For more information on the unspecified enum value, see
-[the Proto Best Practices page](./best-practices/dos-donts#unspecified-enum).
+第一个枚举值应为零值，并以 `_UNSPECIFIED` 或 `_UNKNOWN` 结尾。该值可用作未知/默认值，并应与任何语义值区分。更多关于未指定枚举值的信息，请参见[Proto 最佳实践页面](./best-practices/dos-donts#unspecified-enum)。
 
-#### Enum Value Prefixing {#enum-value-prefixing}
+#### 枚举值前缀 {#enum-value-prefixing}
 
-Enum values are semantically considered to not be scoped by their containing
-enum name, so the same name in two sibling enums is not allowed. For example,
-the following would be rejected by protoc since the `SET` value defined in the
-two enums are considered to be in the same scope:
+枚举值在语义上不受其包含的枚举名作用域限制，因此两个同级枚举中不能有相同的值名。例如，以下内容会被 protoc 拒绝，因为两个枚举中的 `SET` 值被认为处于同一作用域：
 
 ```proto
 enum CollectionType {
@@ -166,25 +136,18 @@ enum TennisVictoryType {
 }
 ```
 
-Name collisions are a high risk when enums are defined at the top level of a
-file (not nested inside a message definition); in that case the siblings include
-enums defined in other files that set the same package, where protoc may not be
-able to detect the collision has occurred at code generation time.
+当枚举定义在文件顶层（未嵌套在消息定义中）时，名称冲突风险较高；此时同级包括其他文件中设置了相同包的枚举，protoc 可能无法在代码生成时检测到冲突。
 
-To avoid these risks, it is strongly recommended to do one of:
+为避免这些风险，强烈建议：
 
-*   Prefix every value with the enum name (converted to UPPER_SNAKE_CASE)
-*   Nest the enum inside a containing message
+*   为每个值添加枚举名前缀（转换为 UPPER_SNAKE_CASE）
+*   将枚举嵌套在包含消息中
 
-Either option is enough to mitigate collision risks, but prefer top-level enums
-with prefixed values over creating a message simply to mitigate the issue. Since
-some languages don't support an enum being defined inside a "struct" type,
-preferring prefixed values ensures a consistent approach across binding
-languages.
+任一方式都可避免冲突，但建议优先使用带前缀的顶层枚举，而不是仅为规避冲突而创建消息。由于某些语言不支持在“结构体”类型中定义枚举，优先使用前缀可确保各语言绑定方式一致。
 
-## Services {#services}
+## 服务 {#services}
 
-Use TitleCase for service names and method names.
+服务名和方法名应使用 TitleCase。
 
 ```proto
 service FooService {
@@ -193,41 +156,28 @@ service FooService {
 }
 ```
 
-For more service-related guidance, see
-[Create Unique Protos per Method](./best-practices/api#unique-protos)
-and
-[Don't Include Primitive Types in a Top-level Request or Response Proto](./programming-guides/api#dont-include-primitive-types)
-in the API Best Practices topic, and
-[Define Message Types in Separate Files](./best-practices/dos-donts#separate-files)
-in Proto Best Practices.
+更多服务相关建议，请参见
+[为每个方法创建唯一的 Proto](./best-practices/api#unique-protos)
+和
+[不要在顶级请求或响应 Proto 中包含原始类型](./programming-guides/api#dont-include-primitive-types)
+以及 Proto 最佳实践中的
+[在单独文件中定义消息类型](./best-practices/dos-donts#separate-files)。
 
-## Things to Avoid {#avoid}
+## 应避免事项 {#avoid}
 
-### Required Fields {#required}
+### Required 字段 {#required}
 
-Required fields are a way to enforce that a given field must be set when parsing
-wire bytes, and otherwise refuse to parse the message. The required invariant is
-generally not enforced on messages constructed in memory. Required fields were
-removed in proto3.
+Required 字段用于强制在解析字节流时必须设置某字段，否则拒绝解析消息。该约束通常不会在内存中构建消息时强制执行。Required 字段在 proto3 中已被移除。
 
-While enforcement of required fields at the schema level is intuitively
-desirable, one of the primary design goals of protobuf is to support long term
-schema evolution. No matter how obviously required a given field seems to be
-today, there is a plausible future where the field should no longer be set (e.g.
-an `int64 user_id` may need to migrate to a `UserId user_id` in the future).
+虽然在模式层面强制 Required 字段直观上很有吸引力，但 protobuf 的主要设计目标之一是支持长期的模式演进。无论某字段现在看起来多么“必须”，未来都有可能不再需要（例如 `int64 user_id` 未来可能迁移为 `UserId user_id`）。
 
-Especially in the case of middleware servers that may forward messages that they
-don't really need to process, the semantics of `required` has proven too harmful
-for those long-term evolution goals, and so is now very strongly discouraged.
+尤其是在中间件服务器可能转发其无需处理的消息时，`required` 的语义对长期演进目标造成了很大阻碍，因此现在强烈不建议使用。
 
-See
-[Required is Strongly Deprecated](./programming-guides/proto2#required-deprecated).
+参见
+[Required 已强烈弃用](./programming-guides/proto2#required-deprecated)。
 
 ### Groups {#groups}
 
-Groups is an alternate syntax and wire format for nested messages. Groups are
-considered deprecated in proto2 and were removed from proto3. You should use a
-nested message definition and field of that type instead of using the group
-syntax.
+Groups 是嵌套消息的另一种语法和线格式。Groups 在 proto2 中已弃用，在 proto3 中被移除。应使用嵌套消息定义及其字段代替 group 语法。
 
-See [groups](./programming-guides/proto2#groups).
+参见 [groups](./programming-guides/proto2#groups)。

@@ -65,7 +65,7 @@ id = "G-5L8P8GRN4Y"
 
 [languages]
 [languages.en]
-title = "Protocol Buffers Documentation"
+title = "Protocol Buffers 文档"
 languageName ="English"
 # Weight used for sorting.
 weight = 1

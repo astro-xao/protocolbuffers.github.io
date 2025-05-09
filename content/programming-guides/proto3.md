@@ -1,7 +1,7 @@
 +++
-title = "Language Guide (proto 3)"
+title = "语言指南 (proto 3)"
 weight = 40
-description = "Covers how to use the proto3 revision of the Protocol Buffers language in your project."
+description = "介绍如何在您的项目中使用 Protocol Buffers 语言的 proto3 版本。"
 type = "docs"
 +++
 

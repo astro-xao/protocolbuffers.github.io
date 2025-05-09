@@ -1,72 +1,42 @@
 +++
-title = "Techniques"
+title = "技术技巧"
 weight = 70
-description = "Describes some commonly-used design patterns for dealing with Protocol Buffers."
+description = "介绍处理 Protocol Buffers 时常用的一些设计模式。"
 type = "docs"
 +++
 
-You can also send design and usage questions to
-the
-[Protocol Buffers discussion group](http://groups.google.com/group/protobuf).
+你也可以将设计和使用相关的问题发送到
+[Protocol Buffers 讨论组](http://groups.google.com/group/protobuf)。
 
-## Common Filename Suffixes {#suffixes}
+## 常见文件名后缀 {#suffixes}
 
-It is fairly common to write messages to files in several different formats. We
-recommend using the following file extensions for these files.
+通常会以多种不同格式将消息写入文件。我们建议为这些文件使用以下扩展名。
 
-Content                                                                   | Extension
+内容                                                                   | 扩展名
 ------------------------------------------------------------------------- | ---------
-[Text Format](./reference/protobuf/textformat-spec) | `.txtpb`
-[Wire Format](./programming-guides/encoding)        | `.binpb`
-[JSON Format](./programming-guides/proto3#json)     | `.json`
+[文本格式](./reference/protobuf/textformat-spec) | `.txtpb`
+[二进制格式](./programming-guides/encoding)        | `.binpb`
+[JSON 格式](./programming-guides/proto3#json)     | `.json`
 
-For Text Format specifically, `.textproto` is also fairly common, but we
-recommend `.txtpb` for its brevity.
+对于文本格式，`.textproto` 也很常见，但我们推荐使用 `.txtpb`，因为它更简洁。
 
-## Streaming Multiple Messages {#streaming}
+## 多消息流式处理 {#streaming}
 
-If you want to write multiple messages to a single file or stream, it is up to
-you to keep track of where one message ends and the next begins. The Protocol
-Buffer wire format is not self-delimiting, so protocol buffer parsers cannot
-determine where a message ends on their own. The easiest way to solve this
-problem is to write the size of each message before you write the message
-itself. When you read the messages back in, you read the size, then read the
-bytes into a separate buffer, then parse from that buffer. (If you want to avoid
-copying bytes to a separate buffer, check out the `CodedInputStream` class (in
-both C++ and Java) which can be told to limit reads to a certain number of
-bytes.)
+如果你想将多个消息写入同一个文件或流，需要自己跟踪每个消息的起止位置。Protocol Buffer 的二进制格式不是自描述的，因此解析器无法自行判断消息的结束位置。最简单的解决方法是，在写入每个消息前先写入其大小。读取时，先读取大小，再将对应字节读入缓冲区，然后解析该缓冲区。（如果想避免复制字节到单独缓冲区，可以查看 `CodedInputStream` 类（C++ 和 Java 均有），它可以限制读取的字节数。）
 
-## Large Data Sets {#large-data}
+## 大数据集 {#large-data}
 
-Protocol Buffers are not designed to handle large messages. As a general rule of
-thumb, if you are dealing in messages larger than a megabyte each, it may be
-time to consider an alternate strategy.
+Protocol Buffers 并不适合处理大型消息。一般来说，如果每条消息超过 1MB，建议考虑其他方案。
 
-That said, Protocol Buffers are great for handling individual messages *within*
-a large data set. Usually, large data sets are a collection of small pieces,
-where each small piece is structured data. Even though Protocol Buffers cannot
-handle the entire set at once, using Protocol Buffers to encode each piece
-greatly simplifies your problem: now all you need is to handle a set of byte
-strings rather than a set of structures.
+不过，Protocol Buffers 非常适合处理大型数据集中的单条消息。通常，大型数据集由许多结构化的小数据组成。虽然 Protocol Buffers 无法一次处理整个数据集，但用它编码每个小数据块可以大大简化问题：你只需处理一组字节串，而不是一组结构体。
 
-Protocol Buffers do not include any built-in support for large data sets because
-different situations call for different solutions. Sometimes a simple list of
-records will do while other times you want something more like a database. Each
-solution should be developed as a separate library, so that only those who need
-it need pay the costs.
+Protocol Buffers 没有内置对大数据集的支持，因为不同场景需要不同的解决方案。有时只需简单的记录列表，有时则需要类似数据库的结构。每种方案都应作为独立库开发，只有需要的人才需承担相应的成本。
 
-## Self-describing Messages {#self-description}
+## 自描述消息 {#self-description}
 
-Protocol Buffers do not contain descriptions of their own types. Thus, given
-only a raw message without the corresponding `.proto` file defining its type, it
-is difficult to extract any useful data.
+Protocol Buffers 本身不包含类型描述。因此，仅凭原始消息而没有对应的 `.proto` 文件，很难提取有用数据。
 
-However, the contents of a .proto file can itself be represented using protocol
-buffers. The file `src/google/protobuf/descriptor.proto` in the source code
-package defines the message types involved. `protoc` can output a
-`FileDescriptorSet`—which represents a set of .proto files—using the
-`--descriptor_set_out` option. With this, you can define a self-describing
-protocol message like so:
+不过，.proto 文件的内容本身可以用 Protocol Buffers 表示。源码包中的 `src/google/protobuf/descriptor.proto` 定义了相关消息类型。`protoc` 可以通过 `--descriptor_set_out` 选项输出 `FileDescriptorSet`，它表示一组 .proto 文件。你可以这样定义自描述协议消息：
 
 ```proto
 syntax = "proto3";
@@ -75,19 +45,16 @@ import "google/protobuf/any.proto";
 import "google/protobuf/descriptor.proto";
 
 message SelfDescribingMessage {
-  // Set of FileDescriptorProtos which describe the type and its dependencies.
+  // 描述类型及其依赖的 FileDescriptorProto 集合。
   google.protobuf.FileDescriptorSet descriptor_set = 1;
 
-  // The message and its type, encoded as an Any message.
+  // 以 Any 消息编码的消息及其类型。
   google.protobuf.Any message = 2;
 }
 ```
 
-By using classes like `DynamicMessage` (available in C++ and Java), you can then
-write tools which can manipulate `SelfDescribingMessage`s.
+通过使用如 `DynamicMessage`（C++ 和 Java 均有）等类，你可以编写工具来操作 `SelfDescribingMessage`。
 
-All that said, the reason that this functionality is not included in the
-Protocol Buffer library is because we have never had a use for it inside Google.
+需要注意的是，这一功能没有包含在 Protocol Buffer 库中，因为 Google 内部并未遇到相关需求。
 
-This technique requires support for dynamic messages using descriptors. Check
-that your platforms support this feature before using self-describing messages.
+该技术需要平台支持基于描述符的动态消息。在使用自描述消息前，请确认你的平台支持此功能。

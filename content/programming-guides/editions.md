@@ -1,7 +1,7 @@
 +++
-title = "Language Guide (editions)"
+title = "语言指南(editions)"
 weight = 40
-description = "Covers how to use the edition 2023 revision of the Protocol Buffers language in your project."
+description = "介绍如何在项目中使用 Protocol Buffers 语言的 2023 版本。"
 type = "docs"
 +++
 
