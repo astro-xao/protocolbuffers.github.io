@@ -1,14 +1,13 @@
 +++
-title = "Proto Best Practices"
+title = "Proto 最佳实践"
 weight = 90
-description = "An overview of best practices topics."
+description = "最佳实践主题概述。"
 type = "docs"
 no_list = "true"
 +++
 
-Best practices content for defining and using protos exists in the following
-topics:
+定义和使用 proto 的最佳实践内容包含以下主题：
 
-*   [Proto Best Practices](/best-practices/dos-donts)
-*   [API Best Practices](/best-practices/api)
-*   [1-1-1 Rule](/best-practices/1-1-1)
+*   [Proto 最佳实践](/best-practices/dos-donts)
+*   [API 最佳实践](/best-practices/api)
+*   [1-1-1 规则](/best-practices/1-1-1)

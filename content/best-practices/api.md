@@ -1,194 +1,126 @@
 +++
-title = "API Best Practices"
+title = "API 最佳实践"
 weight = 100
-description = "A future-proof API is surprisingly hard to get right. The suggestions in this document make trade-offs to favor long-term, bug-free evolution."
+description = "设计一个面向未来的 API 出奇地难。本文件中的建议在权衡取舍时更倾向于长期、无 bug 的演进。"
 type = "docs"
 aliases = "/programming-guides/api"
 +++
 
-Updated for proto3. Patches welcome!
+已针对 proto3 更新。欢迎补丁！
 
-This doc is a complement to
-[Proto Best Practices](/best-practices/dos-donts). It's
-not a prescription for Java/C++/Go and other APIs.
+本文档是
+[Proto 最佳实践](/best-practices/dos-donts) 的补充。
+它不是针对 Java/C++/Go 及其他 API 的规定。
 
-If you see a proto straying from these guidelines in a code review, point the
-author to this topic and help spread the word.
+如果你在代码评审中发现 proto 偏离了这些指南，请将作者指向本主题，帮助传播最佳实践。
 
-{{% alert title="Note" color="note" %}}
-These guidelines are just that and many have documented exceptions. For example,
-if you're writing a performance-critical backend, you might want to sacrifice
-flexibility or safety for speed. This
-topic will help you better understand the trade-offs and make a decision that
-works for your situation. {{% /alert %}}
+{{% alert title="注意" color="note" %}}
+这些指南仅供参考，且许多有明确的例外。例如，如果你在编写性能关键的后端，可能会为了速度牺牲灵活性或安全性。本主题将帮助你更好地理解权衡，并做出适合你场景的决策。
+{{% /alert %}}
 
-## Precisely, Concisely Document Most Fields and Messages {#precisely-concisely}
+## 精确、简明地为大多数字段和消息编写文档 {#precisely-concisely}
 
-Chances are good your proto will be inherited and used by people who don't know
-what you were thinking when you wrote or modified it. Document each field in
-terms that will be useful to a new team-member or client with little knowledge
-of your system.
+你的 proto 很可能会被不了解你设计初衷的人继承和使用。请用对新团队成员或客户有用的术语为每个字段编写文档。
 
-Some concrete examples:
+具体示例：
 
 ```proto
-// Bad: Option to enable Foo
-// Good: Configuration controlling the behavior of the Foo feature.
+// 错误：启用 Foo 的选项
+// 正确：控制 Foo 功能行为的配置。
 message FeatureFooConfig {
-  // Bad: Sets whether the feature is enabled
-  // Good: Required field indicating whether the Foo feature
-  // is enabled for account_id.  Must be false if account_id's
-  // FOO_OPTIN Gaia bit is not set.
+  // 错误：设置是否启用该功能
+  // 正确：必填字段，指示是否为 account_id 启用 Foo 功能。
+  // 如果 account_id 的 FOO_OPTIN Gaia 位未设置，必须为 false。
   optional bool enabled;
 }
 
-// Bad: Foo object.
-// Good: Client-facing representation of a Foo (what/foo) exposed in APIs.
+// 错误：Foo 对象。
+// 正确：API 中面向客户端的 Foo（what/foo）表示。
 message Foo {
-  // Bad: Title of the foo.
-  // Good: Indicates the user-supplied title of this Foo, with no
-  // normalization or escaping.
-  // An example title: "Picture of my cat in a box <3 <3 !!!"
+  // 错误：foo 的标题。
+  // 正确：表示用户提供的 Foo 标题，无归一化或转义。
+  // 示例标题："Picture of my cat in a box <3 <3 !!!"
   optional string title [(max_length) = 512];
 }
 
-// Bad: Foo config.
-// Less-Bad: If the most useful comment is re-stating the name, better to omit
-// the comment.
+// 错误：Foo 配置。
+// 不如不写：如果最有用的注释只是重复字段名，最好省略注释。
 FooConfig foo_config = 3;
 ```
 
-Document the constraints, expectations and interpretation of each field in as
-few words as possible.
+用尽量少的文字描述每个字段的约束、期望和解释。
 
-You can use custom proto annotations.
-See [Custom Options](/programming-guides/proto2#options)
-to define cross-language constants like `max_length` in the example above.
-Supported in proto2 and proto3.
+你可以使用自定义 proto 注解。
+参见 [自定义选项](/programming-guides/proto2#options)
+以定义跨语言常量，如上例中的 `max_length`。
+proto2 和 proto3 均支持。
 
-Over time, documentation of an interface can get longer and longer. The length
-takes away from the clarity. When the documentation is genuinely unclear, fix it, but
-look at it holistically and aim for brevity.
+接口文档会随着时间变长，影响清晰度。文档不清时要修正，但要整体把握，追求简洁。
 
-## Use Different Messages for Wire and Storage {#use-different-messages}
+## 为传输和存储使用不同的消息 {#use-different-messages}
 
-If a top-level proto you expose to clients is the same one you store on disk,
-you're headed for trouble. More and more binaries will depend on your API over
-time, making it harder to change. You'll want the freedom to change your storage
-format without impacting your clients. Layer your code so that modules deal
-either with client protos, storage protos, or translation.
+如果你暴露给客户端的顶层 proto 与存储在磁盘上的 proto 相同，未来会很麻烦。依赖 API 的二进制文件会越来越多，修改难度加大。你需要有更改存储格式而不影响客户端的自由。将代码分层，让模块只处理客户端 proto、存储 proto 或转换。
 
-Why? You might want to swap your underlying storage system. You might want to
-normalize—or denormalize—data differently. You might realize that parts of your
-client-exposed proto make sense to store in RAM while other parts make sense to
-go on disk.
+原因：你可能想更换底层存储系统，或以不同方式归一化/反归一化数据，或发现部分客户端 proto 适合存储在内存，部分适合磁盘。
 
-When it comes to protos nested one or more levels within a top-level request or
-response, the case for separating storage and wire protos isn't as strong, and
-depends on how closely you're willing to couple your clients to those protos.
+对于嵌套在顶层请求或响应中的 proto，是否分离存储和传输 proto 取决于你愿意让客户端与这些 proto 紧密耦合的程度。
 
-There's a cost in maintaining the translation layer, but it quickly pays off
-once you have clients and have to do your first storage changes.
+维护转换层有成本，但一旦有客户端并需要做存储变更，很快就能收回成本。
 
-You might be tempted to share protos and diverge "when you need to." With a
-perceived high cost to diverge and no clear place to put internal fields, your
-API will accrue fields clients either don't understand or begin to depend on
-without your knowledge.
+你可能会想“等需要时再分离”。但分离成本高、内部字段无处可加时，API 会积累客户端不理解或无意中依赖的字段。
 
-By starting with separate proto files, your team will know where to add internal
-fields without polluting your API. In the early days, the wire proto can be
-tag-for-tag identical with an automatic translation layer (think: byte copying
-or proto reflection). Proto annotations can also power an automatic translation
-layer.
+从一开始就用不同的 proto 文件，团队就知道内部字段加在哪里，不会污染 API。早期，传输 proto 可以与存储 proto 完全一致，自动转换（如字节拷贝或 proto 反射）。proto 注解也可驱动自动转换。
 
-The following are exceptions to the rule:
+以下情况可例外：
 
-*   If the proto field is one of a common type, such as `google.type` or
-    `google.protobuf`, then using that type both as storage and API is
-    acceptable.
-*   If your service is extremely performance-sensitive, it may be worth trading
-    flexibility for execution speed. If your service
-    doesn't have millions of QPS with millisecond latency,
-    you're probably not the exception.
-*   If all of the following are true:
+* 字段为常用类型，如 `google.type` 或 `google.protobuf`，可同时用作存储和 API。
+* 服务极度性能敏感时，可为速度牺牲灵活性。若服务 QPS 没有百万级、延迟没到毫秒级，通常不属于例外。
+* 满足以下全部条件：
 
-    *   your service *is* the storage system
-    *   your system doesn't make decisions based on your clients' structured
-        data
-    *   your system simply stores, loads, and perhaps provides queries at your
-        client's request
+    * 服务本身就是存储系统
+    * 系统不基于客户端结构化数据做决策
+    * 系统仅按客户端请求存储、加载、查询
 
-    Note that if you are implementing something like a logging system or a
-    proto-based wrapper around a generic storages system, then you probably want
-    to aim to have your clients' messages transit into your storage backend as
-    opaquely as possible so that you don't create a dependency nexus. Consider
-    using extensions or [Encode Opaque Data in Strings by Web-safe Encoding
-    Binary Proto
-    Serialization](/best-practices/api#encode-opaque-data-in-strings).
+    如果你实现的是日志系统或基于 proto 的通用存储包装器，建议让客户端消息尽可能透明地进入存储后端，避免依赖集中。可考虑用扩展或[通过 Web 安全编码二进制 proto 序列化将不透明数据编码为字符串](/best-practices/api#encode-opaque-data-in-strings)。
 
-## For Mutations, Support Partial Updates or Append-Only Updates, Not Full Replaces {#support-partial-updates}
+## 对变更操作，支持部分更新或仅追加更新，而非全量替换 {#support-partial-updates}
 
-Don't make an `UpdateFooRequest` that only takes a `Foo`.
+不要让 `UpdateFooRequest` 只接收一个 `Foo`。
 
-If a client doesn't preserve unknown fields, they will not have the newest
-fields of `GetFooResponse` leading to data loss on a round-trip. Some systems
-don't preserve unknown fields. Proto2 and proto3 implementations do preserve
-unknown fields unless the application drops the unknown fields explicitly. In
-general, public APIs should drop unknown fields on server-side to prevent
-security attack via unknown fields. For example, garbage unknown fields may
-cause a server to fail when it starts to use them as new fields in the future.
+如果客户端不保留未知字段，`GetFooResponse` 的最新字段会丢失，导致数据丢失。有些系统不保留未知字段。proto2 和 proto3 实现会保留，除非应用显式丢弃。一般来说，公共 API 应在服务端丢弃未知字段，防止安全攻击。例如，垃圾未知字段可能导致服务器在未来使用新字段时失败。
 
-Absent documentation, handling of optional fields is ambiguous. Will `UpdateFoo`
-clear the field? That leaves you open to data loss when the client doesn't know
-about the field. Does it not touch a field? Then how can clients clear the
-field? Neither are good.
+没有文档时，可选字段的处理是模糊的。`UpdateFoo` 会清除字段吗？这会导致客户端不知字段时数据丢失。不触碰字段？那客户端如何清除字段？都不好。
 
-### Fix #1: Use an Update Field-mask {#use-update-field-mask}
+### 方案一：使用更新字段掩码 {#use-update-field-mask}
 
-Have your client pass which fields it wants to modify and include only those
-fields in the update request. Your server leaves other fields alone and updates
-only those specified by the mask.
-In general, the structure of your mask should mirror the
-structure of the response proto; that is, if `Foo` contains `Bar`, `FooMask`
-contains `BarMask`.
+让客户端传递要修改的字段，并在更新请求中只包含这些字段。服务器只更新掩码指定的字段，其他字段保持不变。
+掩码结构应与响应 proto 结构一致；如 `Foo` 包含 `Bar`，则 `FooMask` 包含 `BarMask`。
 
-### Fix #2: Expose More Narrow Mutations That Change Individual Pieces {#expose-more-narrow-mutations}
+### 方案二：暴露更细粒度的变更方法 {#expose-more-narrow-mutations}
 
-For example, instead of `UpdateEmployeeRequest`, you might have:
-`PromoteEmployeeRequest`, `SetEmployeePayRequest`, `TransferEmployeeRequest`,
-etc.
+例如，不用 `UpdateEmployeeRequest`，而用：
+`PromoteEmployeeRequest`、`SetEmployeePayRequest`、`TransferEmployeeRequest` 等。
 
-Custom update methods are easier to monitor, audit, and secure than a very
-flexible update method. They're also easier to implement and call. A *large*
-number of them can increase the cognitive load of an API.
+自定义更新方法更易监控、审计和安全，也更易实现和调用。*太多*会增加 API 认知负担。
 
-## Don't Include Primitive Types in a Top-level Request or Response Proto {#dont-include-primitive-types}
+## 顶层请求或响应 proto 不要包含原始类型 {#dont-include-primitive-types}
 
-Many of the pitfalls described elsewhere in this doc are solved with this rule.
-For example:
+本文件其他地方描述的许多陷阱都可通过此规则避免。例如：
 
-Telling clients that a repeated field is unset in storage versus not-populated
-in this particular call can be done by wrapping the repeated field in a message.
+让客户端区分存储中未设置的 repeated 字段和本次调用未填充，可通过将 repeated 字段包裹在消息中实现。
 
-Common request options that are shared between requests naturally fall out of
-following this rule. Read and write field masks fall out of this.
+通用请求选项自然会因遵循此规则而出现。读写字段掩码也是如此。
 
-Your top-level proto should almost always be a container for other messages that
-can grow independently.
+顶层 proto 应几乎总是作为其他消息的容器，以便独立扩展。
 
-Even when you only need a single primitive type today, having it wrapped in a
-message gives you a clear path to expand that type and share the type among
-other methods that return the similar values. For example:
+即使现在只需一个原始类型，用消息包裹也便于后续扩展和复用。例如：
 
 ```proto
 message MultiplicationResponse {
-  // Bad: What if you later want to return complex numbers and have an
-  // AdditionResponse that returns the same multi-field type?
+  // 错误：如果以后要返回复数，且 AdditionResponse 也返回同类型，怎么办？
   optional double result;
 
-
-  // Good: Other methods can share this type and it can grow as your
-  // service adds new features (units, confidence intervals, etc.).
+  // 正确：其他方法可复用此类型，且可随服务新增功能（单位、置信区间等）扩展。
   optional NumericResult result;
 }
 
@@ -199,268 +131,173 @@ message NumericResult {
 }
 ```
 
-One exception to top-level primitives: Opaque strings (or bytes) that encode a
-proto but are only built and parsed on the server. Continuation tokens, version
-info tokens and IDs can all be returned as strings *if* the string is actually
-an encoding of a structured proto.
+顶层原始类型的例外：仅在字符串（或字节）编码 proto，且仅在服务器端构建和解析时可用。续页 token、版本信息 token 和 ID 可作为字符串返回，*前提是*字符串实际是结构化 proto 的编码。
 
-## Never Use Booleans for Something That Has Two States Now, but Might Have More Later {#never-use-booleans-for-two-states}
+## 永远不要用布尔型表示现在只有两种状态但未来可能扩展的字段 {#never-use-booleans-for-two-states}
 
-If you are using boolean for a field, make sure that the field is indeed
-describing just two possible states (for all time, not just now and the near
-future). Often, the flexibility of an enum, int, or message turns out to be
-worth it.
+如果用布尔型字段，确保它描述的确实是仅有的两种状态（永远如此，而非现在或近期）。通常，枚举、整型或消息的灵活性更值得。
 
-For example, in returning a stream of posts a developer may need to indicate
-whether a post should be rendered in two-columns or not based on the current
-mocks from UX. Even though a boolean is all that's needed today, nothing
-prevents UX from introducing two-row posts, three-column posts or four-square
-posts in a future version.
+例如，返回帖子流时，开发者可能需要根据 UX 当前设计指示帖子是否双栏显示。虽然现在只需布尔型，但未来 UX 可能引入两行、三栏、四宫格等。
 
 ```proto
 message GooglePlusPost {
-  // Bad: Whether to render this post across two columns.
+  // 错误：是否双栏显示此帖子。
   optional bool big_post;
 
-  // Good: Rendering hints for clients displaying this post.
-  // Clients should use this to decide how prominently to render this
-  // post. If absent, assume a default rendering.
+  // 正确：客户端显示此帖子的渲染提示。
+  // 客户端应据此决定如何突出显示帖子。缺省时假定默认渲染。
   optional LayoutConfig layout_config;
 }
 
 message Photo {
-  // Bad: True if it's a GIF.
+  // 错误：是否为 GIF。
   optional bool gif;
 
-  // Good: File format of the referenced photo (for example, GIF, WebP, PNG).
+  // 正确：照片的文件格式（如 GIF、WebP、PNG）。
   optional PhotoType type;
 }
 ```
 
-Be cautious about adding states to an enum that
-conflates concepts.
+为枚举添加新状态时要小心，避免混淆概念。
 
-If a state introduces a new dimension to the enum or implies multiple
-application behaviors, you almost certainly want another field.
+如果新状态引入了新的维度或暗示多种行为，几乎肯定需要另一个字段。
 
-## Rarely Use an Integer Field for an ID {#integer-field-for-id}
+## 很少用整型字段做 ID {#integer-field-for-id}
 
-It's tempting to use an int64 as an identifier for an object. Opt instead for a
-string.
+用 int64 作为对象标识符很诱人。建议用字符串。
 
-This lets you change your ID space if you need to and reduces the chance of
-collisions. 2^64 isn't as big as it used to be.
+这样可在需要时更改 ID 空间，减少冲突风险。2^64 已不再那么大。
 
-You can also encode a structured identifier as a string which encourages clients
-to treat it as an opaque blob. You still must have a proto backing the string,
-but you can serialize the proto to a string field (encoded as web-safe Base64)
-which removes any of the internal details from the client-exposed API. In this
-case follow the guidelines [below](#encode-opaque-data-in-strings).
+你也可以将结构化标识符编码为字符串，鼓励客户端将其视为不透明数据。仍需有 proto 支撑字符串，但可将 proto 序列化为字符串字段（Web 安全 Base64 编码），避免内部细节暴露给客户端。此时请遵循[下文](#encode-opaque-data-in-strings)的指南。
 
 ```proto
 message GetFooRequest {
-  // Which Foo to fetch.
+  // 要获取的 Foo。
   optional string foo_id;
 }
 
-// Serialized and websafe-base64-encoded into the GetFooRequest.foo_id field.
+// 序列化并 Web 安全 base64 编码到 GetFooRequest.foo_id 字段。
 message InternalFooRef {
-  // Only one of these two is set. Foos that have already been
-  // migrated use the spanner_foo_id and Foos still living in
-  // Caribou Storage Server have a classic_foo_id.
+  // 只设置其中一个。已迁移的 Foo 用 spanner_foo_id，未迁移的用 classic_foo_id。
   optional bytes spanner_foo_id;
   optional int64 classic_foo_id;
 }
 ```
 
-If you start off with your own serialization scheme to represent your IDs as
-strings, things can get weird quickly. That's why it's often best to start
-with an internal proto that backs your string field.
+如果你用自定义序列化方案将 ID 表示为字符串，后续会变得很混乱。因此，最好从一开始就用内部 proto 支撑字符串字段。
 
-## Don’t Encode Data in a String That You Expect a Client to Construct or Parse {#dont-encode-data-in-a-string}
+## 不要将需要客户端构造或解析的数据编码为字符串 {#dont-encode-data-in-a-string}
 
-It's less efficient over the wire, more work for the consumer of the proto, and
-confusing for someone reading your documentation. Your clients also have to
-wonder about the encoding: Are lists comma-separated? Did I escape this
-untrusted data correctly? Are numbers base-10? Better to have clients send an
-actual message or primitive type. It's more compact over the wire and clearer
-for your clients.
+这样做传输效率低，proto 使用者负担重，文档阅读者困惑。客户端还要考虑编码方式：列表是否逗号分隔？不可信数据是否正确转义？数字是十进制吗？最好让客户端发送实际消息或原始类型。这样更紧凑、清晰。
 
-This gets especially bad when your service acquires clients in several
-languages. Now each will have to choose the right parser or builder—or
-worse—write one.
+当服务有多语言客户端时尤其糟糕。每个客户端都要选合适的解析器或构造器，甚至自己写。
 
-More generally, choose the right primitive type. See the Scalar Value Types
-table in the
-[Protocol Buffer Language Guide](/programming-guides/proto2#scalar).
+更一般地，选择合适的原始类型。参见
+[协议缓冲区语言指南](/programming-guides/proto2#scalar)中的标量值类型表。
 
-### Don't Return HTML in a Front-End Proto {#returning-html}
+### 不要在前端 proto 返回 HTML {#returning-html}
 
-With a JavaScript client, it's tempting to return HTML or
-JSON in a field of your API. This is a slippery
-slope towards tying your API to a specific UI. Here are three concrete dangers:
+有 JavaScript 客户端时，容易在 API 字段中返回 HTML 或 JSON。这会让 API 与特定 UI 绑定，带来三大风险：
 
-*   A "scrappy" non-web client will end up parsing your HTML or JSON to get the
-    data they want leading to fragility if you change formats and
-    vulnerabilities if their parsing is bad.
-*   Your web-client is now vulnerable to an XSS exploit if that HTML is ever
-    returned unsanitized.
-*   The tags and classes you're returning expect a particular style-sheet and
-    DOM structure. From release to release, that structure will change, and you
-    risk a version-skew problem where the JavaScript client is older than the
-    server and the HTML the server returns no longer renders properly on old
-    clients. For projects that release often, this is not an edge case.
+* “临时”非 Web 客户端会解析 HTML 或 JSON 获取数据，格式变更会导致脆弱性，解析不当还会有安全漏洞。
+* Web 客户端若返回未清理的 HTML，容易遭受 XSS 攻击。
+* 返回的标签和类依赖特定样式表和 DOM 结构。版本变更时，结构可能变化，导致旧客户端无法正确渲染新 HTML。对于频繁发布的项目，这不是边缘情况。
 
-Other than the initial page load, it's usually better to return data and use
-client-side templating to construct HTML on the client
-.
+除首次页面加载外，通常应返回数据，由客户端模板生成 HTML。
 
-## Encode Opaque Data in Strings by Web-Safe Encoding Binary Proto Serialization {#encode-opaque-data-in-strings}
+## 通过 Web 安全编码二进制 proto 序列化将不透明数据编码为字符串 {#encode-opaque-data-in-strings}
 
-If you do encode *opaque* data in a client-visible field (continuation tokens,
-serialized IDs, version infos, and so on), document that clients should treat it
-as an opaque blob. *Always use binary proto serialization, never text-format or
-something of your own devising for these fields.* When you need to expand the
-data encoded in an opaque field, you'll find yourself reinventing protocol
-buffer serialization if you're not already using it.
+如果你在客户端可见字段中编码*不透明*数据（如续页 token、序列化 ID、版本信息等），请注明客户端应将其视为不透明数据。*始终使用二进制 proto 序列化，不要用文本格式或自定义方案。*当你需要扩展不透明字段的数据时，如果不用 proto 序列化，最终会重造轮子。
 
-Define an internal proto to hold the fields that will go in the opaque field
-(even if you only need one field), serialize this internal proto to bytes then
-web-safe base-64 encode the result into your string field
-.
+定义内部 proto 保存要放入不透明字段的内容（即使只需一个字段），序列化为字节后 Web 安全 base64 编码到字符串字段。
 
-One rare exception to using proto serialization: *Very* occasionally, the
-compactness wins from a carefully constructed alternative format are worth it.
+极少数情况下，为了极致紧凑性可用自定义格式。
 
-## Don't Include Fields that Your Clients Can't Possibly Have a Use for {#dont-include-fields}
+## 不要包含客户端不可能用到的字段 {#dont-include-fields}
 
-The API you expose to clients should only be for describing how to interact with
-your system. Including anything else in it adds cognitive overhead to someone
-trying to understand it.
+API 只应描述如何与系统交互。包含其他内容只会增加理解负担。
 
-Returning debug data in response protos used to be a common practice, but we
-have a better way. RPC response extensions (also called "side
-channels") let you describe your client interface with one proto and your
-debugging surface with another.
+过去常在响应 proto 返回调试数据，但现在有更好的做法。RPC 响应扩展（也叫“侧信道”）允许用一个 proto 描述客户端接口，另一个描述调试接口。
 
-Similarly, returning experiment names in response protos used to be a logging
-convenience--the unwritten contract was the client would send those experiments
-back on subsequent actions. The accepted way of accomplishing the same is to do
-log joining in the analysis pipeline.
+同样，过去为日志方便在响应 proto 返回实验名，约定客户端在后续操作中带回。现在推荐在分析流水线做日志关联。
 
-One exception:
+例外：
 
-If you need continuous, real-time analytics *and* are on a small machine budget,
-running log joins might be prohibitive.
-In cases where cost is a deciding factor,
-denormalizing log data ahead of time can be a win. If you need log data
-round-tripped to you, send it to clients as an opaque blob and document the
-request and response fields.
+如果你需要实时分析且机器预算有限，日志关联代价高，提前反规范化日志数据可能有利。如果需要让日志数据回传，作为不透明数据发送给客户端，并注明请求和响应字段。
 
-**Caution:** If you need to return or round-trip hidden data on *every* request
-, you're hiding the true cost of using your service
-and that's not good either.
+**注意：** 如果每次请求都要返回或回传隐藏数据，说明你在隐藏服务的真实成本，这也不好。
 
-## *Rarely* Define a Pagination API Without a Continuation Token {#define-pagination-api}
+## *极少*定义没有续页 token 的分页 API {#define-pagination-api}
 
 ```proto
 message FooQuery {
-  // Bad: If the data changes between the first query and second, each of
-  // these strategies can cause you to miss results. In an eventually
-  // consistent world (that is, storage backed by Bigtable), it's not uncommon
-  // to have old data appear after the new data. Also, the offset- and
-  // page-based approaches all assume a sort-order, taking away some
-  // flexibility.
+  // 错误：数据在两次查询间变化时，这些策略会导致漏结果。在最终一致性存储（如 Bigtable）下，旧数据可能在新数据后出现。偏移和分页都假定有排序，降低灵活性。
   optional int64 max_timestamp_ms;
   optional int32 result_offset;
   optional int32 page_number;
   optional int32 page_size;
 
-  // Good: You've got flexibility! Return this in a FooQueryResponse and
-  // have clients pass it back on the next query.
+  // 正确：灵活！在 FooQueryResponse 返回此字段，客户端下次查询时传回。
   optional string next_page_token;
 }
 ```
 
-The best practice for a pagination API is to use an opaque continuation token
-(called next_page_token ) backed by an internal proto that you
-serialize and then `WebSafeBase64Escape` (C++) or `BaseEncoding.base64Url().encode` (Java). That internal proto could include many fields.
-The important thing is it buys you flexibility and--if you choose--it can buy
-your clients stability in the results.
+分页 API 最佳实践是用不透明续页 token（next_page_token），由内部 proto 支撑，序列化后用 `WebSafeBase64Escape`（C++）或 `BaseEncoding.base64Url().encode`（Java）编码。内部 proto 可包含多个字段，关键是带来灵活性，并可为客户端带来结果稳定性。
 
-Do not forget to validate the fields of this proto as untrustworthy inputs (see
-note in [Encode opaque data in strings](#encode-opaque-data-in-strings)).
+不要忘记将此 proto 字段视为不可信输入做校验（见[不透明数据编码为字符串](#encode-opaque-data-in-strings)）。
 
 ```proto
 message InternalPaginationToken {
-  // Track which IDs have been seen so far. This gives perfect recall at the
-  // expense of a larger continuation token--especially as the user pages
-  // back.
+  // 跟踪已见 ID，完美召回但 token 变大，尤其是用户回翻时。
   repeated FooRef seen_ids;
 
-  // Similar to the seen_ids strategy, but puts the seen_ids in a Bloom filter
-  // to save bytes and sacrifice some precision.
+  // 类似 seen_ids，但用 Bloom filter 节省字节，牺牲精度。
   optional bytes bloom_filter;
 
-  // A reasonable first cut and it may work for longer. Having it embedded in
-  // a continuation token lets you change it later without affecting clients.
+  // 合理的初步方案，后续可变更而不影响客户端。
   optional int64 max_timestamp_ms;
 }
 ```
 
-## Group Related Fields into a new `message`. Nest Only Fields with High Cohesion {#group-related-fields}
+## 将相关字段分组为新 message，仅对高内聚字段嵌套 {#group-related-fields}
 
 ```proto
 message Foo {
-  // Bad: The price and currency of this Foo.
+  // 错误：Foo 的价格和货币。
   optional int price;
   optional CurrencyType currency;
 
-  // Better: Encapsulates the price and currency of this Foo.
+  // 更好：封装 Foo 的价格和货币。
   optional CurrencyAmount price;
 }
 ```
 
-Only fields with high cohesion should be
-nested. If the fields are genuinely related, you'll often want to pass them
-around together inside a server. That's easier if they're defined together in a
-message. Think:
+只嵌套高内聚字段。如果字段确实相关，通常会一起在服务端传递，定义在一起更方便。例如：
 
 ```java
 CurrencyAmount calculateLocalTax(CurrencyAmount price, Location where)
 ```
 
-If your CL introduces one field, but that field might have related fields later,
-preemptively put it in its own message to avoid this:
+如果你的 CL 引入一个字段，且未来可能有相关字段，预先放入独立 message，避免如下情况：
 
 ```proto
 message Foo {
-  // DEPRECATED! Use currency_amount.
+  // 已弃用！请用 currency_amount。
   optional int price [deprecated = true];
 
-  // The price and currency of this Foo.
+  // Foo 的价格和货币。
   optional google.type.Money currency_amount;
 }
 ```
 
-The problem with a nested message is that while `CurrencyAmount` might be a
-popular candidate for reuse in other places of your API, `Foo.CurrencyAmount`
-might not. In the worst case, `Foo.CurrencyAmount` *is* reused, but
-`Foo`-specific fields leak into it.
+嵌套 message 的问题在于，`CurrencyAmount` 可能在 API 其他地方复用，但 `Foo.CurrencyAmount` 不便复用。最坏情况下，`Foo.CurrencyAmount` 被复用，但混入了 Foo 特有字段。
 
-While [loose coupling](https://en.wikipedia.org/wiki/Loose_coupling)
-is generally accepted as a best practice when developing systems, that practice
-may not always apply when designing `.proto` files. There may be cases in which
-tightly coupling two units of information (by nesting one unit inside of the
-other) may make sense. For example, if you are creating a set of fields that
-appear fairly generic right now but which you anticipate adding specialized
-fields into at a later time, nesting the message would dissuade others from
-referencing that message from elsewhere in this or other `.proto` files.
+虽然[松耦合](https://en.wikipedia.org/wiki/Loose_coupling)
+通常是系统开发最佳实践，但设计 `.proto` 文件时未必适用。有时将两个信息单元紧耦合（嵌套）更合理。例如，当前看似通用的字段，未来可能加专用字段，嵌套可阻止他人随意复用。
 
 ```proto
 message Photo {
-  // Bad: It's likely PhotoMetadata will be reused outside the scope of Photo,
-  // so it's probably a good idea not to nest it and make it easier to access.
+  // 错误：PhotoMetadata 可能在 Photo 之外复用，最好不要嵌套，便于访问。
   message PhotoMetadata {
     optional int32 width = 1;
     optional int32 height = 2;
@@ -469,9 +306,7 @@ message Photo {
 }
 
 message FooConfiguration {
-  // Good: Reusing FooConfiguration.Rule outside the scope of FooConfiguration
-  // tightly-couples it with likely unrelated components, nesting it dissuades
-  // from doing that.
+  // 正确：在 FooConfiguration 范围外复用 Rule 会导致与无关组件紧耦合，嵌套可避免。
   message Rule {
     optional float multiplier = 1;
   }
@@ -479,163 +314,114 @@ message FooConfiguration {
 }
 ```
 
-## Include a Field Read Mask in Read Requests {#include-field-read-mask}
+## 在读取请求中包含字段读取掩码 {#include-field-read-mask}
 
 ```proto
-// Recommended: use google.protobuf.FieldMask
+// 推荐：使用 google.protobuf.FieldMask
 
-// Alternative one:
+// 方案一：
 message FooReadMask {
   optional bool return_field1;
   optional bool return_field2;
 }
 
-// Alternative two:
+// 方案二：
 message BarReadMask {
-  // Tag numbers of the fields in Bar to return.
+  // 要返回的 Bar 字段的 tag 编号。
   repeated int32 fields_to_return;
 }
 ```
 
-If you use the recommended `google.protobuf.FieldMask`, you can use the
+如用推荐的 `google.protobuf.FieldMask`，可用
 `FieldMaskUtil`
 ([Java](/reference/java/api-docs/com/google/protobuf/util/FieldMaskUtil.html)/[C++](/reference/cpp/api-docs/google.protobuf.util.field_mask_util.md))
-libraries to automatically filter a proto.
+库自动过滤 proto。
 
-Read masks set clear expectations on the client side, give them control of how
-much data they want back and allow the backend to only fetch data the client
-needs.
+读取掩码让客户端明确期望，控制返回数据量，后端也可只取所需数据。
 
-The acceptable alternative is to always populate every field; that is, treat the
-request as if there were an implicit read mask with all fields set to true. This
-can get costly as your proto grows.
+可接受的替代方案是始终填充所有字段，即隐式读取掩码全为 true。proto 变大后代价高。
 
-The worst failure mode is to have an implicit (undeclared) read mask that varies
-depending on which method populated the message. This anti-pattern leads to
-apparent data loss on clients that build a local cache from response protos.
+最糟糕的是隐式（未声明）读取掩码，随方法不同而变化。此反模式会导致客户端用响应 proto 构建本地缓存时出现数据丢失。
 
-## Include a Version Field to Allow for Consistent Reads {#include-version-field}
+## 在读取请求中包含版本字段以实现一致性读取 {#include-version-field}
 
-When a client does a write followed by a read of the same object, they expect to
-get back what they wrote--even when the expectation isn't reasonable for the
-underlying storage system.
+客户端写后紧跟读同一对象时，期望读到刚写的数据——即使底层存储不保证。
 
-Your server will read the local value and if the local version_info is less than
-the expected version_info, it will read from remote replicas to find the latest
-value. Typically version_info is a
-[proto encoded as a string](#encode-opaque-data-in-strings) that includes the
-datacenter the mutation went to and the timestamp at which it was committed.
+服务器会读取本地值，若本地 version_info 小于期望值，则从远程副本读取最新值。通常 version_info 是
+[proto 编码为字符串](#encode-opaque-data-in-strings)，包含变更数据中心和提交时间戳。
 
-Even systems backed by consistent storage often want a token to trigger the more
-expensive read-consistent path rather than incurring the cost on every read.
+即使底层存储一致，通常也希望用 token 触发更昂贵的一致性读取，而不是每次都走一致性路径。
 
-## Use Consistent Request Options for RPCs that Return the Same Data Type {#use-consistent-request-options}
+## 对返回相同数据类型的 RPC 使用一致的请求选项 {#use-consistent-request-options}
 
-An example failure pattern is the request options for
-a service in which each RPC returns the same
-data type, but has separate request options for specifying things like maximum
-comments, embeds supported types list, and so on.
+一个失败模式是：服务的每个 RPC 都返回相同数据类型，但请求选项各自为政，如最大评论数、支持的嵌入类型等。
 
-The cost of approaching this ad hoc is increased complexity on the client from
-figuring out how to fill out each request and increased complexity on the server
-transforming the N request options into a common internal one. A
-not-small number of real-life bugs are traceable to
-this example.
+这种做法会增加客户端填写请求的复杂度，也增加服务端将 N 个请求选项转换为统一内部选项的复杂度。许多实际 bug 都源于此。
 
-Instead, create a single, separate message to hold request options and include
-that in each of the top-level request messages. Here's a better-practices
-example:
+更好的做法是：创建单独的消息保存请求选项，并在每个顶层请求消息中包含。例如：
 
 ```proto
 message FooRequestOptions {
-  // Field-level read mask of which fields to return. Only fields that
-  // were requested will be returned in the response. Clients should only
-  // ask for fields they need to help the backend optimize requests.
+  // 字段级读取掩码。只返回请求的字段。客户端应只请求所需字段，帮助后端优化。
   optional FooReadMask read_mask;
 
-  // Up to this many comments will be returned on each Foo in the response.
-  // Comments that are marked as spam don't count towards the maximum
-  // comments. By default, no comments are returned.
+  // 每个 Foo 返回的评论数上限。被标记为垃圾的评论不计入。默认不返回评论。
   optional int max_comments_to_return;
 
-  // Foos that include embeds that are not on this supported types list will
-  // have the embeds down-converted to an embed specified in this list. If no
-  // supported types list is specified, no embeds will be returned. If an embed
-  // can't be down-converted to one of the supplied supported types, no embed
-  // will be returned. Clients are strongly encouraged to always include at
-  // least the THING_V2 embed type from EmbedTypes.proto.
+  // 不在此支持类型列表中的嵌入会被降级为列表中的嵌入。未指定则不返回嵌入。无法降级的也不返回。强烈建议客户端始终包含 EmbedTypes.proto 的 THING_V2。
   repeated EmbedType embed_supported_types_list;
 }
 
 message GetFooRequest {
-  // What Foo to read. If the viewer doesn't have access to the Foo or the
-  // Foo has been deleted, the response will be empty but will succeed.
+  // 要读取的 Foo。无权限或已删除则响应为空但成功。
   optional string foo_id;
 
-  // Clients are required to include this field. Server returns
-  // INVALID_ARGUMENT if FooRequestOptions is left empty.
+  // 客户端必须包含此字段。为空则服务器返回 INVALID_ARGUMENT。
   optional FooRequestOptions params;
 }
 
 message ListFooRequest {
-  // Which Foos to return. Searches have 100% recall, but more clauses
-  // impact performance.
+  // 要返回哪些 Foo。搜索保证 100% 召回，但条件越多性能越差。
   optional FooQuery query;
 
-  // Clients are required to include this field. The server returns
-  // INVALID_ARGUMENT if FooRequestOptions is left empty.
+  // 客户端必须包含此字段。为空则服务器返回 INVALID_ARGUMENT。
   optional FooRequestOptions params;
 }
 ```
 
-## Batch/multi-phase Requests {#batch-multi-phase-requests}
+## 批量/多阶段请求 {#batch-multi-phase-requests}
 
-Where possible, make mutations atomic. Even more important, make
-[mutations idempotent](#prefer-idempotency). A full retry of a partial failure
-shouldn't corrupt/duplicate data.
+尽量让变更操作原子化。更重要的是让
+[变更操作幂等](#prefer-idempotency)。部分失败重试不应导致数据损坏或重复。
 
-Occasionally, you'll need a single RPC that encapsulates multiple operations for
-performance reasons. What to do on a partial failure? If some succeeded and some
-failed, it's best to let clients know.
+有时为性能需单个 RPC 封装多操作。部分失败时怎么办？最好让客户端知晓成功和失败详情。
 
-Consider setting the RPC as failed and return details of both the successes and failures in an RPC status proto.
+可将 RPC 标记为失败，并在 RPC 状态 proto 中返回成功和失败详情。
 
-In general, you want clients who are unaware of your handling of partial
-failures to still behave correctly and clients who are aware to get extra value.
+总之，未了解部分失败处理的客户端应能正确工作，了解的客户端可获得更多价值。
 
-## Create Methods that Return or Manipulate Small Bits of Data and Expect Clients to Compose UIs from Batching Multiple Such Requests {#create-methods-manipulate-small-bits}
+## 创建返回或操作小数据块的方法，鼓励客户端批量组合请求 {#create-methods-manipulate-small-bits}
 
-The ability to query many narrowly specified bits of data in a single round-trip
-allows a wider range of UX options without server changes by letting the client
-compose what they need.
+允许客户端在一次往返中查询多个小数据块，可在不改服务器的情况下支持更多 UX 选项。
 
-This is most relevant for front-end and middle-tier servers.
+这对前端和中间层服务器尤为重要。
 
-Many services expose their own batching API.
+许多服务都暴露了自己的批量 API。
 
-## Make a One-off RPC when the Alternative is Serial Round-trips on Mobile or Web {#make-one-off-rpc}
+## 当移动或 Web 客户端需串行往返时，创建一次性 RPC {#make-one-off-rpc}
 
-In cases where a *web or mobile* client needs to make two queries with a data
-dependency between them, the current best practice is to create a new RPC that
-protects the client from the round trip.
+当*Web 或移动*客户端需做两次有数据依赖的查询时，最佳实践是创建新 RPC，避免多次往返。
 
-In the case of mobile, it's almost always worth saving your client the cost of
-an extra round-trip by bundling the two service methods together in one new one.
-For server-to-server calls, the case may not be as clear; it depends on how
-performance-sensitive your service is and how much cognitive overhead the new
-method introduces.
+对移动端，几乎总是值得将两个服务方法合并为一个，节省一次往返。对服务间调用，则视性能敏感度和新方法带来的认知负担而定。
 
-## Make Repeated Fields Messages, Not Scalars or Enums {#repeated-fields-messages-scalar-types}
+## repeated 字段应为消息类型，而非标量或枚举 {#repeated-fields-messages-scalar-types}
 
-A common evolution is that a single repeated field needs to become multiple
-related repeated fields. If you start with a repeated primitive your options are
-limited--you either create parallel repeated fields, or define a new repeated
-field with a new message that holds the values and migrate clients to it.
+常见演进是单一 repeated 字段需变为多个相关 repeated 字段。若一开始用 repeated 原始类型，后续只能用并行 repeated 字段，或新建 repeated 消息字段并迁移客户端。
 
-If you start with a repeated message, evolution becomes trivial.
+若一开始用 repeated 消息，演进就很简单。
 
 ```proto
-// Describes a type of enhancement applied to a photo
+// 描述应用于照片的增强类型
 enum EnhancementType {
   ENHANCEMENT_TYPE_UNSPECIFIED;
   RED_EYE_REDUCTION;
@@ -647,132 +433,86 @@ message PhotoEnhancement {
 }
 
 message PhotoEnhancementReply {
-  // Good: PhotoEnhancement can grow to describe enhancements that require
-  // more fields than just an enum.
+  // 正确：PhotoEnhancement 可扩展描述更多字段。
   repeated PhotoEnhancement enhancements;
 
-  // Bad: If we ever want to return parameters associated with the
-  // enhancement, we'd have to introduce a parallel array (terrible) or
-  // deprecate this field and introduce a repeated message.
+  // 错误：若需返回增强参数，只能用并行数组（很糟）或弃用此字段并引入 repeated 消息。
   repeated EnhancementType enhancement_types;
 }
 ```
 
-Imagine the following feature request: "We need to know which enhancements were
-performed by the user and which enhancements were automatically applied by the
-system."
+假设有新需求：“我们需要知道哪些增强是用户操作，哪些是系统自动应用。”
 
-If the enhancement field in `PhotoEnhancementReply` were a scalar or enum, this
-would be much harder to support.
+若 `PhotoEnhancementReply` 的 enhancement 字段是标量或枚举，支持起来会很难。
 
-This applies equally to maps. It is much easier to add additional fields to a
-map value if it's already a message rather than having to migrate from
-`map<string, string>` to `map<string, MyProto>`.
+map 也一样。若值已是消息类型，后续加字段更容易；否则要从 `map<string, string>` 迁移到 `map<string, MyProto>`。
 
-One exception:
+例外：
 
-Latency-critical applications will find parallel arrays of primitive types are
-faster to construct and delete than a single array of messages; they can also be
-smaller over the wire if you use
-[[packed=true]](/programming-guides/encoding#packed)
-(eliding field tags). Allocating a fixed number of arrays is less work than
-allocating N messages. Bonus: in
-[Proto3](/programming-guides/proto3), packing is
-automatic; you don't need to explicitly specify it.
+对延迟极敏感的应用，原始类型并行数组比消息数组更快、更省空间（用 [[packed=true]](/programming-guides/encoding#packed) 可省略字段标签）。分配固定数量数组比分配 N 个消息更省事。
+[Proto3](/programming-guides/proto3) 默认打包，无需显式指定。
 
-## Use Proto Maps {#use-proto-maps}
+## 使用 Proto Map {#use-proto-maps}
 
-Prior to the introduction in
-[Proto3](/programming-guides/proto3) of
-[Proto3 maps](/programming-guides/proto3#maps), services
-would sometimes expose data as pairs using an ad-hoc KVPair message with scalar
-fields. Eventually clients would need a deeper structure and would end up
-devising keys or values that need to be parsed in some way. See
-[Don't encode data in a string](#dont-encode-data-in-a-string).
+在
+[Proto3](/programming-guides/proto3) 引入
+[Proto3 map](/programming-guides/proto3#maps) 前，服务常用 KVPair 消息配合标量字段表示数据。后续客户端需更深结构时，只能解析 key 或 value。参见
+[不要将数据编码为字符串](#dont-encode-data-in-a-string)。
 
-So, using a (extensible) message type for the value is an immediate improvement
-over the naive design.
+用（可扩展的）消息类型做 value 立刻优于原始设计。
 
-Maps were back-ported to proto2 in all languages, so using `map<scalar,
-**message**>` is better than inventing your own KVPair for the same purpose[^3].
+map 已回移植到 proto2，故用 `map<scalar, **message**>` 比自造 KVPair 更好[^3]。
 
-[^3]: A gotcha with protos that contain `map<k,v>` fields. Don't use them as
-    reduce keys in a MapReduce. The wire format and iteration order of proto3
-    map items are *unspecified* which leads to inconsistent map shards.
+[^3]: proto 中含 `map<k,v>` 字段时，不要用作 MapReduce 的 reduce key。proto3 map 项的线性化和迭代顺序*未定义*，会导致 map 分片不一致。
 
-If you want to represent *arbitrary* data whose structure you don't know ahead
-of time, use
-[`google.protobuf.Any`](/reference/protobuf/textformat-spec#any).
+若需表示*任意*未知结构的数据，用
+[`google.protobuf.Any`](/reference/protobuf/textformat-spec#any)。
 
-## Prefer Idempotency {#prefer-idempotency}
+## 优先保证幂等性 {#prefer-idempotency}
 
-Somewhere in the stack above you, a client may have retry logic. If the retry is
-a mutation, the user could be in for a surprise. Duplicate comments, build
-requests, edits, and so on aren't good for anyone.
+调用栈上方可能有重试逻辑。若重试是变更操作，用户可能遇到重复评论、构建请求、编辑等问题。
 
-A simple way to avoid duplicate writes is to allow clients to specify a
-client-created request ID that your server dedupes on (for example, hash of
-content or UUID).
+避免重复写入的简单方法是允许客户端指定请求 ID，服务器去重（如内容哈希或 UUID）。
 
-## Be Mindful of Your Service Name, and Make it Globally Unique {#service-name-globally-unique}
+## 注意服务名，确保全局唯一 {#service-name-globally-unique}
 
-A service name (that is, the part after the `service` keyword in your `.proto`
-file) is used in surprisingly many places, not just to generate the service
-class name. This makes this name more
-important than one might think.
+服务名（即 `.proto` 文件中 `service` 关键字后的部分）用途远超生成服务类名。
 
-What's tricky is that these tools make the implicit assumption that your service
-name is unique across a network . Worse, the service name they use is the
-*unqualified* service name (for example, `MyService`), not the qualified service
-name (for example, `my_package.MyService`).
+问题在于，许多工具假定服务名在网络中唯一，且用*非限定*服务名（如 `MyService`），而非限定名（如 `my_package.MyService`）。
 
-For this reason, it makes sense to take steps to prevent naming conflicts on
-your service name, even if it is defined inside a specific package. For example,
-a service named `Watcher` is likely to cause problems; something like
-`MyProjectWatcher` would be better.
+因此，即使服务定义在特定包内，也要防止命名冲突。例如，`Watcher` 可能引发问题，`MyProjectWatcher` 更好。
 
-## Bound Request and Response Sizes {#bound-req-res-sizes}
+## 限定请求和响应大小 {#bound-req-res-sizes}
 
-Request and response sizes should be bounded.
-We recommend a bound in the ballpark of 8 MiB, and 2
-GiB is a hard limit at which many proto implementations break
-. Many storage systems have a limit
-on message sizes .
+请求和响应大小应有限制。
+推荐上限约 8 MiB，2 GiB 是许多 proto 实现的硬限制。
+许多存储系统也有限制。
 
-Also, unbounded messages
+否则会：
 
--   bloat both client and server,
--   cause high and unpredictable latency,
--   decrease resiliency by relying on a long-lived connection between a single
-    client and a single server.
+-   增大客户端和服务器负担，
+-   导致高且不可预测的延迟，
+-   降低弹性，因依赖单客户端与单服务器的长连接。
 
-Here are a few ways to bound all messages in an API:
+限定 API 消息大小的几种方式：
 
--   Define RPCs that return bounded messages, where each RPC call is logically
-    independent from the others.
--   Define RPCs that operate on a single object, instead of on an unbounded,
-    client-specified list of objects.
--   Avoid encoding unbounded data in string, byte, or repeated fields.
--   Define a long-running operation . Store the result in a
-    storage system designed for scalable, concurrent reads
-    .
--   Use a pagination API (see
-    [Rarely define a pagination API without a continuation token](#define-pagination-api)).
--   Use streaming RPCs.
+-   定义返回有界消息的 RPC，每次调用逻辑独立。
+-   定义只操作单对象的 RPC，避免操作无界对象列表。
+-   避免在 string、bytes 或 repeated 字段中编码无界数据。
+-   定义长时间运行操作，将结果存储在可扩展并发读取的存储系统。
+-   用分页 API（见[分页 API](#define-pagination-api)）。
+-   用流式 RPC。
 
-If you are working on a UI, see also
-[Create methods that return or manipulate small bits of data](#create-methods-manipulate-small-bits).
+如为 UI 开发，也请参见
+[创建返回或操作小数据块的方法](#create-methods-manipulate-small-bits)。
 
-## Propagate Status Codes Carefully {#propagate-status-codes}
+## 谨慎传播状态码 {#propagate-status-codes}
 
-RPC services should take care at RPC boundaries to interrogate errors, and
-return meaningful status errors to their callers.
+RPC 服务应在 RPC 边界仔细检查错误，并向调用者返回有意义的状态错误。
 
-Let's examine a toy example to illustrate the point:
+举例说明：
 
-Consider a client that calls `ProductService.GetProducts`, which takes no
-arguments. As part of `GetProducts`, `ProductService` might get all the
-products, and call `LocaleService.LocaliseNutritionFacts` for each product.
+假设客户端调用 `ProductService.GetProducts`，无参数。`GetProducts` 可能获取所有产品，并为每个产品调用 `LocaleService.LocaliseNutritionFacts`。
 
 ```dot
 digraph toy_example {
@@ -785,57 +525,33 @@ digraph toy_example {
 }
 ```
 
-If `ProductService` is incorrectly implemented, it might send the wrong
-arguments to `LocaleService`, resulting in an `INVALID_ARGUMENT`.
+若 `ProductService` 实现错误，可能向 `LocaleService` 传错参数，导致 `INVALID_ARGUMENT`。
 
-If `ProductService` carelessly returns errors to its callers, the client will
-receive `INVALID_ARGUMENT`, since status codes propagate across RPC boundaries.
-But, the client didn't pass any arguments to `ProductService.GetProducts`. So,
-the error is worse than useless: it will cause a great deal of confusion!
+若 `ProductService` 粗心地将错误返回给调用者，客户端会收到 `INVALID_ARGUMENT`，但客户端并未向 `GetProducts` 传参。此错误毫无意义，只会引发混乱！
 
-Instead, `ProductService` should interrogate errors it receives at the RPC
-boundary; that is, the `ProductService` RPC handler it implements. It should
-return meaningful errors to users: if *it received* invalid arguments from the
-caller, it should return `INVALID_ARGUMENT`. If *something downstream* received
-invalid arguments, it should convert the `INVALID_ARGUMENT` to `INTERNAL` before
-returning the error to the caller.
+正确做法是：`ProductService` 应在 RPC 边界检查错误。若*收到*无效参数，应返回 `INVALID_ARGUMENT`。若*下游*收到无效参数，应将 `INVALID_ARGUMENT` 转为 `INTERNAL` 再返回。
 
-Carelessly propagating status errors leads to confusion, which can be very
-expensive to debug. Worse, it can lead to an invisible outage where every
-service forwards a client error without causing
-any alerts to happen .
+错误传播不当会导致难以调试的混乱，甚至导致所有服务都转发客户端错误而无告警，形成“隐形故障”。
 
-The general rule is: at RPC boundaries, take care to interrogate errors, and
-return meaningful status errors to callers, with appropriate status codes. To
-convey meaning, each RPC method should document what error codes it returns in
-which circumstances. The implementation of each method should conform to the
-documented API contract.
+总之，在 RPC 边界要仔细检查错误，向调用者返回有意义的状态码。每个 RPC 方法应文档化其错误码及触发条件，方法实现应符合 API 合同。
 
-## Create Unique Protos per Method {#unique-protos}
+## 每个方法创建唯一的 proto {#unique-protos}
 
-Create a unique request and response proto for each RPC method. Discovering
-later that you need to diverge the top-level request or response can be
-expensive. This includes "empty" responses; create a unique empty response proto
-rather than reusing the [well-known Empty message type](https://github.com/protocolbuffers/protobuf/blob/main/src/google/protobuf/empty.proto).
+每个 RPC 方法都应有唯一的请求和响应 proto。后续若需分离顶层请求或响应，代价很高。包括“空”响应；应创建唯一的空响应 proto，而非复用[知名 Empty 消息类型](https://github.com/protocolbuffers/protobuf/blob/main/src/google/protobuf/empty.proto)。
 
-### Reusing Messages {#reuse-messages}
+### 复用消息 {#reuse-messages}
 
-To reuse messages, create shared "domain" message types to include in multiple
-Request and Response protos. Write your application logic in terms of those
-types rather than the request and response types.
+如需复用消息，创建共享的“领域”消息类型，在多个请求和响应 proto 中包含。应用逻辑应基于这些类型，而非请求/响应类型。
 
-This gives you the flexibility to evolve your method request/response types
-independently, but share code for logical sub-units.
+这样可独立演进方法请求/响应类型，同时复用逻辑子单元代码。
 
-## Appendix {#appendix}
+## 附录 {#appendix}
 
-### Returning Repeated Fields {#returning-repeated-fields}
+### 返回 repeated 字段 {#returning-repeated-fields}
 
-When a repeated field is empty, the client can't tell if the field just wasn't
-populated by the server or if the backing data for the field is genuinely empty.
-In other words, there's no `hasFoo` method for repeated fields.
+当 repeated 字段为空时，客户端无法区分是服务器未填充还是数据本为空。即 repeated 字段没有 `hasFoo` 方法。
 
-Wrapping a repeated field in a message is an easy way to get a hasFoo method.
+用消息包裹 repeated 字段即可获得 hasFoo 方法。
 
 ```proto
 message FooList {
@@ -843,108 +559,67 @@ message FooList {
 }
 ```
 
-The more holistic way to solve it is with a field
-[read mask](#include-field-read-mask). If the field was requested, an empty list
-means there's no data. If the field wasn't requested the client should ignore
-the field in the response.
+更全面的解决方案是用字段
+[读取掩码](#include-field-read-mask)。若请求了该字段，空列表表示无数据；未请求则客户端应忽略响应中的字段。
 
-### Updating Repeated Fields {#updating-repeated-fields}
+### 更新 repeated 字段 {#updating-repeated-fields}
 
-The worst way to update a repeated field is to force the client to supply a
-replacement list. The dangers with forcing the client to supply the entire array
-are manyfold. Clients that don't preserve unknown fields cause data loss.
-Concurrent writes cause data loss. Even if those problems don't apply, your
-clients will need to carefully read your documentation to know how the field is
-interpreted on the server side. Does an empty field mean the server won't update
-it, or that the server will clear it?
+最糟糕的做法是强制客户端提供替换列表。这样会导致多种问题：不保留未知字段的客户端会丢数据；并发写入会丢数据。即使没有这些问题，客户端也需仔细阅读文档以理解服务器如何解释字段。空字段是表示不更新还是清空？
 
-**Fix #1**: Use a repeated update mask that permits the client to replace,
-delete, or insert elements into the array without supplying the entire array on
-a write.
+**方案一**：用 repeated 更新掩码，允许客户端替换、删除或插入元素，无需提供完整数组。
 
-**Fix #2**: Create separate append, replace, delete arrays in the
-request proto.
+**方案二**：在请求 proto 中创建单独的追加、替换、删除数组。
 
-**Fix #3**: Allow only appending or clearing. You can do this by wrapping the
-repeated field in a message. A present, but empty, message means clear,
-otherwise, any repeated elements mean append.
+**方案三**：只允许追加或清空。可用消息包裹 repeated 字段。消息存在但为空表示清空，否则有元素表示追加。
 
-### Order Independence in Repeated Fields {#order-independence-repeated-fields}
+### repeated 字段的顺序无关性 {#order-independence-repeated-fields}
 
-*Try* to avoid order dependence in general. It's an extra layer of fragility. An
-especially bad type of order dependence is parallel arrays. Parallel arrays make
-it more difficult for clients to interpret the results and make it unnatural to
-pass the two related fields around inside your own service.
+*尽量*避免顺序依赖。顺序依赖增加脆弱性。尤其是并行数组，客户端难以解释结果，服务端传递相关字段也不自然。
 
 ```proto
 message BatchEquationSolverResponse {
-  // Bad: Solved values are returned in the order of the equations given in
-  // the request.
+  // 错误：解的顺序与请求方程顺序一致。
   repeated double solved_values;
-  // (Usually) Bad: Parallel array for solved_values.
+  // （通常）错误：solved_values 的并行数组。
   repeated double solved_complex_values;
 }
 
-// Good: A separate message that can grow to include more fields and be
-// shared among other methods. No order dependence between request and
-// response, no order dependence between multiple repeated fields.
+// 正确：单独消息可扩展，且可被其他方法复用。请求与响应间、多个 repeated 字段间无顺序依赖。
 message BatchEquationSolverResponse {
-  // Deprecated, this will continue to be populated in responses until Q2
-  // 2014, after which clients must move to using the solutions field below.
+  // 已弃用，Q2 2014 前继续填充，之后客户端必须用 solutions 字段。
   repeated double solved_values [deprecated = true];
 
-  // Good: Each equation in the request has a unique identifier that's
-  // included in the EquationSolution below so that the solutions can be
-  // correlated with the equations themselves. Equations are solved in
-  // parallel and as the solutions are made they are added to this array.
+  // 正确：请求中每个方程有唯一标识符，EquationSolution 中包含，便于关联。方程并行求解，解生成后加入数组。
   repeated EquationSolution solutions;
 }
 ```
 
-### Leaking Features Because Your Proto is in a Mobile Build {#leaking-features}
+### 因 proto 被打包进移动端导致功能泄露 {#leaking-features}
 
-Android and iOS runtimes both support reflection. To do that, the unfiltered
-names of fields and messages are embedded in the application binary
-(APK, IPA) as strings.
+Android 和 iOS 运行时都支持反射。为此，字段和消息的未过滤名称会作为字符串嵌入应用二进制（APK、IPA）。
 
 ```proto
 message Foo {
-  // This will leak existence of Google Teleport project on Android and iOS
+  // 这会在 Android 和 iOS 泄露 Google Teleport 项目存在
   optional FeatureStatus google_teleport_enabled;
 }
 ```
 
-Several mitigation strategies:
+几种缓解策略：
 
-*   ProGuard obfuscation on Android. As of Q3 2014. iOS has no obfuscation
-    option: once you have the IPA on a desktop, piping it through `strings` will
-    reveal field names of included protos.
-    [iOS Chrome tear-down](https://github.com/Bensge/Chrome-for-iOS-Headers)
-*   Curate precisely which fields are sent to mobile clients
-    .
-*   If plugging the leak isn't feasible on an acceptable timescale, get buy-in
-    from the feature owner to risk it.
+* Android 用 ProGuard 混淆。iOS 无混淆选项：拿到 IPA 后用 `strings` 就能看到字段名。
+  [iOS Chrome 拆包](https://github.com/Bensge/Chrome-for-iOS-Headers)
+* 精确筛选发送到移动端的字段。
+* 若无法及时堵住泄露，与功能所有者达成风险共识。
 
-*Never* use this as an excuse to obfuscate the meaning of a field with a
-code-name. Either plug the leak or get buy-in to risk it.
+*绝不要*用代号混淆字段含义。要么堵住泄露，要么获得风险共识。
 
-### Performance Optimizations {#performance-optimizations}
+### 性能优化 {#performance-optimizations}
 
-You can trade type safety or clarity for performance wins in some cases. For
-example, a proto with hundreds of fields--particularly message-type fields--is
-going to be slower to parse than one with fewer fields. A very deeply-nested
-message can be slow to deserialize just from the memory management. A handful of
-techniques teams have used to speed deserialization:
+有时可为性能牺牲类型安全或清晰度。例如，含数百字段（尤其是消息字段）的 proto 解析慢，深层嵌套消息仅因内存管理也慢。加速反序列化的常用技巧：
 
-*   Create a parallel, trimmed proto that mirrors the larger proto but has only
-    some of the tags declared. Use this for parsing when you don't need all the
-    fields. Add tests to enforce that tag numbers continue to match as the
-    trimmed proto accumulates numbering "holes."
-*   Annotate the fields as "lazily parsed" with
-    [[lazy=true]](https://github.com/protocolbuffers/protobuf/blob/cacb096002994000f8ccc6d9b8e1b5b0783ee561/src/google/protobuf/descriptor.proto#L609).
-*   Declare a field as bytes and document its type. Clients who care to parse
-    the field can do so manually. The danger with this approach is there's
-    nothing preventing someone from putting a message of the wrong type in the
-    bytes field. You should never do this with a proto that's written to any
-    logs, as it prevents the proto from being vetted for PII or scrubbed for
-    policy or privacy reasons.
+* 创建并行精简 proto，镜像大 proto 但只声明部分标签。解析时只用精简 proto。加测试确保标签号一致。
+* 用
+  [[lazy=true]](https://github.com/protocolbuffers/protobuf/blob/cacb096002994000f8ccc6d9b8e1b5b0783ee561/src/google/protobuf/descriptor.proto#L609)
+  注解字段为“延迟解析”。
+* 声明字段为 bytes 并注明类型。关心的客户端可手动解析。风险是无法防止放错类型的消息。写入日志的 proto 切勿用此法，否则无法检查 PII 或做策略/隐私清理。

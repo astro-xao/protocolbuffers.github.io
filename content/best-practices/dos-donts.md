@@ -1,296 +1,199 @@
 +++
-title = "Proto Best Practices"
+title = "Proto 最佳实践"
 weight = 90
-description = "Shares vetted best practices for authoring Protocol Buffers."
+description = "分享编写 Protocol Buffers 的最佳实践。"
 type = "docs"
 aliases = "/programming-guides/dos-donts"
 +++
 
-Clients and servers are never updated at exactly the same time - even when you
-try to update them at the same time. One or the
-other may get rolled back. Don’t assume that you can make a breaking change and
-it'll be okay because the client and server are in sync.
+客户端和服务端永远不会在完全相同的时间更新——即使你尝试同时更新它们。某一方可能会被回滚。不要假设你可以做破坏性更改，并且客户端和服务端会保持同步。
 
 <a id="dont-re-use-a-tag-number"></a>
 
-## **Don't** Re-use a Tag Number {#reuse-number}
+## **不要**重复使用标签号 {#reuse-number}
 
-Never re-use a tag number. It messes up deserialization. Even if you think no
-one is using the field, don’t re-use a tag number. If the change was live ever,
-there could be serialized versions of your proto in a log
-somewhere. Or there could be old code in another server that will break.
+绝不要重复使用标签号。这会导致反序列化出错。即使你认为没有人在用该字段，也不要重复使用标签号。如果更改曾经上线过，可能在某些日志中还存在序列化的 proto 版本。或者在其他服务器上的旧代码会因此崩溃。
 
 <a id="do-reserve-tag-numbers-for-deleted-fields"></a>
 
-## **Do** Reserve Tag Numbers for Deleted Fields {#reserve-tag-numbers}
+## **要**为已删除字段保留标签号 {#reserve-tag-numbers}
 
-When you delete a field that's no longer used, reserve its tag number so that no
-one accidentally re-uses it in the future. Just `reserved 2, 3;` is enough. No
-type required (lets you trim dependencies!). You can also reserve names to avoid
-recycling now-deleted field names: `reserved "foo", "bar";`.
+当你删除一个不再使用的字段时，应该保留其标签号，防止将来被误用。只需 `reserved 2, 3;` 即可，无需指定类型（这样还能减少依赖！）。你也可以保留名称，避免回收已删除的字段名：`reserved "foo", "bar";`。
 
 <a id="do-reserve-numbers-for-deleted-enum-values"></a>
 
-## **Do** Reserve Numbers for Deleted Enum Values {#reserve-deleted-numbers}
+## **要**为已删除枚举值保留编号 {#reserve-deleted-numbers}
 
-When you delete an enum value that's no longer used, reserve its number so that
-no one accidentally re-uses it in the future. Just `reserved 2, 3;` is enough.
-You can also reserve names to avoid recycling now-deleted value names: `reserved
-"FOO", "BAR";`.
+当你删除一个不再使用的枚举值时，应该保留其编号，防止将来被误用。只需 `reserved 2, 3;` 即可。你也可以保留名称，避免回收已删除的值名：`reserved "FOO", "BAR";`。
 
 <a id="do-put-new-enum-aliases-last"></a>
 
-## **Do** Put New Enum Aliases Last {#enum-aliases-last}
+## **要**将新的枚举别名放在最后 {#enum-aliases-last}
 
-When you add a new enum alias, put the new name last to give
-services time to pick it up.
+添加新的枚举别名时，应将新名称放在最后，以便服务有时间更新。
 
-To safely remove the original name (if it's being used for interchange, which it
-[shouldn't](#text-format-interchange)), you must do the following:
+如果要安全地移除原始名称（如果它被用于数据交换，实际上[不推荐](#text-format-interchange)），你必须执行以下步骤：
 
-*   Add the new name below the old name and deprecate the old one (serializers
-    will continue to use the old name)
+*   在旧名称下方添加新名称，并弃用旧名称（序列化器仍会使用旧名称）
+*   所有解析器都升级后，交换两个名称的顺序（序列化器开始使用新名称，解析器接受两者）
+*   所有序列化器都升级后，可以删除已弃用的名称。
 
-*   After every parser has the schema rolled out, swap the order of the two
-    names (serializers will begin using the new name, parsers accept both)
-
-*   After every serializer has that version of the schema, you can delete the
-    deprecated name.
-
-> **Note:** While in theory clients shouldn't be using the old name for
-> interchange, it's still polite to follow the above steps, especially for
-> widely-used enum names.
+> **注意：** 理论上客户端不应使用旧名称进行数据交换，但对于广泛使用的枚举名称，仍建议遵循上述步骤。
 
 <a id="dont-change-the-type-of-a-field"></a>
 
-## **Don't** Change the Type of a Field {#change-type}
+## **不要**更改字段类型 {#change-type}
 
-Almost never change the type of a field; it'll mess up deserialization, same as
-re-using a tag number. The
-[protobuf docs](/programming-guides/proto2#updating)
-outline a small number of cases that are okay (for example, going between
-`int32`, `uint32`, `int64` and `bool`). However, changing a field’s message type
-**will break** unless the new message is a superset of the old one.
+几乎不要更改字段类型；这会导致反序列化出错，与重复使用标签号类似。
+[protobuf 文档](/programming-guides/proto2#updating)
+列举了极少数可以更改的情况（如 `int32`、`uint32`、`int64` 和 `bool` 之间）。但更改字段的消息类型**会导致破坏**，除非新消息是旧消息的超集。
 
 <a id="dont-add-a-required-field"></a>
 
-## **Don't** Add a Required Field {#add-required}
+## **不要**添加必填字段 {#add-required}
 
-Never add a required field, instead add `// required` to document the API
-contract. Required fields are considered harmful by so many they were
-removed from proto3 completely. Make all fields
-optional or repeated. You never know how long a message type is going to last
-and whether someone will be forced to fill in your required field with an empty
-string or zero in four years when it’s no longer logically required but the
-proto still says it is.
+绝不要添加必填字段，建议用 `// required` 注释来说明 API 合约。必填字段被认为有害，已在 proto3 中完全移除。所有字段应为 optional 或 repeated。你无法预知消息类型会存在多久，也无法预知四年后某人是否被迫用空字符串或零来填充你定义的必填字段。
 
-For proto3 there are no `required` fields, so this advice does not apply.
+对于 proto3，没有 `required` 字段，因此此建议不适用。
 
 <a id="dont-make-a-message-with-lots-of-fields"></a>
 
-## **Don't** Make a Message with Lots of Fields {#lots-of-fields}
+## **不要**创建包含大量字段的消息 {#lots-of-fields}
 
-Don't make a message with “lots” (think: hundreds) of fields. In C++ every field
-adds roughly 65 bits to the in-memory object size whether it’s populated or not
-(8 bytes for the pointer and, if the field is declared as optional, another bit
-in a bitfield that keeps track of whether the field is set). When your proto
-grows too large, the generated code may not even compile (for example, in Java
-there is a hard limit on the size of a method
-).
+不要创建包含“很多”（比如上百个）字段的消息。在 C++ 中，每个字段无论是否被赋值，都会增加大约 65 位的内存占用（8 字节指针，如果声明为 optional，还会有一个位用于标记是否被赋值）。当 proto 过大时，生成的代码甚至可能无法编译（例如 Java 对方法大小有限制）。
 
 <a id="do-include-an-unspecified-value-in-an-enum"></a>
 
-## **Do** Include an Unspecified Value in an Enum {#unspecified-enum}
+## **要**在枚举中包含未指定值 {#unspecified-enum}
 
-Enums should include a default `FOO_UNSPECIFIED` value as the first value in the
-declaration . When new values
-are added to a proto2 enum, old clients will see the field as unset and the
-getter will return the default value or the first-declared value if no default
-exists . For consistent behavior with [proto enums][proto-enums],
-the first declared enum value should be a default `FOO_UNSPECIFIED` value and
-should use tag 0. It may be tempting to declare this default as a semantically
-meaningful value but as a general rule, do not, to aid in the evolution of your
-protocol as new enum values are added over time. All enum values declared under
-a container message are in the same C++ namespace, so prefix the unspecified
-value with the enum’s name to avoid compilation errors. If you'll never need
-cross-language constants, an `int32` will preserve unknown values and generates
-less code. Note that [proto enums][proto-enums] require the first value to be
-zero and can round-trip (deserialize, serialize) an unknown enum value.
+枚举应在声明的第一个值中包含默认的 `FOO_UNSPECIFIED`。当 proto2 枚举添加新值时，旧客户端会将该字段视为未设置，getter 会返回默认值或第一个声明的值（如果没有默认值）。为保证与 [proto 枚举][proto-enums] 的一致性，第一个声明的枚举值应为默认的 `FOO_UNSPECIFIED`，且编号为 0。不要将默认值声明为有实际意义的值，这有助于协议随时间演进。所有声明在同一消息下的枚举值在 C++ 命名空间中相同，因此应使用枚举名作为前缀，避免编译错误。如果不需要跨语言常量，`int32` 能保留未知值且生成的代码更少。注意 [proto 枚举][proto-enums] 要求第一个值为 0，并且可以对未知枚举值进行序列化和反序列化。
 
 [example-unspecified]: http://cs/#search/&q=file:proto%20%22_UNSPECIFIED%20=%200%22&type=cs
 [proto-enums]: /programming-guides/proto2#enum
 
 <a id="dont-use-cc-macro-constants-for-enum-values"></a>
 
-## **Don't** Use C/C++ Macro Constants for Enum Values {#macro-constants}
+## **不要**将 C/C++ 宏常量用作枚举值 {#macro-constants}
 
-Using words that have already been defined by the C++ language - specifically,
-in its headers such as `math.h`, may cause compilation errors if the `#include`
-statement for one of those headers appears before the one for `.proto.h`. Avoid
-using macro constants such as "`NULL`," "`NAN`," and "`DOMAIN`" as enum values.
+使用 C++ 语言已定义的单词（如 `math.h` 头文件中的内容）可能导致编译错误，尤其当 `#include` 某些头文件在 `.proto.h` 之前。避免使用如 "`NULL`"、"`NAN`"、"`DOMAIN`" 等宏常量作为枚举值。
 
 <a id="do-use-well-known-types-and-common-types"></a>
 
-## **Do** Use Well-Known Types and Common Types {#well-known-common}
+## **要**使用知名类型和通用类型 {#well-known-common}
 
-Using the following common, shared types is strongly encouraged. E.g., do not
-use `int32 timestamp_seconds_since_epoch` or `int64 timeout_millis` in your code
-when a perfectly suitable common type already exists!
+强烈建议使用以下常见、共享类型。例如，不要在代码中使用 `int32 timestamp_seconds_since_epoch` 或 `int64 timeout_millis`，当已有合适的通用类型时！
 
 <a id="well-known-types"></a><a id="common-types"></a>
 
 *   [`duration`](https://github.com/protocolbuffers/protobuf/blob/main/src/google/protobuf/duration.proto)
-    is a signed, fixed-length span of time (for example, 42s).
+    表示有符号、固定长度的时间段（如 42s）。
 *   [`timestamp`](https://github.com/protocolbuffers/protobuf/blob/main/src/google/protobuf/timestamp.proto)
-    is a point in time independent of any time zone or calendar (for example,
-    2017-01-15T01:30:15.01Z).
+    表示独立于时区和日历的时间点（如 2017-01-15T01:30:15.01Z）。
 *   [`interval`](https://github.com/googleapis/googleapis/blob/master/google/type/interval.proto)
-    is a time interval independent of time zone or calendar (for example,
-    2017-01-15T01:30:15.01Z - 2017-01-16T02:30:15.01Z).
+    表示独立于时区和日历的时间区间（如 2017-01-15T01:30:15.01Z - 2017-01-16T02:30:15.01Z）。
 *   [`date`](https://github.com/googleapis/googleapis/blob/master/google/type/date.proto)
-    is a whole calendar date (for example, 2005-09-19).
+    表示完整的日历日期（如 2005-09-19）。
 *   [`month`](https://github.com/googleapis/googleapis/blob/master/google/type/month.proto)
-    is a month of year (for example, April).
+    表示一年中的月份（如四月）。
 *   [`dayofweek`](https://github.com/googleapis/googleapis/blob/master/google/type/dayofweek.proto)
-    is a day of week (for example, Monday).
+    表示星期几（如星期一）。
 *   [`timeofday`](https://github.com/googleapis/googleapis/blob/master/google/type/timeofday.proto)
-    is a time of day (for example, 10:42:23).
+    表示一天中的时间（如 10:42:23）。
 *   [`field_mask`](https://github.com/protocolbuffers/protobuf/blob/main/src/google/protobuf/field_mask.proto)
-    is a set of symbolic field paths (for example, f.b.d).
+    表示一组符号字段路径（如 f.b.d）。
 *   [`postal_address`](https://github.com/googleapis/googleapis/blob/master/google/type/postal_address.proto)
-    is a postal address (for example, 1600 Amphitheatre Parkway Mountain View,
-    CA 94043 USA).
+    表示邮政地址（如 1600 Amphitheatre Parkway Mountain View, CA 94043 USA）。
 *   [`money`](https://github.com/googleapis/googleapis/blob/master/google/type/money.proto)
-    is an amount of money with its currency type (for example, 42 USD).
+    表示带货币类型的金额（如 42 USD）。
 *   [`latlng`](https://github.com/googleapis/googleapis/blob/master/google/type/latlng.proto)
-    is a latitude/longitude pair (for example, 37.386051 latitude and
-    -122.083855 longitude).
+    表示经纬度对（如 37.386051 纬度和 -122.083855 经度）。
 *   [`color`](https://github.com/googleapis/googleapis/blob/master/google/type/color.proto)
-    is a color in the RGBA color space.
+    表示 RGBA 颜色空间中的颜色。
 
 <a id="do-define-widely-used-message-types-in-separate-files"></a>
 
-## **Do** Define Message Types in Separate Files {#separate-files}
+## **要**将常用消息类型定义在单独文件中 {#separate-files}
 
-When defining a proto schema, you should have a single message, enum, extension,
-service, or group of cyclic dependencies per file. This makes refactoring
-easier. Moving files when they're separated is much easier than extracting
-messages from a file with other messages. Following this practice also helps to
-keep the proto schema files smaller, which enhances maintainability.
+定义 proto schema 时，每个文件应只包含一个消息、枚举、扩展、服务或循环依赖组。这样便于重构。分文件管理比从一个大文件中提取消息更容易。遵循此做法还能保持 proto 文件较小，提升可维护性。
 
-If they will be widely used outside of your project, consider putting them in
-their own file with no dependencies. Then it's easy for anyone to use those
-types without introducing the transitive dependencies in your other proto files.
+如果这些类型会被项目外广泛使用，建议将其放在无依赖的独立文件中。这样其他人可以轻松使用这些类型，而不会引入你其他 proto 文件的传递依赖。
 
-For more on this topic, see
-[1-1-1 Rule](/best-practices/1-1-1).
+更多内容见
+[1-1-1 规则](/best-practices/1-1-1)。
 
 <a id="dont-change-the-default-value-of-a-field"></a>
 
-## **Don't** Change the Default Value of a Field {#change-default-value}
+## **不要**更改字段的默认值 {#change-default-value}
 
-Almost never change the default value of a proto field. This causes version skew
-between clients and servers. A client reading an unset value will see a
-different result than a server reading the same unset value when their builds
-straddle the proto change. Proto3 removed the ability to
-set default values.
+几乎不要更改 proto 字段的默认值。这会导致客户端和服务端版本不一致。当客户端读取未设置的值时，结果可能与服务端读取同一未设置值时不同，尤其当它们的构建版本跨越 proto 更改时。Proto3 已移除设置默认值的能力。
 
 <a id="dont-go-from-repeated-to-scalar"></a>
 
-## **Don't** Go from Repeated to Scalar {#repeated-to-scalar}
+## **不要**从 repeated 改为标量类型 {#repeated-to-scalar}
 
-Although it won't cause crashes, you'll lose data. For JSON, a mismatch in
-repeatedness will lose the whole *message*. For numeric proto3 fields and proto2
-`packed` fields, going from repeated to scalar will lose all data in that
-*field*. For non-numeric proto3 fields and un-annotated proto2 fields, going
-from repeated to scalar will result in the last deserialized value "winning."
+虽然不会导致崩溃，但会丢失数据。对于 JSON，repeated 与标量不一致会导致整个*消息*丢失。对于 proto3 的数值字段和 proto2 的 `packed` 字段，从 repeated 改为标量会丢失该*字段*的所有数据。对于 proto3 的非数值字段和未注解的 proto2 字段，从 repeated 改为标量会导致最后一个反序列化的值“获胜”。
 
-Going from scalar to repeated is OK in proto2 and in proto3 with
-`[packed=false]` because for binary serialization the scalar value becomes a
-one-element list.
+从标量改为 repeated 在 proto2 和 proto3（`[packed=false]`）中是可以的，因为二进制序列化时，标量值会变成单元素列表。
 
 <a id="do-follow-the-style-guide-for-generated-code"></a>
 
-## **Do** Follow the Style Guide for Generated Code {#follow-style-guide}
+## **要**遵循生成代码的风格指南 {#follow-style-guide}
 
-Proto generated code is referred to in normal code. Ensure that options in
-`.proto` file do not result in generation of code which violate the style guide.
-For example:
+proto 生成的代码会在普通代码中被引用。确保 `.proto` 文件中的选项不会导致生成的代码违反风格指南。例如：
 
-*   `java_outer_classname` should follow
+*   `java_outer_classname` 应遵循
     https://google.github.io/styleguide/javaguide.html#s5.2.2-class-names
 
-*   `java_package` and `java_alt_package` should follow
+*   `java_package` 和 `java_alt_package` 应遵循
     https://google.github.io/styleguide/javaguide.html#s5.2.1-package-names
 
-*   `package`, although used for Java when `java_package` is not present, always
-    directly corresponds to C++ namespace and thus should follow
-    https://google.github.io/styleguide/cppguide.html#Namespace_Names.
-    If these style guides conflict, use `java_package` for Java.
+*   `package` 虽然在没有 `java_package` 时用于 Java，但始终直接对应 C++ 命名空间，因此应遵循
+    https://google.github.io/styleguide/cppguide.html#Namespace_Names。
+    如有冲突，Java 使用 `java_package`。
 
-*   `ruby_package` should be in the form `Foo::Bar::Baz` rather than
-    `Foo.Bar.Baz`.
+*   `ruby_package` 应为 `Foo::Bar::Baz`，而不是 `Foo.Bar.Baz`。
 
 <a id="never-use-text-format-messages-for-interchange"></a>
 
-## **Don't** use Text Format Messages for Interchange {#text-format-interchange}
+## **不要**使用文本格式消息进行数据交换 {#text-format-interchange}
 
-Text-based serialization formats like text format and
-JSON represent fields and enum values as strings. As a result, deserialization
-of protocol buffers in these formats using old code will fail when a field or
-enum value is renamed, or when a new field or enum value or extension is added.
-Use binary serialization when possible for data interchange, and use text format
-for human editing and debugging only.
+文本序列化格式如 text format 和 JSON 会将字段和枚举值表示为字符串。因此，使用旧代码反序列化这些格式的 proto 时，如果字段或枚举值被重命名，或新增字段、枚举值、扩展，都会失败。数据交换时应尽量使用二进制序列化，文本格式仅用于人工编辑和调试。
 
-If you use protos converted to JSON in your API or for storing data, you may not
-be able to safely rename fields or enums at all.
+如果你在 API 或数据存储中使用 proto 转换为 JSON，可能无法安全地重命名字段或枚举。
 
 <a id="never-rely-on-serialization-stability-across-builds"></a>
 
-## **Never** Rely on Serialization Stability Across Builds {#serialization-stability}
+## **绝不要**依赖不同构建间的序列化稳定性 {#serialization-stability}
 
-The stability of proto serialization is not guaranteed across binaries or across
-builds of the same binary. Do not rely on it when, for example, building cache
-keys.
+proto 序列化的稳定性在不同二进制文件或同一二进制的不同构建间无法保证。不要依赖它，例如用于构建缓存键。
 
 <a id="dont-generate-java-protos-in-the-same-java-package-as-other-code"></a>
 
-## **Don't** Generate Java Protos in the Same Java Package as Other Code {#generate-java-protos}
+## **不要**将 Java proto 生成在与其他代码相同的包中 {#generate-java-protos}
 
-Generate Java proto sources into a separate package from your hand-written Java
-sources. The `package`, `java_package` and `java_alt_api_package` options
-control
-[where the generated Java sources are emitted](/reference/java/java-generated#package).
-Make sure hand-written Java source code does not also live in that same package.
-A common practice is to generate your protos into a `proto` subpackage in your
-project that **only** contains those protos (that is, no hand-written source
-code).
+应将 Java proto 源码生成到与手写 Java 源码不同的包中。`package`、`java_package` 和 `java_alt_api_package` 选项控制
+[生成的 Java 源码的输出位置](/reference/java/java-generated#package)。
+确保手写 Java 代码不在同一包下。常见做法是将 proto 生成到项目的 `proto` 子包中，该包**只**包含 proto（即没有手写源码）。
 
-## Avoid Using Language Keywords for Field Names {#avoid-keywords}
+## 避免将语言关键字用作字段名 {#avoid-keywords}
 
-If the name of a message, field, enum, or enum value is a keyword in the
-language that reads from/writes to that field, then protobuf may change the
-field name, and may have different ways to access them than normal fields. For
-example, see
-[this warning about Python](/reference/python/python-generated#keyword-conflicts).
+如果消息、字段、枚举或枚举值的名称是目标语言的关键字，protobuf 可能会更改字段名，并且访问方式可能与普通字段不同。例如，参见
+[关于 Python 的警告](/reference/python/python-generated#keyword-conflicts)。
 
-You should also avoid using keywords in your file paths, as this can also cause
-problems.
+还应避免在文件路径中使用关键字，这也可能导致问题。
 
-## **Do** Use java_outer_classname {#java-outer-classname}
+## **要**使用 java_outer_classname {#java-outer-classname}
 
-Every proto schema definition file should set option `java_outer_classname` to
-the `.proto` file name converted to TitleCase with the '.' removed. For example,
-the file `student_record_request.proto` should set:
+每个 proto schema 定义文件都应设置 `java_outer_classname` 选项，其值为 `.proto` 文件名去掉点号后转为 TitleCase。例如，文件 `student_record_request.proto` 应设置：
 
 ```java
 option java_outer_classname = "StudentRecordRequestProto";
 ```
 
-## Appendix {#appendix}
+## 附录 {#appendix}
 
-### API Best Practices {#api-best-practices}
+### API 最佳实践 {#api-best-practices}
 
-This document lists only changes that are extremely likely to cause breakage.
-For higher-level guidance on how to craft proto APIs that grow gracefully see
-[API Best Practices](/best-practices/api).
+本文仅列出极易导致破坏的更改。关于如何优雅地扩展 proto API 的更高层次建议，请参见
+[API 最佳实践](/best-practices/api)。
+
