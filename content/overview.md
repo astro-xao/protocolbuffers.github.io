@@ -113,7 +113,7 @@ Protocol Buffers 并不适用于所有数据场景，尤其是：
 
 下图展示了使用 Protocol Buffers 处理数据的流程。
 
-![编译流程，展示 proto 文件、生成代码和编译类的创建](./images/protocol-buffers-concepts.png) \
+![编译流程，展示 proto 文件、生成代码和编译类的创建](../images/protocol-buffers-concepts.png) \
 **图 1. Protocol Buffers 工作流程**
 
 Protocol Buffers 生成的代码提供了从文件和流中检索数据、提取单个值、检查数据是否存在、将数据序列化回文件或流等实用方法。
