@@ -31,9 +31,17 @@ TitleCase 包含大写字母、小写字母和数字 首字母为大写字母 �
 enum Enum { A = 0; B = 1; } message Msg { optional Enum enum = 1; } 开放 和 封闭 的区别可以用一个问题来概括：
 当程序解析包含字段 1 且值为 2 的二进制数据时会发生什么？
 开放枚举会解析值 2 并直接存储在字段中。访问器会报告该字段已设置，并返回代表 2 的内容。 封闭枚举会解析值 2 并将其存储在消息的未知字段集中。访问器会报告该字段为未设置，并返回枚举的默认值。 封闭 枚举的影响 封闭 枚举在解析重复字段时会带来意想不到的后果。当解析 repeated Enum 字段时，所有未知值都会被放入 未知字段 集中。序列化时，这些未知值会被再次写出，但不会在原列表中的原始位置。例如，给定如下 .proto 文件：
-enum Enum { A = 0; B = 1; } message Msg { repeated Enum r = 1; } 如果线格式包含字段 1 的值为 [0, 2, 1, 2]，则重复字段解析后为 [0, 1]，而 [2, 2] 会被存储为未知字段。重新序列化消息后，线格式将变为 [0, 1, 2, 2]。</description></item><item><title>Encoding</title><link>https://astro-xao.github.io/protocolbuffers.github.io/programming-guides/encoding/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://astro-xao.github.io/protocolbuffers.github.io/programming-guides/encoding/</guid><description>This document describes the protocol buffer wire format, which defines the details of how your message is sent on the wire and how much space it consumes on disk. You probably don&amp;rsquo;t need to understand this to use protocol buffers in your application, but it&amp;rsquo;s useful information for doing optimizations.
-If you already know the concepts but want a reference, skip to the Condensed reference card section.
-Protoscope is a very simple language for describing snippets of the low-level wire format, which we&amp;rsquo;ll use to provide a visual reference for the encoding of various messages.</description></item><item><title>ProtoJSON 格式</title><link>https://astro-xao.github.io/protocolbuffers.github.io/programming-guides/json/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://astro-xao.github.io/protocolbuffers.github.io/programming-guides/json/</guid><description>Protobuf 支持一种规范的 JSON 编码格式，使得与不支持标准 protobuf 二进制格式的系统之间的数据共享更加容易。
+enum Enum { A = 0; B = 1; } message Msg { repeated Enum r = 1; } 如果线格式包含字段 1 的值为 [0, 2, 1, 2]，则重复字段解析后为 [0, 1]，而 [2, 2] 会被存储为未知字段。重新序列化消息后，线格式将变为 [0, 1, 2, 2]。</description></item><item><title>编码</title><link>https://astro-xao.github.io/protocolbuffers.github.io/programming-guides/encoding/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://astro-xao.github.io/protocolbuffers.github.io/programming-guides/encoding/</guid><description>本文档介绍了 protocol buffer 的线格式（wire format），它定义了消息在网络上传输和在磁盘上占用空间的详细方式。你在应用中使用 protocol buffer 时通常不需要了解这些细节，但如果你需要做优化，这些信息会很有用。
+如果你已经了解相关概念但需要参考资料，可以直接跳到速查表部分。
+Protoscope 是一种非常简单的语言，用于描述底层线格式的片段，我们将用它来为各种消息的编码提供可视化参考。Protoscope 的语法由一系列标记（token）组成，每个标记都精确编码为特定的字节序列。
+例如，反引号用于表示原始十六进制字面量，如 `70726f746f6275660a`。它会被编码为字面量中表示的确切字节。引号用于表示 UTF-8 字符串，如 &amp;quot;Hello, Protobuf!&amp;quot;。这个字面量等同于 `48656c6c6f2c2050726f746f62756621`（如果你仔细观察，会发现它由 ASCII 字节组成）。我们会在讨论线格式的过程中介绍更多 Protoscope 语言的内容。
+Protoscope 工具还可以将已编码的 protocol buffer 以文本形式导出。参见 https://github.com/protocolbuffers/protoscope/tree/main/testdata 获取示例。
+本文所有示例均假设你使用的是 2023 版或更高版本。
+一个简单的消息 假设你有如下非常简单的消息定义：
+message Test1 { int32 a = 1; } 在应用中，你创建了一个 Test1 消息并将 a 设为 150。然后你将消息序列化到输出流。如果你能检查编码后的消息，你会看到三个字节：
+08 96 01 目前为止，看起来很小且全是数字——但这代表什么？如果你用 Protoscope 工具导出这些字节，你会看到类似 1: 150 的内容。它是如何知道消息内容的？
+基于 128 的变长整数（Varint） 变长整数（varint）是线格式的核心。它允许用 1 到 10 个字节编码无符号 64 位整数，较小的值使用更少的字节。
+varint 的每个字节都有一个续位，用于指示后面的字节是否属于同一个 varint。这个续位是字节的最高有效位（MSB，有时也叫符号位）。低 7 位是有效载荷；最终的整数通过将各字节的 7 位有效载荷拼接起来得到。</description></item><item><title>ProtoJSON 格式</title><link>https://astro-xao.github.io/protocolbuffers.github.io/programming-guides/json/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://astro-xao.github.io/protocolbuffers.github.io/programming-guides/json/</guid><description>Protobuf 支持一种规范的 JSON 编码格式，使得与不支持标准 protobuf 二进制格式的系统之间的数据共享更加容易。
 ProtoJSON 格式的效率不如 protobuf 二进制格式。转换器在编码和解码消息时会消耗更多的 CPU，并且（除极少数情况外）编码后的消息占用的空间也更大。此外，ProtoJSON 格式会将你的字段名和枚举值名写入编码消息，这会导致后续更改这些名称变得更加困难。移除字段会造成兼容性破坏，并触发解析错误。简而言之，Google 更倾向于在几乎所有场景下使用标准二进制格式而不是 ProtoJSON 格式，是有充分理由的。
 各类型的编码方式将在后文的表格中详细说明。
 当将 JSON 编码的数据解析为 protocol buffer 时，如果某个值缺失或其值为 null，则会被解释为对应的默认值。对于单个字段的多次赋值（使用重复或等价的 JSON 键），解析时会保留最后一个值，这与二进制格式解析一致。注意，并非所有 protobuf JSON 解析器实现都符合规范，一些不符合规范的实现可能会拒绝重复键。
