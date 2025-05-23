@@ -1,39 +1,25 @@
 +++
-title = "Encoding"
+title = "编码"
 weight = 60
-description = "Explains how Protocol Buffers encodes data to files or to the wire."
+description = "解释 Protocol Buffers 如何将数据编码到文件或传输到网络。"
 type = "docs"
 +++
 
-This document describes the protocol buffer *wire format*, which defines the
-details of how your message is sent on the wire and how much space it consumes
-on disk. You probably don't need to understand this to use protocol buffers in
-your application, but it's useful information for doing optimizations.
+本文档介绍了 protocol buffer 的*线格式*（wire format），它定义了消息在网络上传输和在磁盘上占用空间的详细方式。你在应用中使用 protocol buffer 时通常不需要了解这些细节，但如果你需要做优化，这些信息会很有用。
 
-If you already know the concepts but want a reference, skip to the
-[Condensed reference card](#cheat-sheet) section.
+如果你已经了解相关概念但需要参考资料，可以直接跳到[速查表](#cheat-sheet)部分。
 
-[Protoscope](https://github.com/protocolbuffers/protoscope) is a very simple
-language for describing snippets of the low-level wire format, which we'll use
-to provide a visual reference for the encoding of various messages. Protoscope's
-syntax consists of a sequence of *tokens* that each encode down to a specific
-byte sequence.
+[Protoscope](https://github.com/protocolbuffers/protoscope) 是一种非常简单的语言，用于描述底层线格式的片段，我们将用它来为各种消息的编码提供可视化参考。Protoscope 的语法由一系列*标记*（token）组成，每个标记都精确编码为特定的字节序列。
 
-For example, backticks denote a raw hex literal, like `` `70726f746f6275660a`
-``. This encodes into the exact bytes denoted as hex in the literal. Quotes
-denote UTF-8 strings, like `"Hello, Protobuf!"`. This literal is synonymous with
-`` `48656c6c6f2c2050726f746f62756621` `` (which, if you observe closely, is
-composed of ASCII bytes). We'll introduce more of the Protoscope language as we
-discuss aspects of the wire format.
+例如，反引号用于表示原始十六进制字面量，如 `` `70726f746f6275660a` ``。它会被编码为字面量中表示的确切字节。引号用于表示 UTF-8 字符串，如 `"Hello, Protobuf!"`。这个字面量等同于 `` `48656c6c6f2c2050726f746f62756621` ``（如果你仔细观察，会发现它由 ASCII 字节组成）。我们会在讨论线格式的过程中介绍更多 Protoscope 语言的内容。
 
-The Protoscope tool can also dump encoded protocol buffers as text. See
-https://github.com/protocolbuffers/protoscope/tree/main/testdata for examples.
+Protoscope 工具还可以将已编码的 protocol buffer 以文本形式导出。参见 https://github.com/protocolbuffers/protoscope/tree/main/testdata 获取示例。
 
-All examples in this topic assume that you are using Edition 2023 or later.
+本文所有示例均假设你使用的是 2023 版或更高版本。
 
-## A Simple Message {#simple}
+## 一个简单的消息 {#simple}
 
-Let's say you have the following very simple message definition:
+假设你有如下非常简单的消息定义：
 
 ```proto
 message Test1 {
@@ -41,205 +27,139 @@ message Test1 {
 }
 ```
 
-In an application, you create a `Test1` message and set `a` to 150. You then
-serialize the message to an output stream. If you were able to examine the
-encoded message, you'd see three bytes:
+在应用中，你创建了一个 `Test1` 消息并将 `a` 设为 150。然后你将消息序列化到输出流。如果你能检查编码后的消息，你会看到三个字节：
 
 ```proto
 08 96 01
 ```
 
-So far, so small and numeric -- but what does it mean? If you use the Protoscope
-tool to dump those bytes, you'd get something like `1: 150`. How does it know
-this is the contents of the message?
+目前为止，看起来很小且全是数字——但这代表什么？如果你用 Protoscope 工具导出这些字节，你会看到类似 `1: 150` 的内容。它是如何知道消息内容的？
 
-## Base 128 Varints {#varints}
+## 基于 128 的变长整数（Varint）{#varints}
 
-Variable-width integers, or *varints*, are at the core of the wire format. They
-allow encoding unsigned 64-bit integers using anywhere between one and ten
-bytes, with small values using fewer bytes.
+变长整数（*varint*）是线格式的核心。它允许用 1 到 10 个字节编码无符号 64 位整数，较小的值使用更少的字节。
 
-Each byte in the varint has a *continuation bit* that indicates if the byte that
-follows it is part of the varint. This is the *most significant bit* (MSB) of
-the byte (sometimes also called the *sign bit*). The lower 7 bits are a payload;
-the resulting integer is built by appending together the 7-bit payloads of its
-constituent bytes.
+varint 的每个字节都有一个*续位*，用于指示后面的字节是否属于同一个 varint。这个续位是字节的*最高有效位*（MSB，有时也叫*符号位*）。低 7 位是有效载荷；最终的整数通过将各字节的 7 位有效载荷拼接起来得到。
 
-So, for example, here is the number 1, encoded as `` `01` `` -- it's a single
-byte, so the MSB is not set:
+例如，数字 1 编码为 `` `01` ``——它只有一个字节，所以 MSB 没有被设置：
 
 ```proto
 0000 0001
 ^ msb
 ```
 
-And here is 150, encoded as `` `9601` `` -- this is a bit more complicated:
+而 150 编码为 `` `9601` ``——稍微复杂一些：
 
 ```proto
 10010110 00000001
 ^ msb    ^ msb
 ```
 
-How do you figure out that this is 150? First you drop the MSB from each byte,
-as this is just there to tell us whether we've reached the end of the number (as
-you can see, it's set in the first byte as there is more than one byte in the
-varint). These 7-bit payloads are in little-endian order. Convert to big-endian
-order, concatenate, and interpret as an unsigned 64-bit integer:
+如何确定这是 150？首先去掉每个字节的 MSB，因为它只是用来告诉我们数字是否结束（如你所见，第一个字节的 MSB 被设置，表示 varint 不止一个字节）。这些 7 位有效载荷是小端序。转换为大端序，拼接后按无符号 64 位整数解释：
 
 ```proto
-10010110 00000001        // Original inputs.
- 0010110  0000001        // Drop continuation bits.
- 0000001  0010110        // Convert to big-endian.
-   00000010010110        // Concatenate.
- 128 + 16 + 4 + 2 = 150  // Interpret as an unsigned 64-bit integer.
+10010110 00000001        // 原始输入
+ 0010110  0000001        // 去掉续位
+ 0000001  0010110        // 转为大端序
+   00000010010110        // 拼接
+ 128 + 16 + 4 + 2 = 150  // 解释为无符号 64 位整数
 ```
 
-Because varints are so crucial to protocol buffers, in protoscope syntax, we
-refer to them as plain integers. `150` is the same as `` `9601` ``.
+由于 varint 对 protocol buffer 至关重要，在 protoscope 语法中，我们直接用整数表示 varint。`150` 就等同于 `` `9601` ``。
 
-## Message Structure {#structure}
+## 消息结构 {#structure}
 
-A protocol buffer message is a series of key-value pairs. The binary version of
-a message just uses the field's number as the key -- the name and declared type
-for each field can only be determined on the decoding end by referencing the
-message type's definition (i.e. the `.proto` file). Protoscope does not have
-access to this information, so it can only provide the field numbers.
+protocol buffer 消息是一系列键值对。消息的二进制版本只用字段号作为键——字段的名称和声明类型只能在解码端通过消息类型定义（即 `.proto` 文件）确定。Protoscope 无法获取这些信息，因此只能提供字段号。
 
-When a message is encoded, each key-value pair is turned into a *record*
-consisting of the field number, a wire type and a payload. The wire type tells
-the parser how big the payload after it is. This allows old parsers to skip over
-new fields they don't understand. This type of scheme is sometimes called
-[Tag-Length-Value](https://en.wikipedia.org/wiki/Type%E2%80%93length%E2%80%93value),
-or TLV.
+消息编码时，每个键值对会被转换为一个*记录*，包含字段号、线类型和有效载荷。线类型告诉解析器后面的有效载荷有多大。这允许旧的解析器跳过它们不理解的新字段。这种方案有时被称为[标签-长度-值](https://zh.wikipedia.org/wiki/Type%E2%80%93length%E2%80%93value)（TLV）。
 
-There are six wire types: `VARINT`, `I64`, `LEN`, `SGROUP`, `EGROUP`, and `I32`
+线类型有六种：`VARINT`、`I64`、`LEN`、`SGROUP`、`EGROUP` 和 `I32`
 
-ID  | Name   | Used For
+ID  | 名称    | 用于
 --- | ------ | --------------------------------------------------------
 0   | VARINT | int32, int64, uint32, uint64, sint32, sint64, bool, enum
 1   | I64    | fixed64, sfixed64, double
 2   | LEN    | string, bytes, embedded messages, packed repeated fields
-3   | SGROUP | group start (deprecated)
-4   | EGROUP | group end (deprecated)
+3   | SGROUP | group start（已弃用）
+4   | EGROUP | group end（已弃用）
 5   | I32    | fixed32, sfixed32, float
 
-The "tag" of a record is encoded as a varint formed from the field number and
-the wire type via the formula `(field_number << 3) | wire_type`. In other words,
-after decoding the varint representing a field, the low 3 bits tell us the wire
-type, and the rest of the integer tells us the field number.
+记录的“标签”通过字段号和线类型组合成一个 varint，公式为 `(field_number << 3) | wire_type`。换句话说，解码表示字段的 varint 后，低 3 位是线类型，其余位是字段号。
 
-Now let's look at our simple example again. You now know that the first number
-in the stream is always a varint key, and here it's `` `08` ``, or (dropping the
-MSB):
+让我们再看一下前面的简单例子。你现在知道流中的第一个数字总是 varint 键，这里是 `` `08` ``，去掉 MSB 后：
 
 ```proto
 000 1000
 ```
 
-You take the last three bits to get the wire type (0) and then right-shift by
-three to get the field number (1). Protoscope represents a tag as an integer
-followed by a colon and the wire type, so we can write the above bytes as
-`1:VARINT`.
+取最后三位得到线类型（0），右移三位得到字段号（1）。Protoscope 用整数加冒号和线类型表示标签，所以这些字节可以写作 `1:VARINT`。
 
-Because the wire type is 0, or `VARINT`, we know that we need to decode a varint
-to get the payload. As we saw above, the bytes `` `9601` `` varint-decode to
-150, giving us our record. We can write it in Protoscope as `1:VARINT 150`.
+因为线类型是 0，即 `VARINT`，我们知道需要解码一个 varint 作为有效载荷。如上所述，字节 `` `9601` `` 解码为 150，得到我们的记录。用 Protoscope 表示为 `1:VARINT 150`。
 
-Protoscope can infer the type for a tag if there is whitespace after the `:`. It
-does so by looking ahead at the next token and guessing what you meant (the
-rules are documented in detail in
-[Protoscope's language.txt](https://github.com/protocolbuffers/protoscope/blob/main/language.txt)).
-For example, in `1: 150`, there is a varint immediately after the untyped tag,
-so Protoscope infers its type to be `VARINT`. If you wrote `2: {}`, it would see
-the `{` and guess `LEN`; if you wrote `3: 5i32` it would guess `I32`, and so on.
+如果标签后有空格，Protoscope 可以推断类型。它会查看下一个标记并猜测你的意图（详细规则见 [Protoscope's language.txt](https://github.com/protocolbuffers/protoscope/blob/main/language.txt)）。例如，`1: 150` 后面紧跟 varint，Protoscope 推断类型为 `VARINT`。如果写 `2: {}`，它看到 `{` 会猜测为 `LEN`；写 `3: 5i32` 会猜测为 `I32`，等等。
 
-## More Integer Types {#int-types}
+## 更多整数类型 {#int-types}
 
-### Bools and Enums {#bools-and-enums}
+### 布尔和枚举 {#bools-and-enums}
 
-Bools and enums are both encoded as if they were `int32`s. Bools, in particular,
-always encode as either `` `00` `` or `` `01` ``. In Protoscope, `false` and
-`true` are aliases for these byte strings.
+布尔和枚举都按 `int32` 编码。布尔值总是编码为 `` `00` `` 或 `` `01` ``。在 Protoscope 中，`false` 和 `true` 是这两个字节串的别名。
 
-### Signed Integers {#signed-ints}
+### 有符号整数 {#signed-ints}
 
-As you saw in the previous section, all the protocol buffer types associated
-with wire type 0 are encoded as varints. However, varints are unsigned, so the
-different signed types, `sint32` and `sint64` vs `int32` or `int64`, encode
-negative integers differently.
+如前所述，所有与线类型 0 相关的 protocol buffer 类型都按 varint 编码。但 varint 是无符号的，所以不同的有符号类型（`sint32`、`sint64` 与 `int32`、`int64`）对负数的编码方式不同。
 
-The `intN` types encode negative numbers as two's complement, which means that,
-as unsigned, 64-bit integers, they have their highest bit set. As a result, this
-means that *all ten bytes* must be used. For example, `-2` is converted by
-protoscope into
+`intN` 类型将负数按二进制补码编码，这意味着作为无符号 64 位整数时，其最高位被设置。因此，*必须使用全部十个字节*。例如，`-2` 被 protoscope 转换为
 
 ```proto
 11111110 11111111 11111111 11111111 11111111
 11111111 11111111 11111111 11111111 00000001
 ```
 
-This is the *two's complement* of 2, defined in unsigned arithmetic as `~0 - 2 +
-1`, where `~0` is the all-ones 64-bit integer. It is a useful exercise to
-understand why this produces so many ones.
+这是 2 的*二进制补码*，在无符号运算中定义为 `~0 - 2 + 1`，其中 `~0` 是全 1 的 64 位整数。理解为什么会产生这么多 1 是一个有趣的练习。
 
 <!-- mdformat off(the asterisks cause bullets) -->
-`sintN` uses the "ZigZag" encoding instead of two's complement to encode
-negative integers. Positive integers `p` are encoded as `2 * p` (the even
-numbers), while negative integers `n` are encoded as `2 * |n| - 1` (the odd
-numbers). The encoding thus "zig-zags" between positive and negative numbers.
-For example:
+`sintN` 使用“ZigZag”编码而不是二进制补码来编码负数。正整数 `p` 编码为 `2 * p`（偶数），负整数 `n` 编码为 `2 * |n| - 1`（奇数）。编码结果在正负数之间“之”字形切换。例如：
 <!-- mdformat on -->
 
-Signed Original | Encoded As
---------------- | ----------
-0               | 0
--1              | 1
-1               | 2
--2              | 3
-...             | ...
-0x7fffffff      | 0xfffffffe
--0x80000000     | 0xffffffff
+原始有符号值 | 编码后
+----------- | -------
+0           | 0
+-1          | 1
+1           | 2
+-2          | 3
+...         | ...
+0x7fffffff  | 0xfffffffe
+-0x80000000 | 0xffffffff
 
-In other words, each value `n` is encoded using
+换句话说，每个值 `n` 的编码方式为
 
 ```
 (n << 1) ^ (n >> 31)
 ```
 
-for `sint32`s, or
+对于 `sint32`，或
 
 ```
 (n << 1) ^ (n >> 63)
 ```
 
-for the 64-bit version.
+用于 64 位版本。
 
-When the `sint32` or `sint64` is parsed, its value is decoded back to the
-original, signed version.
+解析 `sint32` 或 `sint64` 时，会将其值解码回原始有符号值。
 
-In protoscope, suffixing an integer with a `z` will make it encode as ZigZag.
-For example, `-500z` is the same as the varint `999`.
+在 protoscope 中，整数后缀 `z` 表示用 ZigZag 编码。例如，`-500z` 等同于 varint `999`。
 
-### Non-varint Numbers {#non-varints}
+### 非 varint 数字类型 {#non-varints}
 
-Non-varint numeric types are simple -- `double` and `fixed64` have wire type
-`I64`, which tells the parser to expect a fixed eight-byte lump of data. We can
-specify a `double` record by writing `5: 25.4`, or a `fixed64` record with `6:
-200i64`. In both cases, omitting an explicit wire type implies the `I64` wire
-type.
+非 varint 数值类型很简单——`double` 和 `fixed64` 使用线类型 `I64`，告诉解析器后面是固定的 8 字节数据。我们可以用 `5: 25.4` 指定一个 `double` 记录，或用 `6: 200i64` 指定一个 `fixed64` 记录。两种情况下，省略显式线类型会默认推断为 `I64`。
 
-Similarly `float` and `fixed32` have wire type `I32`, which tells it to expect
-four bytes instead. The syntax for these consists of adding an `i32` suffix.
-`25.4i32` will emit four bytes, as will `200i32`. Tag types are inferred as
-`I32`.
+同理，`float` 和 `fixed32` 使用线类型 `I32`，表示后面是 4 字节。语法是在数字后加 `i32` 后缀。`25.4i32` 和 `200i32` 都会输出 4 字节。标签类型会被推断为 `I32`。
 
-## Length-Delimited Records {#length-types}
+## 长度前缀记录 {#length-types}
 
-*Length prefixes* are another major concept in the wire format. The `LEN` wire
-type has a dynamic length, specified by a varint immediately after the tag,
-which is followed by the payload as usual.
+*长度前缀*是线格式中的另一个重要概念。`LEN` 线类型的长度是动态的，由标签后紧跟的 varint 指定，然后是有效载荷。
 
-Consider this message schema:
+考虑如下消息结构：
 
 ```proto
 message Test2 {
@@ -247,33 +167,21 @@ message Test2 {
 }
 ```
 
-A record for the field `b` is a string, and strings are `LEN`-encoded. If we set
-`b` to `"testing"`, we encoded as a `LEN` record with field number 2 containing
-the ASCII string `"testing"`. The result is `` `120774657374696e67` ``. Breaking
-up the bytes,
+字段 `b` 是字符串，字符串用 `LEN` 编码。如果我们将 `b` 设为 `"testing"`，它会被编码为字段号 2 的 `LEN` 记录，内容为 ASCII 字符串 `"testing"`。结果是 `` `120774657374696e67` ``。拆分字节如下：
 
 ```proto
 12 07 [74 65 73 74 69 6e 67]
 ```
 
-we see that the tag, `` `12` ``, is `00010 010`, or `2:LEN`. The byte that
-follows is the int32 varint `7`, and the next seven bytes are the UTF-8
-encoding of `"testing"`. The int32 varint means that the max length of a string
-is 2GB.
+标签 `` `12` `` 是 `00010 010`，即 `2:LEN`。后面的字节是 int32 varint `7`，再后面七个字节是 `"testing"` 的 UTF-8 编码。int32 varint 意味着字符串最大长度为 2GB。
 
-In Protoscope, this is written as `2:LEN 7 "testing"`. However, it can be
-inconvenient to repeat the length of the string (which, in Protoscope text, is
-already quote-delimited). Wrapping Protoscope content in braces will generate a
-length prefix for it: `{"testing"}` is a shorthand for `7 "testing"`. `{}` is
-always inferred by fields to be a `LEN` record, so we can write this record
-simply as `2: {"testing"}`.
+在 Protoscope 中，这写作 `2:LEN 7 "testing"`。不过，重复写字符串长度可能不方便（在 Protoscope 文本中，字符串已经用引号包裹）。用大括号包裹 Protoscope 内容会自动生成长度前缀：`{"testing"}` 等价于 `7 "testing"`。`{}` 总是被字段推断为 `LEN` 记录，所以可以简写为 `2: {"testing"}`。
 
-`bytes` fields are encoded in the same way.
+`bytes` 字段编码方式相同。
 
-### Submessages {#embedded}
+### 子消息 {#embedded}
 
-Submessage fields also use the `LEN` wire type. Here's a message definition with
-an embedded message of our original example message, `Test1`:
+子消息字段同样使用 `LEN` 线类型。下面是一个嵌套了我们最初例子消息 `Test1` 的消息定义：
 
 ```proto
 message Test3 {
@@ -281,40 +189,27 @@ message Test3 {
 }
 ```
 
-If `Test1`'s `a` field (i.e., `Test3`'s `c.a` field) is set to 150, we get `
-``1a03089601`` `. Breaking it up:
+如果 `Test1` 的 `a` 字段（即 `Test3` 的 `c.a` 字段）设为 150，编码结果为 ``1a03089601``。拆分如下：
 
 ```proto
  1a 03 [08 96 01]
 ```
 
-The last three bytes (in `[]`) are exactly the same ones from our
-[very first example](#simple). These bytes are preceded by a `LEN`-typed tag,
-and a length of 3, exactly the same way as strings are encoded.
+最后三个字节（`[]` 内）正好是我们[第一个例子](#simple)中的字节。这些字节前面是一个 `LEN` 类型标签和长度 3，与字符串编码方式完全相同。
 
-In Protoscope, submessages are quite succinct. ` ``1a03089601`` ` can be written
-as `3: {1: 150}`.
+在 Protoscope 中，子消息写法非常简洁。``1a03089601`` 可写作 `3: {1: 150}`。
 
-## Missing Elements {#optional}
+## 缺失元素 {#optional}
 
-Missing fields are easy to encode: we just leave out the record if
-it's not present. This means that "huge" protos with only a few fields set are
-quite sparse.
+缺失字段的编码很简单：如果字段不存在，就不写入记录。这意味着“庞大”的 proto 只要设置了少量字段，编码结果会非常稀疏。
 
 <span id="packed"></span>
 
-## Repeated Elements {#repeated}
+## 重复元素 {#repeated}
 
-Starting in Edition 2023, `repeated` fields of a primitive type
-(any [scalar type](./programming-guides/proto2#scalar)
-that is not `string` or `bytes`) are ["packed"](./editions/features#repeated_field_encoding) by default.
+从 2023 版开始，原始类型的 `repeated` 字段（任何[标量类型](./programming-guides/proto2#scalar)，不包括 `string` 或 `bytes`）默认采用[打包](./editions/features#repeated_field_encoding)编码。
 
-Packed `repeated` fields, instead of being encoded as one
-record per entry, are encoded as a single `LEN` record that contains each
-element concatenated. To decode, elements are decoded from the `LEN` record one
-by one until the payload is exhausted. The start of the next element is
-determined by the length of the previous, which itself depends on the type of
-the field. Thus, if we have:
+打包的 `repeated` 字段不会为每个元素单独编码记录，而是编码为一个包含所有元素的 `LEN` 记录。解码时，从 `LEN` 记录中依次解出每个元素，直到有效载荷耗尽。下一个元素的起始位置由前一个元素的长度决定，而长度又取决于字段类型。例如：
 
 ```proto
 message Test4 {
@@ -323,21 +218,14 @@ message Test4 {
 }
 ```
 
-and we construct a `Test4` message with `d` set to `"hello"`, and `e` set to
-`1`, `2`, and `3`, this *could* be encoded as `` `3206038e029ea705` ``, or
-written out as Protoscope,
+我们构造一个 `Test4` 消息，`d` 设为 `"hello"`，`e` 设为 `1`、`2`、`3`，编码结果*可能*为 `` `3206038e029ea705` ``，Protoscope 写法为：
 
 ```proto
 4: {"hello"}
 6: {3 270 86942}
 ```
 
-However, if the repeated field is set to expanded (overriding the default packed
-state) or is not packable (strings and messages) then an entry for each
-individual value is encoded. Also, records for `e` do not need to appear
-consecutively, and can be interleaved with other fields; only the order of
-records for the same field with respect to each other is preserved. Thus, this
-could look like the following:
+但如果 repeated 字段被设置为展开（覆盖默认打包状态）或不可打包（如字符串和消息），则每个值单独编码记录。并且，`e` 的记录不必连续出现，可以与其他字段交错；只有同一字段的记录顺序被保留。因此，也可以这样：
 
 ```proto
 5: 1
@@ -346,50 +234,31 @@ could look like the following:
 5: 3
 ```
 
-Only repeated fields of primitive numeric types can be declared "packed". These
-are types that would normally use the `VARINT`, `I32`, or `I64` wire types.
+只有原始数值类型的 repeated 字段可以声明为“打包”。这些类型通常使用 `VARINT`、`I32` 或 `I64` 线类型。
 
-Note that although there's usually no reason to encode more than one key-value
-pair for a packed repeated field, parsers must be prepared to accept multiple
-key-value pairs. In this case, the payloads should be concatenated. Each pair
-must contain a whole number of elements. The following is a valid encoding of
-the same message above that parsers must accept:
+注意，虽然通常没有必要为打包 repeated 字段编码多个键值对，但解析器必须能接受多个键值对。在这种情况下，有效载荷应当拼接。每对必须包含完整数量的元素。如下编码也是有效的：
 
 ```proto
 6: {3 270}
 6: {86942}
 ```
 
-Protocol buffer parsers must be able to parse repeated fields that were compiled
-as `packed` as if they were not packed, and vice versa. This permits adding
-`[packed=true]` to existing fields in a forward- and backward-compatible way.
+protocol buffer 解析器必须能将打包和非打包 repeated 字段互相兼容解析。这允许你在向现有字段添加 `[packed=true]` 时保持前后兼容。
 
-### Oneofs {#oneofs}
+### Oneof {#oneofs}
 
-[`Oneof` fields](./programming-guides/proto2#oneof) are
-encoded the same as if the fields were not in a `oneof`. The rules that apply to
-`oneofs` are independent of how they are represented on the wire.
+[`Oneof` 字段](./programming-guides/proto2#oneof)的编码方式与不在 oneof 中时相同。oneof 的规则与其在线格式上的表示无关。
 
-### Last One Wins {#last-one-wins}
+### 最后一个获胜 {#last-one-wins}
 
-Normally, an encoded message would never have more than one instance of a
-non-`repeated` field. However, parsers are expected to handle the case in which
-they do. For numeric types and strings, if the same field appears multiple
-times, the parser accepts the *last* value it sees. For embedded message fields,
-the parser merges multiple instances of the same field, as if with the
-`Message::MergeFrom` method -- that is, all singular scalar fields in the latter
-instance replace those in the former, singular embedded messages are merged, and
-`repeated` fields are concatenated. The effect of these rules is that parsing
-the concatenation of two encoded messages produces exactly the same result as if
-you had parsed the two messages separately and merged the resulting objects.
-That is, this:
+通常，编码消息不会有多个非 repeated 字段实例。但解析器应能处理这种情况。对于数值类型和字符串，如果同一字段出现多次，解析器接受*最后*出现的值。对于嵌套消息字段，解析器会合并同一字段的多个实例，类似于 `Message::MergeFrom` 方法——即后一个实例的所有单一标量字段替换前一个，单一嵌套消息合并，repeated 字段拼接。这样，解析两个编码消息的拼接结果与分别解析后合并对象的结果完全一致。即：
 
 ```cpp
 MyMessage message;
 message.ParseFromString(str1 + str2);
 ```
 
-is equivalent to this:
+等价于：
 
 ```cpp
 MyMessage message, message2;
@@ -398,12 +267,11 @@ message2.ParseFromString(str2);
 message.MergeFrom(message2);
 ```
 
-This property is occasionally useful, as it allows you to merge two messages (by
-concatenation) even if you do not know their types.
+这个特性有时很有用，因为即使你不知道消息类型，也可以通过拼接合并两个消息。
 
-### Maps {#maps}
+### Map {#maps}
 
-Map fields are just a shorthand for a special kind of repeated field. If we have
+Map 字段只是特殊 repeated 字段的简写。如果有
 
 ```proto
 message Test6 {
@@ -411,7 +279,7 @@ message Test6 {
 }
 ```
 
-this is actually the same as
+实际上等同于
 
 ```proto
 message Test6 {
@@ -423,26 +291,17 @@ message Test6 {
 }
 ```
 
-Thus, maps are encoded exactly like a `repeated` message field: as a sequence of
-`LEN`-typed records, with two fields each.
+因此，map 的编码方式与 repeated 消息字段完全相同：作为一系列 `LEN` 类型记录，每条记录有两个字段。
 
 ## Groups {#groups}
 
-Groups are a deprecated feature that should not be used, but they remain in the
-wire format, and deserve a passing mention.
+Groups 是已弃用的特性，不应再使用，但它们仍然存在于线格式中，这里简单介绍一下。
 
-A group is a bit like a submessage, but it is delimited by special tags rather
-than by a `LEN` prefix. Each group in a message has a field number, which is
-used on these special tags.
+Group 有点像子消息，但用特殊标签而不是 `LEN` 前缀分隔。每个 group 在消息中有一个字段号，用于这些特殊标签。
 
-A group with field number `8` begins with an `8:SGROUP` tag. `SGROUP` records
-have empty payloads, so all this does is denote the start of the group. Once all
-the fields in the group are listed, a corresponding `8:EGROUP` tag denotes its
-end. `EGROUP` records also have no payload, so `8:EGROUP` is the entire record.
-Group field numbers need to match up. If we encounter `7:EGROUP` where we expect
-`8:EGROUP`, the message is mal-formed.
+字段号为 `8` 的 group 以 `8:SGROUP` 标签开始。`SGROUP` 记录没有有效载荷，仅表示 group 开始。列出 group 内所有字段后，用对应的 `8:EGROUP` 标签结束。`EGROUP` 记录也没有有效载荷，所以 `8:EGROUP` 就是整个记录。group 字段号必须匹配。如果遇到 `7:EGROUP` 而期望 `8:EGROUP`，消息格式错误。
 
-Protoscope provides a convenient syntax for writing groups. Instead of writing
+Protoscope 提供了便捷的 group 写法。你可以不用写
 
 ```proto
 8:SGROUP
@@ -451,7 +310,7 @@ Protoscope provides a convenient syntax for writing groups. Instead of writing
 8:EGROUP
 ```
 
-Protoscope allows
+而直接写
 
 ```proto
 8: !{
@@ -460,128 +319,101 @@ Protoscope allows
 }
 ```
 
-This will generate the appropriate start and end group markers. The `!{}` syntax
-can only occur immediately after an un-typed tag expression, like `8:`.
+这会自动生成合适的 group 起止标记。`!{}` 语法只能紧跟未指定类型的标签表达式，如 `8:`。
 
-## Field Order {#order}
+## 字段顺序 {#order}
 
-Field numbers may be declared in any order in a `.proto` file. The order chosen
-has no effect on how the messages are serialized.
+字段号在 `.proto` 文件中可以任意顺序声明。顺序不会影响消息的序列化方式。
 
-When a message is serialized, there is no guaranteed order for how its known or
-[unknown fields](./programming-guides/proto2#updating)
-will be written. Serialization order is an implementation detail, and the
-details of any particular implementation may change in the future. Therefore,
-protocol buffer parsers must be able to parse fields in any order.
+消息序列化时，已知或[未知字段](./programming-guides/proto2#updating)的顺序没有保证。序列化顺序是实现细节，具体实现可能随时变化。因此，protocol buffer 解析器必须能解析任意顺序的字段。
 
-### Implications {#implications}
+### 含义 {#implications}
 
-*   Do not assume the byte output of a serialized message is stable. This is
-    especially true for messages with transitive bytes fields representing other
-    serialized protocol buffer messages.
-*   By default, repeated invocations of serialization methods on the same
-    protocol buffer message instance may not produce the same byte output. That
-    is, the default serialization is not deterministic.
-    *   Deterministic serialization only guarantees the same byte output for a
-        particular binary. The byte output may change across different versions
-        of the binary.
-*   The following checks may fail for a protocol buffer message instance `foo`:
+*   不要假设序列化消息的字节输出是稳定的。对于包含其他 protocol buffer 消息的字节字段的消息尤其如此。
+*   默认情况下，对同一 protocol buffer 消息实例重复调用序列化方法，可能不会产生相同的字节输出。即，默认序列化不是确定性的。
+    *   确定性序列化只保证同一二进制文件的输出一致。不同版本的二进制文件输出可能不同。
+*   以下检查对于 protocol buffer 消息实例 `foo` 可能失败：
     *   `foo.SerializeAsString() == foo.SerializeAsString()`
     *   `Hash(foo.SerializeAsString()) == Hash(foo.SerializeAsString())`
     *   `CRC(foo.SerializeAsString()) == CRC(foo.SerializeAsString())`
-    *   `FingerPrint(foo.SerializeAsString()) ==
-        FingerPrint(foo.SerializeAsString())`
-*   Here are a few example scenarios where logically equivalent protocol buffer
-    messages `foo` and `bar` may serialize to different byte outputs:
-    *   `bar` is serialized by an old server that treats some fields as unknown.
-    *   `bar` is serialized by a server that is implemented in a different
-        programming language and serializes fields in different order.
-    *   `bar` has a field that serializes in a non-deterministic manner.
-    *   `bar` has a field that stores a serialized byte output of a protocol
-        buffer message which is serialized differently.
-    *   `bar` is serialized by a new server that serializes fields in a
-        different order due to an implementation change.
-    *   `foo` and `bar` are concatenations of the same individual messages in a
-        different order.
+    *   `FingerPrint(foo.SerializeAsString()) == FingerPrint(foo.SerializeAsString())`
+*   以下场景中，逻辑等价的 protocol buffer 消息 `foo` 和 `bar` 可能序列化为不同的字节输出：
+    *   `bar` 由旧服务器序列化，部分字段被视为未知。
+    *   `bar` 由不同编程语言实现的服务器序列化，字段顺序不同。
+    *   `bar` 有字段以非确定性方式序列化。
+    *   `bar` 有字段存储了 protocol buffer 消息的序列化字节输出，而该消息序列化方式不同。
+    *   `bar` 由新服务器序列化，因实现变更字段顺序不同。
+    *   `foo` 和 `bar` 是同一组消息以不同顺序拼接的结果。
 
-## Encoded Proto Size Limitations {#size-limit}
+## 编码 proto 的大小限制 {#size-limit}
 
-Protos must be smaller than 2 GiB when serialized. Many proto implementations
-will refuse to serialize or parse messages that exceed this limit.
+序列化后的 proto 必须小于 2 GiB。许多 proto 实现会拒绝序列化或解析超过此限制的消息。
 
-## Condensed Reference Card {#cheat-sheet}
+## 速查表 {#cheat-sheet}
 
-The following provides the most prominent parts of the wire format in an
-easy-to-reference format.
+以下是线格式最重要部分的便捷参考。
 
 ```none
 message    := (tag value)*
 
 tag        := (field << 3) bit-or wire_type;
-                encoded as uint32 varint
-value      := varint      for wire_type == VARINT,
-              i32         for wire_type == I32,
-              i64         for wire_type == I64,
-              len-prefix  for wire_type == LEN,
-              <empty>     for wire_type == SGROUP or EGROUP
+                编码为 uint32 varint
+value      := varint      当 wire_type == VARINT,
+              i32         当 wire_type == I32,
+              i64         当 wire_type == I64,
+              len-prefix  当 wire_type == LEN,
+              <empty>     当 wire_type == SGROUP 或 EGROUP
 
 varint     := int32 | int64 | uint32 | uint64 | bool | enum | sint32 | sint64;
-                encoded as varints (sintN are ZigZag-encoded first)
+                编码为 varint（sintN 先用 ZigZag 编码）
 i32        := sfixed32 | fixed32 | float;
-                encoded as 4-byte little-endian;
-                memcpy of the equivalent C types (u?int32_t, float)
+                编码为 4 字节小端序；
+                等价 C 类型（u?int32_t, float）的 memcpy
 i64        := sfixed64 | fixed64 | double;
-                encoded as 8-byte little-endian;
-                memcpy of the equivalent C types (u?int64_t, double)
+                编码为 8 字节小端序；
+                等价 C 类型（u?int64_t, double）的 memcpy
 
 len-prefix := size (message | string | bytes | packed);
-                size encoded as int32 varint
-string     := valid UTF-8 string (e.g. ASCII);
-                max 2GB of bytes
-bytes      := any sequence of 8-bit bytes;
-                max 2GB of bytes
+                size 编码为 int32 varint
+string     := 有效 UTF-8 字符串（如 ASCII）；
+                最多 2GB 字节
+bytes      := 任意 8 位字节序列；
+                最多 2GB 字节
 packed     := varint* | i32* | i64*,
-                consecutive values of the type specified in `.proto`
+                `.proto` 中指定类型的连续值
 ```
 
-See also the
-[Protoscope Language Reference](https://github.com/protocolbuffers/protoscope/blob/main/language.txt).
+另见
+[Protoscope 语言参考](https://github.com/protocolbuffers/protoscope/blob/main/language.txt)。
 
-### Key {#cheat-sheet-key}
+### 关键说明 {#cheat-sheet-key}
 
 `message   := (tag value)*`
-:   A message is encoded as a sequence of zero or more pairs of tags and values.
+:   一条消息编码为零个或多个标签和值对。
 
 `tag        := (field << 3) bit-or wire_type`
-:   A tag is a combination of a `wire_type`, stored in the least significant
-    three bits, and the field number that is defined in the `.proto` file.
+:   标签由 `wire_type`（最低三位）和 `.proto` 文件中定义的字段号组合而成。
 
-`value      := varint   for wire_type == VARINT, ...`
-:   A value is stored differently depending on the `wire_type` specified in the
-    tag.
+`value      := varint   当 wire_type == VARINT, ...`
+:   值的存储方式取决于标签中指定的 `wire_type`。
 
 `varint     := int32 | int64 | uint32 | uint64 | bool | enum | sint32 | sint64`
-:   You can use varint to store any of the listed data types.
+:   varint 可用于存储上述任意类型。
 
 `i32        := sfixed32 | fixed32 | float`
-:   You can use fixed32 to store any of the listed data types.
+:   fixed32 可用于存储上述任意类型。
 
 `i64        := sfixed64 | fixed64 | double`
-:   You can use fixed64 to store any of the listed data types.
+:   fixed64 可用于存储上述任意类型。
 
 `len-prefix := size (message | string | bytes | packed)`
-:   A length-prefixed value is stored as a length (encoded as a varint), and
-    then one of the listed data types.
+:   长度前缀值存储为长度（编码为 varint），后跟上述任意类型。
 
-`string     := valid UTF-8 string (e.g. ASCII)`
-:   As described, a string must use UTF-8 character encoding. A string cannot
-    exceed 2GB.
+`string     := 有效 UTF-8 字符串（如 ASCII）`
+:   字符串必须使用 UTF-8 编码，最大不能超过 2GB。
 
-`bytes      := any sequence of 8-bit bytes`
-:   As described, bytes can store custom data types, up to 2GB in size.
+`bytes      := 任意 8 位字节序列`
+:   bytes 可存储自定义数据类型，最大 2GB。
 
 `packed     := varint* | i32* | i64*`
-:   Use the `packed` data type when you are storing consecutive values of the
-    type described in the protocol definition. The tag is dropped for values
-    after the first, which amortizes the costs of tags to one per field, rather
-    than per element.
+:   当你需要存储 `.proto` 定义类型的连续值时使用 packed。标签只在第一个值前出现一次，后续值不再重复标签，从而摊薄标签开销。
